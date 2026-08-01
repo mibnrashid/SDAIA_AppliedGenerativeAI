@@ -21,7 +21,7 @@
       "name": "First calls",
       "day": "Day 1 · Sunday",
       "description": "From a four-line request to schema-validated JSON your code can branch on.",
-      "colab_url": ""
+      "colab_url": "https://colab.research.google.com/drive/1Fc5SZc8HUu9BFwlW93yVrsnj84Uh0ssn?usp=sharing"
     },
     {
       "number": "2",
@@ -29,7 +29,7 @@
       "name": "Retrieval",
       "day": "Day 2 · Monday",
       "description": "Ingest, vision-read a scanned page, chunk, embed, retrieve — then score it against a golden set.",
-      "colab_url": ""
+      "colab_url": "https://colab.research.google.com/drive/1p_6S_y86gIee2P43_KWKCOJDIbVz9w1b?usp=sharing"
     },
     {
       "number": "3",
@@ -37,7 +37,7 @@
       "name": "Agents",
       "day": "Day 3 · Tuesday",
       "description": "Tool schemas, the round trip by hand, the agent loop, and yesterday's retriever as a tool.",
-      "colab_url": ""
+      "colab_url": "https://colab.research.google.com/drive/1nLFlmgjZpJrGfe_ppxVYvZST2KI18C0t?usp=sharing"
     },
     {
       "number": "4",
@@ -45,7 +45,7 @@
       "name": "Production",
       "day": "Day 4 · Wednesday",
       "description": "Retries, streaming, caching and logging — applied to your own project, ending in a numbers table.",
-      "colab_url": ""
+      "colab_url": "https://colab.research.google.com/drive/1zOfbxNJu0zI21AZ-hnUQuAikkb1FvYBU?usp=sharing"
     },
     {
       "number": "5",
@@ -53,7 +53,7 @@
       "name": "Red team",
       "day": "Day 5 · Thursday",
       "description": "Four attacks that work, three layers of defence, and an honest before/after table.",
-      "colab_url": ""
+      "colab_url": "https://colab.research.google.com/drive/1Bc1FRjRYhOdWLwpb_ZcaPnupauEgABfL?usp=sharing"
     }
   ]
 }
