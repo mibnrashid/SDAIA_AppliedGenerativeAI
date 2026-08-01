@@ -4,20 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The project · Applied Generative AI</title>
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../assets/theme.css">
   <link rel="stylesheet" href="../assets/site.css">
   <style>
-    .pj-hero {
-      background-color: var(--ink);
-      color: var(--text-on-dark);
-      padding-block: var(--s6);
-      background-image:
-        radial-gradient(50rem 26rem at 82% -10%, rgba(102,204,255,.16), transparent 60%),
-        radial-gradient(34rem 22rem at 2% 115%, rgba(55,204,149,.14), transparent 60%);
-    }
-    .pj-hero h1 { font-size: var(--fs-display); margin-bottom: var(--s4); max-width: 14ch; }
-    .pj-hero p { color: var(--text-muted-on-dark); max-width: 58ch; font-size: 1.09rem; }
-    .pj-hero .back { display: inline-block; margin-bottom: var(--s3); color: var(--teal-bright); font-size: var(--fs-small); font-weight: 600; text-decoration: none; }
+    .page-hero h1 { max-width: 14ch; }
+    .page-hero-inner { padding-block: 0 var(--s6); }
 
     /* The rubric is the most prominent thing on the page. */
     .rubric-wrap {
@@ -81,25 +73,25 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <header class="site-header">
-    <div class="container">
-      <a class="logo" href="../index.html" aria-label="Applied Generative AI — course home">
-        <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
-        <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
-      </a>
-      <span class="logo">
-        <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
-        <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
-      </span>
-    </div>
-  </header>
-
   <main id="main">
 
-    <section class="pj-hero on-dark">
-      <div class="container">
+    <section class="page-hero on-dark">
+      <header class="site-header site-header--hero">
+        <div class="container">
+          <a class="logo" href="../index.html" aria-label="Applied Generative AI — course home">
+            <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
+            <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
+          </a>
+          <span class="logo">
+            <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+            <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+          </span>
+        </div>
+      </header>
+
+      <div class="container page-hero-inner">
         <a class="back" href="../index.html">← Course home</a>
-        <p class="eyebrow">SDAIA Academy · Applied Generative AI</p>
+        <p class="eyebrow">SDAIA Academy</p>
         <h1>The project</h1>
         <p>Build a generative AI assistant over documents you care about.
            Ship it to GitHub. Defend the architecture you chose.</p>

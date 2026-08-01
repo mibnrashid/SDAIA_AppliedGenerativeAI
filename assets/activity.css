@@ -5,13 +5,10 @@
    ============================================================ */
 
 /* ---- Activity header ------------------------------------- */
-.act-hero {
-  background: var(--ink);
-  color: var(--text-on-dark);
-  padding-block: var(--s5);
-}
-.act-hero h1 { margin: 0 0 var(--s3); }
-.act-hero p { color: var(--text-muted-on-dark); max-width: 62ch; }
+/* Shares the home-page hero background via .page-hero in site.css. */
+.act-hero h1 { margin: 0 0 var(--s3); font-size: var(--fs-display); max-width: 20ch; }
+.act-hero p { color: var(--text-muted-on-dark); max-width: 62ch; font-size: 1.09rem; }
+.act-hero-inner { padding-block: 0 var(--s5); }
 .act-hero .back {
   display: inline-block;
   margin-bottom: var(--s3);

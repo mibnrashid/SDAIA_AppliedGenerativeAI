@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Day 1 — From token to typed output · Applied Generative AI</title>
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../assets/theme.css">
   <link rel="stylesheet" href="../assets/site.css">
   <link rel="stylesheet" href="../assets/deck.css">
@@ -29,11 +30,11 @@
     }
     .weekmap { display: grid; gap: 10px; }
     .weekmap div {
-      display: grid; grid-template-columns: 90px 1fr; gap: 16px; align-items: baseline;
+      display: grid; grid-template-columns: minmax(7.25rem, auto) 1fr; gap: 16px; align-items: start;
       padding: 10px 14px; border-radius: var(--radius-sm); font-size: 20px;
       border: 1px solid var(--border); background: var(--card);
     }
-    .weekmap div span:first-child { font-weight: 700; color: var(--text-muted); font-size: 17px; letter-spacing: .06em; text-transform: uppercase; }
+    .weekmap div span:first-child { font-weight: 700; color: var(--text-muted); font-size: 17px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
     .weekmap div.is-today { background: var(--ink); color: var(--text-on-dark); border-color: var(--ink); }
     .weekmap div.is-today span:first-child { color: var(--teal-bright); }
     .tokenbits span {
@@ -55,6 +56,19 @@
     .steps div b { display: block; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin-bottom: 4px; }
     .tok-out { font-size: 19px; margin-top: 10px; }
     .tok-out output { font-family: var(--font-mono); font-weight: 700; color: var(--teal-dark); font-size: 22px; }
+
+    /* Slides 19 and 21: long code blocks need a tighter fit on the 720px canvas. */
+    .slide--code-compact { gap: 14px; }
+    .slide--code-compact h2 { font-size: 38px; }
+    .slide--code-compact pre {
+      font-size: 12px;
+      line-height: 1.35;
+      padding: 10px 12px;
+    }
+    .slide--code-compact .slide__caption { font-size: 15px; }
+    .slide--code-compact .slide__caption h3 { font-size: 16px; margin-bottom: 6px; }
+    .slide--code-compact .slide__caption li { margin-bottom: 6px; }
+    .slide--code-compact .slide__cols { gap: 24px; }
   </style>
 </head>
 <body>
@@ -436,7 +450,7 @@
   </section>
 
   <!-- ══════════ 19 · Code: JSON mode ══════════ -->
-  <section class="slide slide--code">
+  <section class="slide slide--code slide--code-compact">
     <p class="slide__eyebrow">The ceiling · code</p>
     <h2>Ask for JSON, and define the shape</h2>
     <div class="slide__cols">
@@ -525,7 +539,7 @@ print(u.prompt_token_count, u.candidates_token_count)</code></pre>
   </section>
 
   <!-- ══════════ 21 · Code: ask() ══════════ -->
-  <section class="slide slide--code">
+  <section class="slide slide--code slide--code-compact">
     <p class="slide__eyebrow">The ceiling · code</p>
     <h2>Wrap it once, use it all week</h2>
     <div class="slide__cols">
