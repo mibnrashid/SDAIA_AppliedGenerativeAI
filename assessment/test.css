@@ -2,11 +2,10 @@
    test.css — shared chrome for the pre-test and post-test.
    ============================================================ */
 
-.test-hero {
-  background: var(--ink);
-  color: var(--text-on-dark);
-  padding-block: var(--s5);
-}
+/* Colour and spacing only. The dark background, the gradients and the
+   hex pattern come from .page-hero in site.css — using the `background`
+   shorthand here would reset background-image and wipe the pattern. */
+.test-hero { color: var(--text-on-dark); }
 .test-hero h1 { margin-bottom: var(--s3); }
 .test-hero p { color: var(--text-muted-on-dark); max-width: 62ch; }
 

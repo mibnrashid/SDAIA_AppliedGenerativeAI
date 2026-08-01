@@ -153,7 +153,10 @@ def check_links():
     for path in walk((".html",)):
         # Strip script blocks: href="..." inside JS string concatenation is
         # a template, not a link, and matching it invents dead links.
+        # Strip HTML comments too — markup in a comment never loads, and
+        # commented-out examples are documentation, not defects.
         text = re.sub(r"<script\b.*?</script>", "", read(path), flags=re.S)
+        text = re.sub(r"<!--.*?-->", "", text, flags=re.S)
         base = os.path.dirname(path)
         for m in re.finditer(r'(?:href|src)\s*=\s*"([^"#?][^"]*?)"', text):
             url = m.group(1)

@@ -148,12 +148,6 @@ main { display: block; }
 .hero-inner,
 .page-hero-inner { padding-block: var(--s6); }
 
-.site-header--hero {
-  background: transparent;
-  border-bottom: 0;
-}
-.site-header--hero .container { min-height: 72px; }
-
 .hero .eyebrow::before,
 .page-hero .eyebrow::before {
   content: "";
@@ -204,6 +198,20 @@ main { display: block; }
 }
 .site-header .logo img { height: 34px; }
 .site-header .logo:focus-visible { outline-offset: 4px; }
+
+/* The header when it sits INSIDE a dark hero: no white bar, no border,
+   so the logos read as part of the hero rather than as a strip above it.
+   These rules MUST come after the base .site-header block above — they
+   have the same specificity, so source order is what decides. Moving
+   them earlier puts the white bar back over the hero. */
+.site-header--hero {
+  background: transparent;
+  border-bottom: 0;
+}
+.site-header--hero .container {
+  min-height: 72px;
+  padding-block: var(--s3);
+}
 
 @media (max-width: 480px) {
   .site-header .logo img { height: 26px; }

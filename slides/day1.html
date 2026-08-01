@@ -69,6 +69,59 @@
     .slide--code-compact .slide__caption h3 { font-size: 16px; margin-bottom: 6px; }
     .slide--code-compact .slide__caption li { margin-bottom: 6px; }
     .slide--code-compact .slide__cols { gap: 24px; }
+
+    /* Opening block: about me, logistics, icebreaker. */
+    .about-cols {
+      display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 28px; align-items: start;
+    }
+    .about-cols p { max-width: none; font-size: 19px; }
+    .facts { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+    .facts li {
+      padding: 10px 14px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--card); font-size: 18px;
+    }
+    .facts li[lang="ar"] { font-family: var(--font-arabic); font-size: 1.05em; }
+    .intro-prompt {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+    }
+    .intro-prompt div {
+      padding: 16px 18px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--card); font-size: 20px;
+    }
+    .intro-prompt div b {
+      display: block; font-size: 14px; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--teal); margin-bottom: 6px;
+    }
+    .qr-box {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px; min-height: 240px; padding: var(--s4);
+      border: 2px dashed var(--border); border-radius: var(--radius-sm);
+      background: var(--card-2); color: var(--text-muted); text-align: center;
+    }
+    .qr-box .big { font-family: var(--font-display); font-size: 2.4rem; line-height: 1; color: var(--teal); }
+    .daygrid { display: grid; gap: 6px; }
+    .daygrid div {
+      display: grid; grid-template-columns: 9.5rem 1fr 4.5rem; gap: 12px; align-items: center;
+      padding: 8px 12px; border-radius: var(--radius-sm); font-size: 18px;
+      border: 1px solid var(--border); background: var(--card);
+    }
+    .daygrid div span:first-child { font-family: var(--font-mono); font-size: 16px; color: var(--text-muted); }
+    .daygrid div span:last-child { text-align: right; font-size: 15px; color: var(--text-muted); }
+    .daygrid div.is-break { background: var(--card-2); font-size: 16px; color: var(--text-muted); }
+    .daygrid div.is-break span:first-child { font-family: var(--font-sans); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; font-size: 14px; }
+    .daygrid div.is-lunch { border-left: 4px solid var(--amber); }
+    .daygrid div.is-now { background: var(--ink); color: var(--text-on-dark); border-color: var(--ink); }
+    .daygrid div.is-now span { color: var(--text-muted-on-dark); }
+    .daygrid div.is-now span:first-child { color: var(--teal-bright); }
+    .ice-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .ice-steps div {
+      padding: 12px 14px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--card); font-size: 17px;
+    }
+    .ice-steps div b {
+      display: block; font-family: var(--font-display); font-size: 1.6rem;
+      line-height: 1; color: var(--teal); margin-bottom: 6px;
+    }
   </style>
 </head>
 <body>
@@ -88,7 +141,140 @@
     </aside>
   </section>
 
-  <!-- ══════════ 2 · Objectives ══════════ -->
+  <!-- ══════════ 2 · About me ══════════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Your instructor</p>
+    <h2>About me</h2>
+    <div class="about-cols">
+      <div>
+        <p><strong>Musa Ibn Rashid</strong> — Software Engineering from KFUPM, QA Engineering Intern at Sawt,
+           Qimam Fellow, and KAUST AI Summer Internship alumni.</p>
+        <p style="margin-top:12px">AI Instructor at SDAIA Academy, specialising in Applied Generative AI,
+           Computer Vision, and Prompt Engineering. I like helping people ship, empowering tech talent,
+           and building AI that bridges complex ideas with practical execution.</p>
+      </div>
+      <ul class="facts">
+        <li>For fun I created <strong>Ice❄️Offering</strong>.</li>
+        <li>All my life I've been travelling.</li>
+        <li lang="ar" dir="rtl">أحب اسجل صوتيات كثيرة واطول.</li>
+        <li>I literally fall asleep wherever I am if I am sleepy.</li>
+      </ul>
+    </div>
+    <aside class="notes">
+      <p>Keep this to two minutes. The facts are there so they remember you as a person, not just the syllabus.</p>
+      <p>Ice Offering is a good laugh if someone asks — don't dwell on it unless the room wants to.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 3 · Student intros ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Your turn</p>
+    <h2>Quick intro — everyone, thirty seconds</h2>
+    <div class="intro-prompt">
+      <div><b>Name</b>First and last — how you want to be called this week.</div>
+      <div><b>University</b>Where you studied or where you are studying now.</div>
+      <div><b>Major</b>Your field — engineering, CS, business, anything.</div>
+      <div><b>Year</b>Graduated when, or what year you are in if still a student.</div>
+    </div>
+    <p class="slide-callout">One sentence each. We will go around the room — no speeches.</p>
+    <aside class="notes">
+      <p>Start on the left, work around. If someone freezes, prompt them with "name and major is enough."</p>
+      <p>You are listening for who has coded before and who has not — that is your pairing data for the project.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 4 · WhatsApp ══════════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Stay connected</p>
+    <h2>Join the WhatsApp group</h2>
+    <div class="slide__cols">
+      <div class="qr-box">
+        <!-- To show a real code instead of this placeholder, drop the PNG in
+             assets/ and swap the two lines below for:
+             <img src="../assets/whatsapp-qr.png" alt="WhatsApp group QR code"> -->
+        <span class="big">📱</span>
+        <p><strong>Scan the QR code on screen</strong></p>
+        <p class="muted" style="font-size:16px;margin:0">I will open it now — announcements, links, and quick help between blocks.</p>
+      </div>
+      <div class="slide-card">
+        <h3>Why bother</h3>
+        <ul>
+          <li>Colab links and slide URLs when you need them on your phone.</li>
+          <li>Ask a question without stopping the whole room.</li>
+          <li>Pair up for the project if you miss someone on day one.</li>
+        </ul>
+        <p class="muted" style="margin-top:12px;font-size:17px">No confidential data in the group. Treat it like a classroom channel.</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Have the QR ready before you show this slide. Give them ninety seconds to scan and confirm they are in.</p>
+      <p>If someone cannot use WhatsApp, tell them everything also lives on the course site.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 5 · Week map ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">The week</p>
+    <h2>Where today sits</h2>
+    <div class="weekmap">
+      <div class="is-today"><span>Sunday</span><span><strong>From token to typed output.</strong> The model as a reliable function.</span></div>
+      <div><span>Monday</span><span>Retrieval you can measure — RAG, hybrid search, and a golden set that scores it.</span></div>
+      <div><span>Tuesday</span><span>Tools and agents — the model requests, your code executes. Yesterday's retriever becomes a tool.</span></div>
+      <div><span>Wednesday</span><span>Production and the numbers — latency, caching, and what this costs per user per month.</span></div>
+      <div><span>Thursday</span><span>Break it, then defend it — prompt injection, red teaming, and your demo.</span></div>
+    </div>
+    <p class="slide-callout">Each day ends higher than it started. If Thursday feels reachable today, tell me.</p>
+    <p class="slide-callout"><strong>There is no such thing as a dumb question.</strong> If you are wondering, someone else is too — ask.</p>
+    <aside class="notes">
+      <p>Notice that every day builds on the one before it. Monday's retriever becomes Tuesday's tool, and Tuesday's agent is what you instrument on Wednesday and attack on Thursday.</p>
+      <p>That means falling behind on any one day is expensive, so please tell me the moment you are stuck rather than at the end of the block.</p>
+      <p>Thursday afternoon you present to the room, in pairs, for four minutes.</p>
+      <p>Say the dumb-question line slowly and mean it — it sets the room for the whole week.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 6 · Daily timeline ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Every day</p>
+    <h2>How the hours run</h2>
+    <p class="slide__kicker">We announce 9:00. We start at 9:15. The buffer is for keys, laptops, and coffee.</p>
+    <div class="daygrid">
+      <div class="is-now"><span>9:00 – 10:00</span><span>Block 1</span><span>60 min</span></div>
+      <div class="is-break"><span>10:00 – 10:20</span><span>Break</span><span>20 min</span></div>
+      <div><span>10:20 – 11:00</span><span>Block 2</span><span>40 min</span></div>
+      <div class="is-break"><span>11:00 – 11:20</span><span>Break</span><span>20 min</span></div>
+      <div><span>11:20 – 12:00</span><span>Block 3</span><span>40 min</span></div>
+      <div class="is-lunch"><span>12:00 – 1:00</span><span>Lunch</span><span>60 min</span></div>
+      <div><span>1:00 – 1:50</span><span>Block 4</span><span>50 min</span></div>
+      <div class="is-break"><span>1:50 – 2:00</span><span>Break</span><span>10 min</span></div>
+      <div><span>2:00 – 2:30</span><span>Block 5</span><span>30 min</span></div>
+    </div>
+    <aside class="notes">
+      <p>Same grid every day — once they know it, they stop asking when lunch is.</p>
+      <p>Never announce the real start time as nine. Nine fifteen is when teaching begins; nine to nine fifteen is setup.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 7 · Icebreaker ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Twenty minutes · nothing to do with AI</p>
+    <h2>Two Truths and a Lie</h2>
+    <div class="ice-steps">
+      <div><b>1</b>Write three statements about yourself — two true, one false. Make the lie <em>boring enough to believe</em>.</div>
+      <div><b>2</b>Groups of five. Read yours out; the group votes on the lie; each group picks their best faker.</div>
+      <div><b>3</b>The final — group winners to the front. Whole room votes by raised hand. Small prize.</div>
+      <div><b>4</b>I go last, out of competition. Then: name + <strong>one sentence</strong> on what you want AI to do for you by Thursday.</div>
+    </div>
+    <p class="slide-callout">Remember your group of five — those become your project team pool on Monday.</p>
+    <aside class="notes">
+      <p>Three minutes to write. Ten minutes in heats. Six minutes for the final. One minute wrap.</p>
+      <p>The boring-lie instruction is what makes this work — say it twice before they start writing.</p>
+      <p>Capture the Thursday AI wishes on a flipchart. That flipchart is the project idea pool.</p>
+      <p>You go last, out of competition, after they have all done it — lands better than opening with yourself.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 8 · Objectives ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Day 1</p>
     <h2>What you will be able to do by 2:30</h2>
@@ -106,26 +292,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 3 · Week map ══════════ -->
-  <section class="slide">
-    <p class="slide__eyebrow">The week</p>
-    <h2>Where today sits</h2>
-    <div class="weekmap">
-      <div class="is-today"><span>Sunday</span><span><strong>From token to typed output.</strong> The model as a reliable function.</span></div>
-      <div><span>Monday</span><span>Retrieval you can measure — RAG, hybrid search, and a golden set that scores it.</span></div>
-      <div><span>Tuesday</span><span>Tools and agents — the model requests, your code executes. Yesterday's retriever becomes a tool.</span></div>
-      <div><span>Wednesday</span><span>Production and the numbers — latency, caching, and what this costs per user per month.</span></div>
-      <div><span>Thursday</span><span>Break it, then defend it — prompt injection, red teaming, and your demo.</span></div>
-    </div>
-    <p class="slide-callout">Each day ends higher than it started. If Thursday feels reachable today, tell me.</p>
-    <aside class="notes">
-      <p>Notice that every day builds on the one before it. Monday's retriever becomes Tuesday's tool, and Tuesday's agent is what you instrument on Wednesday and attack on Thursday.</p>
-      <p>That means falling behind on any one day is expensive, so please tell me the moment you are stuck rather than at the end of the block.</p>
-      <p>Thursday afternoon you present to the room, in pairs, for four minutes.</p>
-    </aside>
-  </section>
-
-  <!-- ══════════ 4 · Divider ══════════ -->
+  <!-- ══════════ 9 · Divider ══════════ -->
   <section class="slide slide--section">
     <p class="slide__eyebrow">Part one</p>
     <h2>How the thing actually works</h2>
@@ -136,7 +303,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 5 · Discriminative vs generative ══════════ -->
+  <!-- ══════════ 10 · Discriminative vs generative ══════════ -->
   <section class="slide slide--split">
     <h2>Two kinds of model</h2>
     <div class="slide__cols">
@@ -161,7 +328,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 6 · Tokens ══════════ -->
+  <!-- ══════════ 11 · Tokens ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Mechanics</p>
     <h2>A token is not a word</h2>
@@ -181,7 +348,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 7 · Arabic vs English + widget ══════════ -->
+  <!-- ══════════ 12 · Arabic vs English + widget ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Mechanics · live</p>
     <h2>The same sentence costs more in Arabic</h2>
@@ -215,7 +382,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 8 · Context window ══════════ -->
+  <!-- ══════════ 13 · Context window ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Mechanics</p>
     <h2>The context window</h2>
@@ -240,7 +407,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 9 · Next-token prediction ══════════ -->
+  <!-- ══════════ 14 · Next-token prediction ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Mechanics</p>
     <h2>It is predicting the next token. That is the whole trick.</h2>
@@ -260,7 +427,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 10 · Temperature ══════════ -->
+  <!-- ══════════ 15 · Temperature ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">The dial you actually turn</p>
     <h2>Temperature</h2>
@@ -290,7 +457,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 11 · Hallucination ══════════ -->
+  <!-- ══════════ 16 · Hallucination ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Mechanics</p>
     <h2>Hallucination is a property, not a bug</h2>
@@ -317,7 +484,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 12 · Four ways ══════════ -->
+  <!-- ══════════ 17 · Four ways ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">The spine of the week</p>
     <h2>Four ways to make a model useful</h2>
@@ -340,7 +507,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 13 · Divider ══════════ -->
+  <!-- ══════════ 18 · Divider ══════════ -->
   <section class="slide slide--section">
     <p class="slide__eyebrow">Part two</p>
     <h2>Make it reliable</h2>
@@ -351,7 +518,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 14 · System vs user ══════════ -->
+  <!-- ══════════ 19 · System vs user ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Roles</p>
     <h2>System instruction vs user message</h2>
@@ -375,7 +542,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 15 · Anatomy of a prompt ══════════ -->
+  <!-- ══════════ 20 · Anatomy of a prompt ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Prompting</p>
     <h2>Anatomy of a prompt that holds</h2>
@@ -393,7 +560,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 16 · Few-shot ══════════ -->
+  <!-- ══════════ 21 · Few-shot ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Prompting</p>
     <h2>Show it, don't tell it</h2>
@@ -419,7 +586,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 17 · Divider ══════════ -->
+  <!-- ══════════ 22 · Divider ══════════ -->
   <section class="slide slide--section">
     <p class="slide__eyebrow">Part three · the ceiling</p>
     <h2>Make it typed</h2>
@@ -430,7 +597,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 18 · Why free text fails ══════════ -->
+  <!-- ══════════ 23 · Why free text fails ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">The ceiling</p>
     <h2>Free text is unusable inside software</h2>
@@ -449,7 +616,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 19 · Code: JSON mode ══════════ -->
+  <!-- ══════════ 24 · Code: JSON mode ══════════ -->
   <section class="slide slide--code slide--code-compact">
     <p class="slide__eyebrow">The ceiling · code</p>
     <h2>Ask for JSON, and define the shape</h2>
@@ -501,7 +668,7 @@ resp = client.models.generate_content(
     </aside>
   </section>
 
-  <!-- ══════════ 20 · Code: parse and branch ══════════ -->
+  <!-- ══════════ 25 · Code: parse and branch ══════════ -->
   <section class="slide slide--code">
     <p class="slide__eyebrow">The ceiling · code</p>
     <h2>This is the moment</h2>
@@ -538,7 +705,7 @@ print(u.prompt_token_count, u.candidates_token_count)</code></pre>
     </aside>
   </section>
 
-  <!-- ══════════ 21 · Code: ask() ══════════ -->
+  <!-- ══════════ 26 · Code: ask() ══════════ -->
   <section class="slide slide--code slide--code-compact">
     <p class="slide__eyebrow">The ceiling · code</p>
     <h2>Wrap it once, use it all week</h2>
@@ -584,7 +751,7 @@ MODEL = <span class="s">"gemini-2.5-flash-lite"</span>
     </aside>
   </section>
 
-  <!-- ══════════ 22 · Six layers ══════════ -->
+  <!-- ══════════ 27 · Six layers ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Zoom out</p>
     <h2>The model is not the solution</h2>
@@ -604,7 +771,7 @@ MODEL = <span class="s">"gemini-2.5-flash-lite"</span>
     </aside>
   </section>
 
-  <!-- ══════════ 23 · Lifecycle ══════════ -->
+  <!-- ══════════ 28 · Lifecycle ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">How the work goes</p>
     <h2>The solution lifecycle</h2>
@@ -624,7 +791,7 @@ MODEL = <span class="s">"gemini-2.5-flash-lite"</span>
     </aside>
   </section>
 
-  <!-- ══════════ 24 · Lab ══════════ -->
+  <!-- ══════════ 29 · Lab ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Lab · Notebook 1</p>
     <h2>Now you build it</h2>
@@ -657,7 +824,7 @@ MODEL = <span class="s">"gemini-2.5-flash-lite"</span>
     </aside>
   </section>
 
-  <!-- ══════════ 25 · Summary ══════════ -->
+  <!-- ══════════ 30 · Summary ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Day 1</p>
     <h2>What today was</h2>
@@ -674,7 +841,7 @@ MODEL = <span class="s">"gemini-2.5-flash-lite"</span>
     </aside>
   </section>
 
-  <!-- ══════════ 26 · Homework ══════════ -->
+  <!-- ══════════ 31 · Homework ══════════ -->
   <section class="slide slide--full">
     <p class="slide__eyebrow">Before 9:15 tomorrow</p>
     <h2>Two things tonight</h2>
