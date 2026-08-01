@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cost Auction · Applied Generative AI</title>
+  <link rel="stylesheet" href="../assets/theme.css">
+  <link rel="stylesheet" href="../assets/site.css">
+  <link rel="stylesheet" href="../assets/activity.css">
+  <style>
+    .scenario {
+      font-size: 1.15rem;
+      line-height: 1.6;
+      padding: var(--s4);
+      border-radius: var(--radius-sm);
+      background: rgba(102,204,255,.12);
+      border-left: 5px solid var(--sky);
+      margin-bottom: var(--s4);
+    }
+    .working { display: grid; gap: 6px; margin-top: var(--s3); }
+    .working div {
+      display: grid; grid-template-columns: 1fr auto; gap: var(--s3);
+      padding: 8px 14px; border-radius: var(--radius-sm);
+      background: var(--card); border: 1px solid var(--border);
+      font-size: var(--fs-small);
+    }
+    .working div b { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+    .working div.total { background: var(--ink); color: var(--text-on-dark); border-color: var(--ink); font-size: 1rem; }
+    .working div.total b { color: var(--teal-bright); }
+    .guessrow { display: flex; gap: var(--s3); align-items: flex-end; flex-wrap: wrap; }
+    .model { display: grid; gap: var(--s3); }
+    .model pre {
+      background: var(--ink); color: #e8ecf5; padding: var(--s4);
+      border-radius: var(--radius-sm); overflow-x: auto;
+      font-size: 0.85rem; line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="logo" href="../index.html" aria-label="Applied Generative AI — course home">
+        <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
+        <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
+      </a>
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+        <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="act-hero on-dark">
+      <div class="container">
+        <a class="back" href="./index.html">← All activities</a>
+        <div class="act-meta">
+          <span class="badge badge--day4">Day 4</span>
+          <span class="badge badge--time">12 minutes</span>
+          <span class="badge badge--time">Max 15 points</span>
+        </div>
+        <h1>Activity 4 · Cost Auction</h1>
+        <p>Five deployments, described the way a manager would describe them. Estimate the
+           monthly bill in US dollars. Right order of magnitude scores 3, one out scores 1,
+           further out scores 0.</p>
+      </div>
+    </section>
+
+    <div class="scorestrip">
+      <div class="container">
+        <div class="scorestrip__item">
+          <span class="scorestrip__label">Scenario</span>
+          <span class="scorestrip__value" id="s-round">1 / 5</span>
+        </div>
+        <div class="rounds" id="rounds" aria-hidden="true"></div>
+        <div class="scorestrip__item">
+          <span class="scorestrip__label">Score</span>
+          <span class="scorestrip__value" id="s-score">0</span>
+        </div>
+        <div class="scorestrip__item">
+          <span class="scorestrip__label">Best</span>
+          <span class="scorestrip__value scorestrip__value--muted" id="s-best">—</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="section--tight">
+      <div class="container">
+
+        <div class="panel" id="play">
+          <h2 id="s-title">Scenario 1</h2>
+          <p class="scenario" id="s-text"></p>
+
+          <form id="guess-form">
+            <div class="guessrow">
+              <div class="field">
+                <label for="guess">Your estimate of the monthly cost, in US dollars</label>
+                <input type="number" id="guess" min="0" step="any" required autocomplete="off"
+                       placeholder="e.g. 250">
+              </div>
+              <button type="submit" class="btn">Lock in my estimate</button>
+            </div>
+            <p class="small muted" style="margin-top:var(--s3)">
+              Assume 22 working days per month. Prices are on the reveal — estimate first.
+            </p>
+          </form>
+
+          <div id="reveal" hidden>
+            <div class="verdict" id="verdict"></div>
+            <h3 style="margin-top:var(--s4);font-size:1rem">The working</h3>
+            <div class="working" id="working"></div>
+            <p class="small muted" id="lesson" style="margin-top:var(--s3)"></p>
+            <p style="margin-top:var(--s4)">
+              <button type="button" class="btn" id="next">Next scenario →</button>
+            </p>
+          </div>
+        </div>
+
+        <div class="panel finish" id="finish" hidden>
+          <h2 style="font-family:var(--font-display);font-size:1.6rem">Auction closed</h2>
+          <p class="finish__score" id="final">0 / 15</p>
+          <p class="muted" id="final-note"></p>
+          <div class="rowline" style="margin-top:var(--s4)">
+            <button type="button" class="btn" id="again">Play again</button>
+            <a class="btn btn--ghost" href="./index.html">All activities</a>
+          </div>
+        </div>
+
+        <div class="panel" id="model-panel" hidden>
+          <h2>The cost model, to reuse</h2>
+          <p class="small muted">Every scenario above is this, with different numbers. Copy it into your own project.</p>
+          <div class="model">
+<pre><code>requests_per_month = users × queries_per_user × working_days
+
+cost_per_request   = (input_tokens  / 1e6) × price_per_1M_input
+                   + (output_tokens / 1e6) × price_per_1M_output
+
+monthly_cost       = requests_per_month × cost_per_request × (1 − cache_hit_rate)
+
+Where the input tokens actually come from, in a RAG system:
+    system prompt        ~200 tokens   (re-sent on every call, forever)
+    retrieved chunks     top_k × chunk_size   ← usually 80% of the bill
+    conversation history grows with every turn
+    the user's question  ~30 tokens
+
+Three levers, in order of effect:
+    1. top_k and chunk size   — directly sets the biggest input component
+    2. cache hit rate         — a hit costs nothing at all
+    3. model choice           — route easy requests to the cheaper model
+
+And remember: Arabic is roughly 2–3× the tokens of the same meaning
+in English, so the same product costs more to run in Arabic.</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
+        <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
+      </span>
+      <p class="footer-text">Built for the SDAIA Academy course · Instructor: Musa Ibn Rashid</p>
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+        <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+      </span>
+    </div>
+  </footer>
+
+  <script src="../assets/store.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var ACTIVITY_ID = 'cost-auction';
+      var MAX = 15;
+
+      /* Illustrative prices, in US dollars per million tokens. They are
+         in the same range as current low-cost models; the teaching point
+         is the arithmetic and the order of magnitude, not the vendor. */
+      var P_IN = 0.10, P_OUT = 0.40;
+
+      var SCENARIOS = [
+        {
+          title: 'An internal HR assistant',
+          text: 'An internal HR assistant for 500 employees. Each asks about 4 questions per ' +
+                'working day. It retrieves 4 policy chunks per question and answers in around ' +
+                '300 words. No caching.',
+          rows: [
+            ['Requests per month', '500 × 4 × 22', '44,000'],
+            ['Input tokens per request', '200 system + 4 × 500 chunks + 30 question', '≈ 2,230'],
+            ['Output tokens per request', '300 words ≈ 400 tokens', '400'],
+            ['Cost per request', '(2,230/1M × $0.10) + (400/1M × $0.40)', '$0.000383'],
+          ],
+          total: 44000 * ((2230 / 1e6) * 0.10 + (400 / 1e6) * 0.40),
+          lesson: 'Under twenty dollars a month. The number people fear is almost never the ' +
+                  'number they get — and notice the retrieved chunks are 90% of the input.'
+        },
+        {
+          title: 'The same assistant, in Arabic',
+          text: 'Exactly the same HR assistant, same 500 employees, same 4 questions each — ' +
+                'but the documents and the answers are in Arabic, which runs at roughly 2.5× ' +
+                'the tokens for the same meaning.',
+          rows: [
+            ['Requests per month', 'unchanged', '44,000'],
+            ['Input tokens per request', '2,230 × 2.5', '≈ 5,575'],
+            ['Output tokens per request', '400 × 2.5', '1,000'],
+            ['Cost per request', '(5,575/1M × $0.10) + (1,000/1M × $0.40)', '$0.000958'],
+          ],
+          total: 44000 * ((5575 / 1e6) * 0.10 + (1000 / 1e6) * 0.40),
+          lesson: 'Two and a half times the bill for the same product. This is the Day 1 ' +
+                  'tokenizer lesson arriving as a line item — and nobody warns you about it.'
+        },
+        {
+          title: 'A public-facing citizen service',
+          text: 'A public service answering questions about a government programme. 20,000 ' +
+                'citizens use it per day, 2 questions each. Answers are short — about 150 ' +
+                'words — and it retrieves 3 chunks. Runs every day, not just working days. ' +
+                'A cache absorbs 45% of traffic because everyone asks the same things.',
+          rows: [
+            ['Requests per month', '20,000 × 2 × 30', '1,200,000'],
+            ['After 45% cache hits', '1,200,000 × 0.55', '660,000'],
+            ['Input tokens per request', '200 + 3 × 500 + 30', '≈ 1,730'],
+            ['Output tokens per request', '150 words ≈ 200 tokens', '200'],
+            ['Cost per request', '(1,730/1M × $0.10) + (200/1M × $0.40)', '$0.000253'],
+          ],
+          total: 660000 * ((1730 / 1e6) * 0.10 + (200 / 1e6) * 0.40),
+          lesson: 'Public scale changes the order of magnitude. Note what the cache saved: ' +
+                  'without it this line is about $304 instead of $167.'
+        },
+        {
+          title: 'A document-processing pipeline',
+          text: 'A back-office pipeline that reads 8,000 scanned pages per month with a vision ' +
+                'model and extracts structured fields from each one. Each page is roughly 1,200 ' +
+                'tokens of image and text in, and about 250 tokens of JSON out. No caching — ' +
+                'every page is different.',
+          rows: [
+            ['Requests per month', 'one per page', '8,000'],
+            ['Input tokens per request', 'page image + instruction', '≈ 1,200'],
+            ['Output tokens per request', 'structured JSON', '250'],
+            ['Cost per request', '(1,200/1M × $0.10) + (250/1M × $0.40)', '$0.000220'],
+          ],
+          total: 8000 * ((1200 / 1e6) * 0.10 + (250 / 1e6) * 0.40),
+          lesson: 'Under two dollars a month to digitise 8,000 pages. Compare that with the ' +
+                  'staff cost of doing it by hand — this is where the business case usually is.'
+        },
+        {
+          title: 'An agent with a step problem',
+          text: 'An internal research agent. 200 staff, 3 tasks each per working day. Each task ' +
+                'takes an average of 6 loop steps, and because the whole conversation is re-sent ' +
+                'each step, the average input across those steps is about 6,000 tokens. Output ' +
+                'averages 500 tokens per step.',
+          rows: [
+            ['Tasks per month', '200 × 3 × 22', '13,200'],
+            ['Model calls per month', '13,200 × 6 steps', '79,200'],
+            ['Input tokens per call', 'history re-sent each step', '≈ 6,000'],
+            ['Output tokens per call', '', '500'],
+            ['Cost per call', '(6,000/1M × $0.10) + (500/1M × $0.40)', '$0.000800'],
+          ],
+          total: 79200 * ((6000 / 1e6) * 0.10 + (500 / 1e6) * 0.40),
+          lesson: 'The agent costs more than the citizen service serving 100× the people. ' +
+                  'Six steps and a growing history is a multiplier on everything — this is why ' +
+                  'the step cap is a budget control, not a safety nicety.'
+        }
+      ];
+
+      var i = 0, score = 0;
+
+      function magnitude(v) { return Math.floor(Math.log(Math.max(v, 1e-9)) / Math.LN10); }
+
+      function points(guess, actual) {
+        var d = Math.abs(magnitude(guess) - magnitude(actual));
+        if (d === 0) return 3;
+        if (d === 1) return 1;
+        return 0;
+      }
+
+      function money(v) {
+        return v < 10 ? '$' + v.toFixed(2)
+             : '$' + Math.round(v).toLocaleString('en-US');
+      }
+
+      function dots() {
+        var el = document.getElementById('rounds');
+        el.innerHTML = '';
+        SCENARIOS.forEach(function (_, n) {
+          var s = document.createElement('span');
+          if (n < i) s.className = 'is-done';
+          else if (n === i) s.className = 'is-now';
+          el.appendChild(s);
+        });
+      }
+
+      function load() {
+        var sc = SCENARIOS[i];
+        document.getElementById('s-title').textContent = 'Scenario ' + (i + 1) + ' · ' + sc.title;
+        document.getElementById('s-text').textContent = sc.text;
+        document.getElementById('s-round').textContent = (i + 1) + ' / ' + SCENARIOS.length;
+        document.getElementById('reveal').hidden = true;
+        document.getElementById('guess-form').hidden = false;
+        document.getElementById('guess').value = '';
+        dots();
+        document.getElementById('guess').focus();
+      }
+
+      document.getElementById('guess-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var g = parseFloat(document.getElementById('guess').value);
+        if (isNaN(g) || g < 0) return;
+
+        var sc = SCENARIOS[i];
+        var p = points(g, sc.total);
+        score += p;
+        document.getElementById('s-score').textContent = score;
+
+        var v = document.getElementById('verdict');
+        v.className = 'verdict ' + (p === 3 ? 'verdict--good' : p === 1 ? 'verdict--warn' : 'verdict--bad');
+        v.innerHTML =
+          '<h3>' + money(sc.total) + ' per month · +' + p + ' point' + (p === 1 ? '' : 's') + '</h3>' +
+          '<p>You said ' + money(g) + '. ' +
+          (p === 3 ? 'Right order of magnitude.'
+           : p === 1 ? 'One order of magnitude out.'
+           : 'More than one order of magnitude out.') + '</p>';
+
+        var w = document.getElementById('working');
+        w.innerHTML = '';
+        sc.rows.forEach(function (row) {
+          var d = document.createElement('div');
+          d.innerHTML = '<span>' + row[0] + (row[1] ? ' <span class="muted">— ' + row[1] + '</span>' : '') +
+                        '</span><b>' + row[2] + '</b>';
+          w.appendChild(d);
+        });
+        var tot = document.createElement('div');
+        tot.className = 'total';
+        tot.innerHTML = '<span>Monthly total</span><b>' + money(sc.total) + '</b>';
+        w.appendChild(tot);
+
+        document.getElementById('lesson').textContent = sc.lesson;
+        document.getElementById('guess-form').hidden = true;
+        document.getElementById('reveal').hidden = false;
+        document.getElementById('next').focus();
+      });
+
+      document.getElementById('next').addEventListener('click', function () {
+        i++;
+        if (i >= SCENARIOS.length) return finish();
+        load();
+      });
+
+      function finish() {
+        Store.saveScore(ACTIVITY_ID, score, MAX);
+        document.getElementById('play').hidden = true;
+        document.getElementById('finish').hidden = false;
+        document.getElementById('model-panel').hidden = false;
+        document.getElementById('final').textContent = score + ' / ' + MAX;
+        document.getElementById('final-note').textContent =
+          score >= 11 ? 'You can cost a deployment in a meeting without going away to check.'
+          : score >= 6 ? 'Reasonable. The usual error is overestimating — these systems are cheaper than people expect, until an agent loop is involved.'
+          : 'Worth doing again. Almost everyone starts by guessing far too high.';
+        showBest();
+        document.getElementById('finish').setAttribute('tabindex', '-1');
+        document.getElementById('finish').focus();
+      }
+
+      function showBest() {
+        var b = Store.getScore(ACTIVITY_ID);
+        document.getElementById('s-best').textContent = b ? b.score + ' / ' + b.max : '—';
+      }
+
+      document.getElementById('again').addEventListener('click', function () {
+        i = 0; score = 0;
+        document.getElementById('s-score').textContent = '0';
+        document.getElementById('finish').hidden = true;
+        document.getElementById('model-panel').hidden = true;
+        document.getElementById('play').hidden = false;
+        load();
+      });
+
+      showBest();
+      load();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+Information Security Policy - Summary for Staff
+Reference: SDAIA-SEC-POL-002-04-V5
+
+1. Access
+Access follows least privilege. Accounts are reviewed quarterly and removed
+within one working day of an employee leaving.
+
+2. Devices
+Authority data may only be processed on managed devices. Personal cloud
+storage is not permitted for any Internal, Confidential or Restricted data.
+
+3. Incidents
+Any suspected breach is reported to the data protection officer within
+twenty-four hours of discovery. The officer maintains the breach register.
+
+4. Passwords and multi-factor authentication
+Multi-factor authentication is mandatory on all systems that hold personal
+data. Shared accounts are prohibited without a documented exception.

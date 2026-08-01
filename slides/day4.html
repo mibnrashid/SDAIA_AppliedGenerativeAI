@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Day 4 — Production and the numbers · Applied Generative AI</title>
+  <link rel="stylesheet" href="../assets/theme.css">
+  <link rel="stylesheet" href="../assets/site.css">
+  <link rel="stylesheet" href="../assets/deck.css">
+  <style>
+    .numbered { list-style: none; padding: 0; counter-reset: n; }
+    .numbered li { counter-increment: n; position: relative; padding-left: 52px; margin-bottom: 13px; }
+    .numbered li::before {
+      content: counter(n, decimal-leading-zero);
+      position: absolute; left: 0; top: -2px;
+      font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--teal);
+    }
+    .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .cols4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .cols3 .slide-card, .cols4 .slide-card { padding: 15px 17px; font-size: 18px; }
+    .cols3 h3, .cols4 h3 { font-size: 18px; margin-bottom: 6px; }
+
+    /* Live cost calculator */
+    .calc { display: grid; grid-template-columns: 1.05fr 1fr; gap: 26px; align-items: start; }
+    .calc-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .calc-inputs .f { display: grid; gap: 3px; }
+    .calc-inputs label { font-size: 15px; font-weight: 700; }
+    .calc-inputs input {
+      font: inherit; font-size: 18px; padding: 6px 9px;
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--paper); color: var(--text); width: 100%;
+      font-variant-numeric: tabular-nums;
+    }
+    .calc-out { display: grid; gap: 10px; }
+    .calc-out div {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 14px;
+      padding: 12px 16px; border-radius: var(--radius-sm);
+      background: var(--card); border: 1px solid var(--border);
+    }
+    .calc-out span { font-size: 17px; color: var(--text-muted); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+    .calc-out output { font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--teal); font-variant-numeric: tabular-nums; }
+    .calc-out div.big output { font-size: 40px; }
+    .calc-out div.big { background: rgba(14,130,100,.09); border-color: var(--teal); }
+
+    .arch { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 17px; }
+    .arch div { padding: 12px 14px; border-radius: var(--radius-sm); background: var(--card); border: 1px solid var(--border); }
+    .arch b { display: block; font-size: 14px; letter-spacing: .07em; text-transform: uppercase; color: var(--teal); margin-bottom: 4px; }
+    .arch .wide { grid-column: 1 / -1; background: var(--ink); color: var(--text-on-dark); border-color: var(--ink); }
+    .arch .wide b { color: var(--teal-bright); }
+    .bigstat { font-family: var(--font-display); font-size: 38px; font-weight: 700; line-height: 1; color: var(--teal); margin: 6px 0 0; }
+  </style>
+</head>
+<body>
+
+<div class="deck" data-title="Day 4 — Production and the numbers">
+
+  <!-- 1 -->
+  <section class="slide slide--title">
+    <p class="slide__eyebrow">SDAIA Academy · Applied Generative AI</p>
+    <h2>Production and the numbers</h2>
+    <p class="slide__kicker">Day 4 · Wednesday 5 August 2026 · Musa Ibn Rashid</p>
+    <p class="muted">What does this cost per user per month?</p>
+    <aside class="notes">
+      <p>Today we stop adding capability and start measuring what you already have.</p>
+      <p>By noon you will have a table of your own numbers: latency per request, tokens in and out, cost, and a measured cache hit rate.</p>
+      <p>Engineers who can answer the question on this slide get hired. That is not a joke — it is the single most useful thing you will take away this week.</p>
+    </aside>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide">
+    <p class="slide__eyebrow">Day 4</p>
+    <h2>What you will be able to do by 12:00</h2>
+    <ol class="numbered">
+      <li>Name the concrete differences between your notebook and a production system.</li>
+      <li>Compute what an assistant costs per user per month, from token counts.</li>
+      <li>Add retries with backoff, a cache, and a fallback chain to your own code.</li>
+      <li>Measure and report latency, tokens, cost and cache hit rate from real runs.</li>
+      <li>Say what you would log, trace and alert on before you let anyone use it.</li>
+    </ol>
+    <aside class="notes">
+      <p>Number two is the one your management will ask you first, and almost nobody in this field can answer it without going away for a week.</p>
+      <p>Number four is what you will paste into your Thursday presentation. A real table of your own numbers is far more persuasive than any claim about quality.</p>
+    </aside>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide">
+    <p class="slide__eyebrow">Yesterday · questions to the room</p>
+    <h2>Three questions before we start</h2>
+    <ol class="numbered">
+      <li>Who executes a tool call?</li>
+      <li>Why does step twenty of an agent loop cost more than step one?</li>
+      <li>What does a tool return when it fails, and why?</li>
+    </ol>
+    <p class="slide-callout">Five minutes. Then we start counting things.</p>
+    <aside class="notes">
+      <p>The second question is the bridge into today, because it is the first cost-shaped question of the week.</p>
+      <p>If nobody gets it: the conversation history grows with every step, and you re-send all of it every time.</p>
+    </aside>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide slide--section">
+    <p class="slide__eyebrow">Part one</p>
+    <h2>The gap</h2>
+    <p class="slide__kicker">Everything that is fine in a notebook and not fine with five hundred users.</p>
+    <aside class="notes">
+      <p>Your projects currently work. That is genuinely an achievement and it is also the easiest part.</p>
+      <p>This next section is the list of things that break the first week something real is in front of real people.</p>
+    </aside>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide">
+    <p class="slide__eyebrow">The gap</p>
+    <h2>Prototype vs production</h2>
+    <table>
+      <thead><tr><th style="width:190px"></th><th>Your notebook</th><th>Production</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Users</strong></td><td>One. You.</td><td>Hundreds, at the same moment, at 9am</td></tr>
+        <tr><td><strong>Errors</strong></td><td>You re-run the cell</td><td>Handled, retried, logged, or shown honestly</td></tr>
+        <tr><td><strong>Cost</strong></td><td>Ignored — it's free</td><td>Measured, budgeted, alerted on</td></tr>
+        <tr><td><strong>Latency</strong></td><td>You wait. It's fine.</td><td>Eight seconds of silence loses the user</td></tr>
+        <tr><td><strong>Secrets</strong></td><td>In a Colab secret</td><td>In a secret manager, rotated, never in git</td></tr>
+        <tr><td><strong>Change</strong></td><td>Edit and re-run</td><td>Versioned, reviewed, evaluated before release</td></tr>
+      </tbody>
+    </table>
+    <p class="slide-callout">None of this is AI-specific. It is ordinary engineering that AI projects skip because the demo was so easy.</p>
+    <aside class="notes">
+      <p>Read the last line slowly. The reason generative AI projects fail in production is almost never the model.</p>
+      <p>It is that a two-day prototype convinced everyone the hard part was done, so nothing on the right-hand column was ever budgeted.</p>
+      <p>Ask the room which row they think will bite them first. It is usually cost or latency.</p>
+    </aside>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide">
+    <p class="slide__eyebrow">Scale</p>
+    <h2>Four things that decide whether it holds up</h2>
+    <div class="cols4">
+      <div class="slide-card">
+        <h3>Concurrency</h3>
+        <p>Fifty people at 9am is fifty simultaneous calls. One synchronous loop serves them one at a time.</p>
+      </div>
+      <div class="slide-card">
+        <h3>Async</h3>
+        <p>These calls are almost entirely waiting. Async lets one process hold hundreds of open requests.</p>
+      </div>
+      <div class="slide-card">
+        <h3>Caching</h3>
+        <p>The same question, asked by forty people. Answer it once. Free and instant thereafter.</p>
+      </div>
+      <div class="slide-card">
+        <h3>Rate limiting</h3>
+        <p>Yours from the provider, and the one you impose on your own users so one script cannot drain the budget.</p>
+      </div>
+    </div>
+    <p class="slide-callout">Caching is the cheapest of the four and the one most often left out.</p>
+    <aside class="notes">
+      <p>The async point is worth a sentence of explanation: your process is not computing anything, it is sitting on a socket waiting for a model, so blocking is pure waste.</p>
+      <p>Rate limiting in both directions is the part people forget. You need a limit on your users, not only a plan for the provider's limit on you.</p>
+    </aside>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Callback · Monday</p>
+    <h2>Those 429s were the lesson</h2>
+    <div class="slide__cols">
+      <div>
+        <p>On Monday, when everyone embedded their chunks at once, the room filled with <code>429 RESOURCE_EXHAUSTED</code>.</p>
+        <p style="margin-top:14px">That was a rate limit, and you already know how it feels. Your users will feel the same thing unless you design for it.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>What to do about it</h3>
+        <ul>
+          <li><strong>Batch</strong> — fewer, larger requests.</li>
+          <li><strong>Backoff</strong> — wait 1s, 2s, 4s. Never retry immediately in a loop.</li>
+          <li><strong>Queue</strong> — smooth the burst instead of amplifying it.</li>
+          <li><strong>Degrade honestly</strong> — "busy, try again in a moment" beats a spinner that never resolves.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="slide-callout">A retry without backoff is not a fix. It is a denial of service attack on yourself.</p>
+    <aside class="notes">
+      <p>This is why we hit the rate limit deliberately on Monday rather than quietly avoiding it — lived experience beats a definition on a slide.</p>
+      <p>The last line is the one to say firmly. Tight retry loops turn a brief limit into a sustained outage, and I have watched it happen.</p>
+    </aside>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide slide--section">
+    <p class="slide__eyebrow">Part two</p>
+    <h2>The arithmetic</h2>
+    <p class="slide__kicker">Tokens in, plus tokens out, times a price. That is the whole model.</p>
+    <aside class="notes">
+      <p>This next twenty minutes is the part of the course that most directly changes how you are seen at work.</p>
+      <p>Nobody teaches this, and it is arithmetic. That combination is unusual and worth exploiting.</p>
+    </aside>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Cost</p>
+    <h2>What you are actually paying for</h2>
+    <div class="slide__cols">
+      <div>
+        <p>Every request has two meters:</p>
+        <ul style="margin-top:10px">
+          <li><strong>Input tokens</strong> — your system prompt, the retrieved chunks, the conversation so far, the question.</li>
+          <li><strong>Output tokens</strong> — what it writes back. Usually priced higher.</li>
+        </ul>
+        <p style="margin-top:14px">In a RAG system the <em>retrieved chunks dominate the input</em>. Four chunks of 500 tokens is 2,000 tokens on every single call, before anyone types a word.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>Where the money actually goes</h3>
+        <ul>
+          <li>Top-k too high — you pay for every chunk, every time.</li>
+          <li>Long system prompts — re-sent on every call, forever.</li>
+          <li>Agent loops — history re-sent at every step.</li>
+          <li>No cache — the same question paid for forty times.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Point at the retrieved-chunks line. This is the direct consequence of Monday's top-k decision, and it is why "just raise k" is an expensive habit.</p>
+      <p>The system prompt point surprises people: a four-hundred-token system prompt is small until you multiply it by forty thousand requests a month.</p>
+    </aside>
+  </section>
+
+  <!-- 10 -->
+  <section class="slide">
+    <p class="slide__eyebrow">Cost · live</p>
+    <h2>Work it out on the screen</h2>
+    <div class="calc">
+      <div class="slide-widget">
+        <div class="calc-inputs">
+          <div class="f"><label for="c-users">Users per day</label><input type="number" id="c-users" value="500" min="0"></div>
+          <div class="f"><label for="c-queries">Queries per user</label><input type="number" id="c-queries" value="4" min="0"></div>
+          <div class="f"><label for="c-in">Avg input tokens</label><input type="number" id="c-in" value="2200" min="0"></div>
+          <div class="f"><label for="c-out">Avg output tokens</label><input type="number" id="c-out" value="400" min="0"></div>
+          <div class="f"><label for="c-pin">$ per 1M input</label><input type="number" id="c-pin" value="0.10" step="0.01" min="0"></div>
+          <div class="f"><label for="c-pout">$ per 1M output</label><input type="number" id="c-pout" value="0.40" step="0.01" min="0"></div>
+          <div class="f"><label for="c-days">Working days / month</label><input type="number" id="c-days" value="22" min="1"></div>
+          <div class="f"><label for="c-cache">Cache hit rate %</label><input type="number" id="c-cache" value="0" min="0" max="99"></div>
+        </div>
+        <p class="muted" style="font-size:15px;margin-top:10px">Prices are per million tokens. Put today's real figures in — these are placeholders.</p>
+      </div>
+      <div class="calc-out">
+        <div><span>Per query</span><output id="o-query">$0.00</output></div>
+        <div><span>Per day</span><output id="o-day">$0.00</output></div>
+        <div class="big"><span>Per month</span><output id="o-month">$0.00</output></div>
+        <div><span>Per user / month</span><output id="o-user">$0.00</output></div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Type real numbers into this while they watch. Start with the defaults, then change one thing at a time so they see what moves the total.</p>
+      <p>Drop the input tokens from twenty-two hundred to twelve hundred — that is retrieving two chunks instead of four — and watch the monthly figure fall by nearly half.</p>
+      <p>Then put the cache hit rate to forty percent and watch it fall again. Those two numbers are the whole cost conversation.</p>
+    </aside>
+  </section>
+
+  <!-- 11 -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Callback · Sunday</p>
+    <h2>The same product costs more in Arabic</h2>
+    <div class="slide__cols">
+      <div>
+        <p>On Sunday we measured it: the same sentence is two to three times the tokens in Arabic.</p>
+        <p style="margin-top:14px">Both meters are affected. Arabic documents make bigger chunks, so the input grows. Arabic answers are more tokens, so the output grows.</p>
+        <p style="margin-top:14px"><strong>Put a bilingual assistant into the calculator and the monthly figure moves materially.</strong></p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>What to do about it</h3>
+        <ul>
+          <li>Budget for it explicitly rather than discovering it in month two.</li>
+          <li>Cache harder — repeated Arabic questions save more per hit.</li>
+          <li>Keep chunks tighter for Arabic sources.</li>
+          <li>Measure both languages separately in your logs.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Nobody teaches this and it is directly relevant to every project in this room.</p>
+      <p>If you present a cost estimate to management based on English measurements for a service that will run in Arabic, you will be wrong by a factor that gets noticed.</p>
+      <p>The last bullet is practical: log the language, so you can see the split rather than guessing at it.</p>
+    </aside>
+  </section>
+
+  <!-- 12 -->
+  <section class="slide">
+    <p class="slide__eyebrow">Latency</p>
+    <h2>Four ways to make it faster, and one to make it feel faster</h2>
+    <div class="cols4">
+      <div class="slide-card">
+        <h3>Right-size the model</h3>
+        <p>Most requests do not need your best model. Route the easy ones to the cheap fast one.</p>
+      </div>
+      <div class="slide-card">
+        <h3>Cache</h3>
+        <p>A hit is zero latency and zero cost. Nothing else on this slide competes with that.</p>
+      </div>
+      <div class="slide-card">
+        <h3>Shorter prompts</h3>
+        <p>Fewer input tokens is less time to first token. Top-k discipline pays twice.</p>
+      </div>
+      <div class="slide-card">
+        <h3>Batch offline work</h3>
+        <p>Embedding, summarising, indexing — none of it belongs on the user's request path.</p>
+      </div>
+    </div>
+    <p class="slide-callout"><strong>Streaming</strong> changes none of the above. It changes when the first word appears — and users read that as speed.</p>
+    <aside class="notes">
+      <p>Separate the four real fixes from streaming very clearly, because people conflate them constantly.</p>
+      <p>Streaming does not reduce total generation time by a millisecond. It moves time-to-first-token from about six seconds to about three hundred milliseconds, and that is what the user experiences as fast.</p>
+      <p>In the notebook you run both side by side with a timer, and the total is the same. Watch for the surprise.</p>
+    </aside>
+  </section>
+
+  <!-- 13 -->
+  <section class="slide slide--code">
+    <p class="slide__eyebrow">Code</p>
+    <h2>Streaming, and a cache that pays for itself</h2>
+    <div class="slide__cols">
+      <div>
+<pre><code><span class="c"># Streaming: same total time, first word in ~300ms.</span>
+<span class="k">for</span> chunk <span class="k">in</span> client.models.generate_content_stream(
+        model=MODEL, contents=prompt):
+    print(chunk.text, end=<span class="s">""</span>, flush=<span class="k">True</span>)
+
+<span class="c"># A cache. Twelve lines, and the best value in the file.</span>
+<span class="k">import</span> hashlib, json
+
+CACHE = {}
+
+<span class="k">def</span> cached_ask(prompt, **kw):
+    key = hashlib.sha256(
+        (prompt + json.dumps(kw, sort_keys=<span class="k">True</span>)).encode()
+    ).hexdigest()
+
+    <span class="k">if</span> key <span class="k">in</span> CACHE:
+        <span class="hl">stats[<span class="s">"hits"</span>] += <span class="n">1</span></span>
+        <span class="k">return</span> CACHE[key]
+
+    stats[<span class="s">"misses"</span>] += <span class="n">1</span>
+    CACHE[key] = ask(prompt, **kw)
+    <span class="k">return</span> CACHE[key]</code></pre>
+      </div>
+      <div class="slide__caption">
+        <h3>Three notes</h3>
+        <ul>
+          <li>Key on the prompt <em>and</em> the settings — a different temperature is a different question.</li>
+          <li>Count hits and misses from the start. An unmeasured cache is a guess.</li>
+          <li>In production this is Redis with a time-to-live, not a dict — but the shape is identical.</li>
+        </ul>
+        <p class="muted" style="margin-top:10px">A cache with no expiry serves yesterday's policy after it changed. Set a TTL.</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>The highlighted lines are the whole point. If you do not count hits and misses, you cannot tell anyone whether the cache is worth having.</p>
+      <p>In the notebook you run twenty queries with eight repeats and print the measured hit rate and the time saved. That number goes straight into your presentation.</p>
+      <p>Do mention the expiry problem out loud — a stale cache in a policy assistant is a correctness bug, not a performance detail.</p>
+    </aside>
+  </section>
+
+  <!-- 14 -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Reliability</p>
+    <h2>Assume every call can fail</h2>
+    <div class="slide__cols">
+      <div class="slide-card slide-card--accent">
+        <h3>The four controls</h3>
+        <ul>
+          <li><strong>Timeout</strong> — never wait forever. Decide the number.</li>
+          <li><strong>Retry with backoff</strong> — 1s, 2s, 4s, then give up.</li>
+          <li><strong>Fallback chain</strong> — primary model, then a cheaper one, then a canned response.</li>
+          <li><strong>Circuit breaker</strong> — if it is failing for everyone, stop trying for a minute.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Retry only what is worth retrying</h3>
+        <p class="muted">A 429 or a 503 will probably succeed in two seconds. A 400 will fail identically forever, and retrying it wastes your budget and your user's time.</p>
+        <p style="margin-top:14px"><strong>The canned response matters.</strong> "I can't reach the assistant right now — here is the policy page" is a better product than a spinner.</p>
+      </div>
+    </div>
+    <p class="slide-callout">Your users will forgive a degraded answer. They will not forgive a page that hangs.</p>
+    <aside class="notes">
+      <p>The distinction between retryable and non-retryable errors is the difference between a robust system and an expensive one.</p>
+      <p>The fallback chain is easy to build and almost never built. Two lines of code turn a total outage into a slightly worse answer.</p>
+      <p>In the notebook you break the primary model on purpose and watch the fallback engage.</p>
+    </aside>
+  </section>
+
+  <!-- 15 -->
+  <section class="slide slide--code">
+    <p class="slide__eyebrow">Code</p>
+    <h2>Retry, then fall back</h2>
+    <div class="slide__cols">
+      <div>
+<pre><code><span class="k">import</span> time, functools
+
+RETRYABLE = (<span class="n">429</span>, <span class="n">500</span>, <span class="n">502</span>, <span class="n">503</span>, <span class="n">504</span>)
+
+<span class="k">def</span> retry(tries=<span class="n">3</span>, base=<span class="n">1.0</span>):
+    <span class="k">def</span> deco(fn):
+        @functools.wraps(fn)
+        <span class="k">def</span> wrapper(*a, **kw):
+            <span class="k">for</span> n <span class="k">in</span> range(tries):
+                <span class="k">try</span>:
+                    <span class="k">return</span> fn(*a, **kw)
+                <span class="k">except</span> ApiError <span class="k">as</span> e:
+                    <span class="c"># Only retry what might succeed next time.</span>
+                    <span class="k">if</span> e.code <span class="k">not</span> <span class="k">in</span> RETRYABLE <span class="k">or</span> n == tries - <span class="n">1</span>:
+                        <span class="k">raise</span>
+                    <span class="hl">time.sleep(base * <span class="n">2</span> ** n)  <span class="c"># 1s, 2s, 4s</span></span>
+        <span class="k">return</span> wrapper
+    <span class="k">return</span> deco
+
+<span class="k">def</span> ask_with_fallback(prompt):
+    <span class="k">for</span> model <span class="k">in</span> (PRIMARY, CHEAPER):
+        <span class="k">try</span>:
+            <span class="k">return</span> ask(prompt, model=model)
+        <span class="k">except</span> Exception:
+            log.warning(<span class="s">"falling back from %s"</span>, model)
+    <span class="k">return</span> CANNED   <span class="c"># honest, useful, never a spinner</span></code></pre>
+      </div>
+      <div class="slide__caption">
+        <h3>Two decisions in this file</h3>
+        <ul>
+          <li><strong>Which errors to retry.</strong> A 400 will fail identically forever — retrying it wastes budget and time.</li>
+          <li><strong>What the last resort is.</strong> A canned response with a link beats an error page.</li>
+        </ul>
+        <p class="muted" style="margin-top:10px">In the notebook you break the primary on purpose and watch the fallback engage.</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>The highlighted line is exponential backoff, and it is four characters of arithmetic that keeps you from making an outage worse.</p>
+      <p>The retryable list is the design decision here — most people retry everything, which turns a permanent failure into three permanent failures.</p>
+      <p>And notice the fallback returns something useful rather than raising. Your user gets a worse answer instead of no product.</p>
+    </aside>
+  </section>
+
+  <!-- 16 -->
+  <section class="slide">
+    <p class="slide__eyebrow">What "measured" looks like</p>
+    <h2>The table you will produce today</h2>
+    <table>
+      <thead><tr><th>Metric</th><th style="width:150px">Your run</th><th>Why it matters</th></tr></thead>
+      <tbody>
+        <tr><td>Median latency</td><td>2.1 s</td><td>What a typical user waits. Optimise the median first.</td></tr>
+        <tr><td>p95 latency</td><td>6.8 s</td><td>The bad experience. This is what people complain about.</td></tr>
+        <tr><td>Avg input tokens</td><td>2,240</td><td>Mostly retrieved chunks. Directly set by your top-k.</td></tr>
+        <tr><td>Avg output tokens</td><td>380</td><td>Priced higher than input. Shorter answers are cheaper answers.</td></tr>
+        <tr><td>Cache hit rate</td><td>38%</td><td>Measured, not hoped for. Every hit is free and instant.</td></tr>
+        <tr><td>Cost per query</td><td>$0.00037</td><td>Multiply by traffic and you have the monthly number.</td></tr>
+      </tbody>
+    </table>
+    <p class="slide-callout">Six numbers. With these you can answer any question your management asks about this system.</p>
+    <aside class="notes">
+      <p>These are illustrative figures — yours will differ, and the point is that you will have your own by noon.</p>
+      <p>Explain the median-versus-p95 distinction, because it is the single most useful idea in performance work and almost nobody arrives knowing it.</p>
+      <p>Put this table in your presentation tomorrow. Pairs who show measured numbers read as engineers; pairs who say "it feels fast" do not.</p>
+    </aside>
+  </section>
+
+  <!-- 17 -->
+  <section class="slide">
+    <p class="slide__eyebrow">Observability</p>
+    <h2>If you cannot see it, you cannot run it</h2>
+    <div class="cols4">
+      <div class="slide-card">
+        <h3>Logging</h3>
+        <p>Every request: prompt id, tokens in and out, latency, model, cache hit, cost, outcome.</p>
+      </div>
+      <div class="slide-card">
+        <h3>Tracing</h3>
+        <p>One request across every step — retrieval, each tool call, generation — as a single timeline.</p>
+      </div>
+      <div class="slide-card">
+        <h3>Metrics</h3>
+        <p>p50 and p95 latency, error rate, cost per day, cache hit rate, tokens per request.</p>
+      </div>
+      <div class="slide-card">
+        <h3>Continuous eval</h3>
+        <p>Run your golden set on a schedule. Documents drift, models change, quality moves.</p>
+      </div>
+    </div>
+    <p class="slide-callout">Tools that do this for you: <strong>LangSmith</strong>, <strong>Langfuse</strong>, <strong>Phoenix</strong>. Or a dataframe and a plot, which is what you build today.</p>
+    <aside class="notes">
+      <p>Tracing is the one that is specific to this kind of system. A single user question can become five model calls, and without a trace you cannot tell which one was slow or wrong.</p>
+      <p>Continuous evaluation is Monday's golden set, run on a schedule. That is the whole idea, and it is why we spent the afternoon building it.</p>
+      <p>Name the tools but do not sell them. Today you build the small version yourself, which is enough to understand what those products are for.</p>
+    </aside>
+  </section>
+
+  <!-- 16 -->
+  <section class="slide">
+    <p class="slide__eyebrow">Architecture</p>
+    <h2>What the whole thing looks like deployed</h2>
+    <div class="arch">
+      <div class="wide"><b>User interface</b>Web or chat. Streaming, citations, honest failure states.</div>
+      <div><b>API layer</b>Auth, rate limiting per user, request logging.</div>
+      <div><b>Orchestration</b>Prompts, the agent loop, retries, guardrails.</div>
+      <div><b>Cache</b>Checked before any model call is made.</div>
+      <div><b>Model</b>Primary and fallback. Swappable behind one interface.</div>
+      <div><b>Vector store</b>Your chunks and metadata.</div>
+      <div><b>Tools</b>Internal APIs, least privilege.</div>
+      <div><b>Monitoring</b>Logs, traces, metrics, alerts.</div>
+      <div><b>Governance</b>Audit trail, PII controls, evaluation runs.</div>
+    </div>
+    <p class="slide-callout">The model is one box. Notice how much of this diagram is ordinary systems engineering.</p>
+    <aside class="notes">
+      <p>Walk the request through the diagram once, out loud, from the top: interface, API, cache check, orchestration, retrieval, model, back up with a citation.</p>
+      <p>Then make the point on the callout. One box on this whole diagram is the model, and it is the box you will spend the least time on.</p>
+      <p>For your projects, none of this is required. It is the map for what happens after this week.</p>
+    </aside>
+  </section>
+
+  <!-- 17 -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">The product</p>
+    <h2>UX for something that is sometimes wrong</h2>
+    <div class="slide__cols">
+      <div class="slide-card slide-card--accent">
+        <h3>Do</h3>
+        <ul>
+          <li><strong>Stream</strong> — so it feels alive within a second.</li>
+          <li><strong>Cite</strong> — source and page, clickable. Trust comes from checkability.</li>
+          <li><strong>Say "I don't know"</strong> — and mean it, when retrieval came back empty.</li>
+          <li><strong>Show the failure</strong> — plainly, with something useful to do next.</li>
+        </ul>
+      </div>
+      <div class="slide-card">
+        <h3>Don't</h3>
+        <ul>
+          <li>Hide that an AI produced it.</li>
+          <li>Present an unsourced answer with the same confidence as a sourced one.</li>
+          <li>Leave a spinner running when the call has already failed.</li>
+          <li>Make the user retype the question after an error.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="slide-callout">Citations are not decoration. They are how a user decides whether to believe you.</p>
+    <aside class="notes">
+      <p>In a government context the citation is the feature. An answer someone can verify in ten seconds is worth more than a better-written answer they cannot check.</p>
+      <p>The "I don't know" behaviour needs building deliberately — it does not happen by default, and it is the thing that makes the rest of the answers credible.</p>
+    </aside>
+  </section>
+
+  <!-- 18 -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Lab · Notebook 4</p>
+    <h2>Instrument your own project</h2>
+    <div class="slide__cols">
+      <div>
+        <h3 style="font-size:21px">day4_production.ipynb</h3>
+        <ul>
+          <li>A retry decorator with backoff, and a forced failure to prove it fires.</li>
+          <li>Streaming against non-streaming, timed.</li>
+          <li>A cache, then 20 queries with 8 repeats — measure the hit rate.</li>
+          <li>Log every request into a DataFrame and <code>describe()</code> it.</li>
+          <li>Plot latency and cumulative cost. Fill in the cost formula yourself.</li>
+        </ul>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>This one runs against <em>your</em> project</h3>
+        <p>Not a toy. Import your own retrieval and agent functions from the last two days.</p>
+        <p style="margin-top:10px"><strong>You finish with a table of your own numbers.</strong> That table goes in tomorrow's presentation.</p>
+        <p style="margin-top:12px"><a class="btn" href="../notebooks/index.html">Open the notebooks →</a></p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>The cost formula is deliberately left blank. Fill it in from the real pricing page, because reading a pricing page is a skill and it changes every few months.</p>
+      <p>If your project is not running yet, come and find me now rather than at one o'clock, because this notebook needs something to instrument.</p>
+    </aside>
+  </section>
+
+  <!-- 19 -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">This afternoon</p>
+    <h2>Build, then the README clinic</h2>
+    <div class="slide__cols">
+      <div class="slide-card">
+        <h3>1:00 – 2:00 · Build</h3>
+        <p>I circulate. Get the numbers table out of Notebook 4 and into your repository.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>2:00 – 2:20 · README clinic</h3>
+        <p>Every pair writes their README <strong>now</strong>, with me checking. All six SDAIA requirements on screen.</p>
+        <p class="muted" style="margin-top:8px">READMEs written the night before are always bad. This is not negotiable.</p>
+      </div>
+    </div>
+    <p class="slide-callout">2:20 · Tomorrow's format: four minutes, two for questions. An honestly-explained broken demo scores better than a fake working one.</p>
+    <aside class="notes">
+      <p>Be firm about the README clinic. Fifteen points of the rubric are repository quality, and it is the cheapest fifteen points available.</p>
+      <p>Say the last line clearly and then say it again tomorrow morning. Someone's demo will break, and I want them to know in advance that explaining it honestly is worth more than pretending.</p>
+    </aside>
+  </section>
+
+  <!-- 20 -->
+  <section class="slide slide--full">
+    <p class="slide__eyebrow">Day 4</p>
+    <h2>What today was</h2>
+    <p><strong>1 ·</strong> The gap between a notebook and a system is ordinary engineering — and it is where these projects die.</p>
+    <p><strong>2 ·</strong> Cost is tokens in, plus tokens out, times a price. You can now answer it for your own project.</p>
+    <p><strong>3 ·</strong> Retries, caching and fallbacks are a day's work and they change what you can promise.</p>
+    <p><strong>4 ·</strong> <strong>You measured your own system.</strong> Not estimated — measured.</p>
+    <aside class="notes">
+      <p>Four things, and the fourth is what separates you from most people who will claim this on a CV.</p>
+      <p>Tomorrow morning we try to break each other's systems, so bring yours running and bring your sense of humour.</p>
+      <p>Post-test is at quarter past nine, first thing. Do not be late for it.</p>
+    </aside>
+  </section>
+
+</div>
+
+<script src="../assets/deck.js"></script>
+<script>
+  /* ----------------------------------------------------------
+     Slide 10 · live cost calculator.
+     cost = (in_tokens/1e6 * price_in + out_tokens/1e6 * price_out)
+            per query, scaled by traffic, discounted by cache hits.
+     Runs entirely offline; edit the price fields to today's numbers.
+     ---------------------------------------------------------- */
+  (function () {
+    'use strict';
+    var ids = ['c-users','c-queries','c-in','c-out','c-pin','c-pout','c-days','c-cache'];
+    var f = {};
+    ids.forEach(function (id) { f[id] = document.getElementById(id); });
+    if (!f['c-users']) return;
+
+    function num(el) { var v = parseFloat(el.value); return isNaN(v) ? 0 : v; }
+    function money(v) {
+      if (v === 0) return '$0.00';
+      if (v < 0.01) return '$' + v.toFixed(5);
+      if (v < 1000) return '$' + v.toFixed(2);
+      return '$' + Math.round(v).toLocaleString('en-US');
+    }
+
+    function update() {
+      var perQuery = num(f['c-in']) / 1e6 * num(f['c-pin']) +
+                     num(f['c-out']) / 1e6 * num(f['c-pout']);
+      var miss = 1 - Math.min(99, Math.max(0, num(f['c-cache']))) / 100;
+      var queriesPerDay = num(f['c-users']) * num(f['c-queries']);
+      var perDay = perQuery * queriesPerDay * miss;
+      var perMonth = perDay * num(f['c-days']);
+      var perUser = num(f['c-users']) ? perMonth / num(f['c-users']) : 0;
+
+      document.getElementById('o-query').textContent = money(perQuery);
+      document.getElementById('o-day').textContent = money(perDay);
+      document.getElementById('o-month').textContent = money(perMonth);
+      document.getElementById('o-user').textContent = money(perUser);
+    }
+
+    ids.forEach(function (id) { f[id].addEventListener('input', update); });
+    update();
+  })();
+</script>
+</body>
+</html>

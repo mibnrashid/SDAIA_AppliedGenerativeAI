@@ -1,0 +1,59 @@
+{
+  "_readme": [
+    "Paste your Colab share links into the colab_url fields below.",
+    "Upload each .ipynb to Colab, then File -> Share -> anyone with the link",
+    "-> Viewer, and copy the URL. Nothing in the HTML needs editing.",
+    "A row with an empty colab_url still works: the .ipynb download link",
+    "beside it always points at the file in this repository."
+  ],
+  "notebooks": [
+    {
+      "number": "0",
+      "file": "project_scaffold.ipynb",
+      "name": "Project scaffold",
+      "day": "Handed out Monday afternoon",
+      "description": "The file you build your project on. Twelve sections, structure written, TODOs throughout.",
+      "colab_url": ""
+    },
+    {
+      "number": "1",
+      "file": "day1_first_calls.ipynb",
+      "name": "First calls",
+      "day": "Day 1 · Sunday",
+      "description": "From a four-line request to schema-validated JSON your code can branch on.",
+      "colab_url": ""
+    },
+    {
+      "number": "2",
+      "file": "day2_retrieval.ipynb",
+      "name": "Retrieval",
+      "day": "Day 2 · Monday",
+      "description": "Ingest, vision-read a scanned page, chunk, embed, retrieve — then score it against a golden set.",
+      "colab_url": ""
+    },
+    {
+      "number": "3",
+      "file": "day3_agents.ipynb",
+      "name": "Agents",
+      "day": "Day 3 · Tuesday",
+      "description": "Tool schemas, the round trip by hand, the agent loop, and yesterday's retriever as a tool.",
+      "colab_url": ""
+    },
+    {
+      "number": "4",
+      "file": "day4_production.ipynb",
+      "name": "Production",
+      "day": "Day 4 · Wednesday",
+      "description": "Retries, streaming, caching and logging — applied to your own project, ending in a numbers table.",
+      "colab_url": ""
+    },
+    {
+      "number": "5",
+      "file": "day5_redteam.ipynb",
+      "name": "Red team",
+      "day": "Day 5 · Thursday",
+      "description": "Four attacks that work, three layers of defence, and an honest before/after table.",
+      "colab_url": ""
+    }
+  ]
+}

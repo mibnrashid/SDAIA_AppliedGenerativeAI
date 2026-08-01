@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chunk Lab · Applied Generative AI</title>
+  <link rel="stylesheet" href="../assets/theme.css">
+  <link rel="stylesheet" href="../assets/site.css">
+  <link rel="stylesheet" href="../assets/activity.css">
+  <style>
+    .lab { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: var(--s4); align-items: start; }
+    @media (max-width: 900px) { .lab { grid-template-columns: 1fr; } }
+
+    .doc { font-size: 0.98rem; line-height: 1.65; }
+    .doc h3 { font-family: var(--font-sans); font-size: 1.05rem; margin: 0 0 var(--s2); }
+    .para { margin: 0; padding: 2px 0; }
+    .para--h { font-weight: 700; }
+    .para--t { font-family: var(--font-mono); font-size: 0.9rem; white-space: pre-line; background: var(--card-2); padding: var(--s2) var(--s3); border-radius: var(--radius-sm); }
+
+    /* Chunk colouring: alternating tints so the pieces are obvious. */
+    .chunk-0 { background: rgba(14, 130, 100, 0.09); }
+    .chunk-1 { background: rgba(102, 204, 255, 0.13); }
+    .chunk-2 { background: rgba(240, 160, 60, 0.14); }
+    .chunk-3 { background: rgba(228, 96, 42, 0.11); }
+
+    /* The clickable gap between two paragraphs. */
+    .gap {
+      display: block;
+      width: 100%;
+      border: 0;
+      background: none;
+      padding: 3px 0;
+      margin: 2px 0;
+      cursor: pointer;
+      text-align: left;
+      font: inherit;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .gap::after {
+      content: "";
+      display: block;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--border);
+      transition: background-color 120ms;
+    }
+    .gap:hover::after { background: var(--teal-bright); }
+    .gap[aria-pressed="true"] { color: var(--coral-ink); font-weight: 700; }
+    .gap[aria-pressed="true"]::after { background: var(--coral); height: 3px; }
+    .gap[aria-pressed="true"] .gap__label::before { content: "chunk boundary — click to remove"; }
+    .gap .gap__label::before { content: "click to split here"; opacity: 0.75; }
+
+    .qresult { display: grid; gap: var(--s2); margin-top: var(--s3); }
+    .qrow {
+      display: grid; grid-template-columns: 2.2rem 1fr; gap: var(--s3);
+      padding: var(--s3); border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--paper);
+      font-size: var(--fs-small);
+    }
+    .qrow--pass { border-left: 5px solid var(--teal); background: rgba(14,130,100,.07); }
+    .qrow--fail { border-left: 5px solid var(--coral); background: rgba(228,96,42,.07); }
+    .qrow b { font-family: var(--font-display); font-size: 1.1rem; }
+    .qrow--pass b { color: var(--teal-dark); }
+    .qrow--fail b { color: var(--coral-ink); }
+    .qrow p { margin: 4px 0 0; color: var(--text-muted); }
+
+    /* Naive split overlay. */
+    .naive { font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.7; white-space: pre-wrap; }
+    .naive .cutmark {
+      display: inline-block;
+      background: var(--coral);
+      color: #fff;
+      font-family: var(--font-sans);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 1px 6px;
+      border-radius: var(--radius-pill);
+      margin: 0 4px;
+      vertical-align: middle;
+    }
+    .naive .nchunk-0 { background: rgba(14,130,100,.10); }
+    .naive .nchunk-1 { background: rgba(228,96,42,.12); }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="logo" href="../index.html" aria-label="Applied Generative AI — course home">
+        <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
+        <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
+      </a>
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+        <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="act-hero on-dark">
+      <div class="container">
+        <a class="back" href="./index.html">← All activities</a>
+        <div class="act-meta">
+          <span class="badge badge--day2">Day 2</span>
+          <span class="badge badge--time">20 minutes</span>
+          <span class="badge badge--time">Max 8 points</span>
+        </div>
+        <h1>Activity 2 · Chunk Lab</h1>
+        <p>A real two-page policy document. Click between paragraphs to place your chunk
+           boundaries, then test whether your chunking can actually answer six questions.
+           6 points for the questions, 2 bonus for keeping every chunk under 800 tokens.</p>
+      </div>
+    </section>
+
+    <div class="scorestrip">
+      <div class="container">
+        <div class="scorestrip__item">
+          <span class="scorestrip__label">Chunks</span>
+          <span class="scorestrip__value" id="s-chunks">1</span>
+        </div>
+        <div class="scorestrip__item">
+          <span class="scorestrip__label">Avg tokens</span>
+          <span class="scorestrip__value" id="s-avg">0</span>
+        </div>
+        <div class="scorestrip__item">
+          <span class="scorestrip__label">Largest</span>
+          <span class="scorestrip__value" id="s-max">0</span>
+        </div>
+        <div class="scorestrip__item">
+          <span class="scorestrip__label">Smallest</span>
+          <span class="scorestrip__value" id="s-min">0</span>
+        </div>
+        <div class="scorestrip__item">
+          <span class="scorestrip__label">Best score</span>
+          <span class="scorestrip__value scorestrip__value--muted" id="s-best">—</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="section--tight">
+      <div class="container">
+        <div class="lab">
+
+          <div class="panel">
+            <p class="approx">Token counts are approximate</p>
+            <h2 style="margin-top:var(--s3)">The document</h2>
+            <p class="small muted">Click any line between two paragraphs to start a new chunk there.
+               Colours show where each chunk begins and ends.</p>
+            <div class="doc" id="doc"></div>
+            <p style="margin-top:var(--s4)">
+              <button type="button" class="btn btn--ghost btn--sm" id="clear">Remove all boundaries</button>
+            </p>
+          </div>
+
+          <div>
+            <div class="panel">
+              <h2>Test my chunking</h2>
+              <p class="small muted">Six questions a real user might ask. Each one is answerable only
+                 if the text that answers it survives inside a <strong>single</strong> chunk.</p>
+              <p style="margin-top:var(--s3)">
+                <button type="button" class="btn" id="test">Test my chunking</button>
+              </p>
+              <div class="qresult" id="qresult"></div>
+              <div class="verdict" id="scoreline" hidden></div>
+            </div>
+
+            <div class="panel">
+              <h2>Compare with a blind split</h2>
+              <p class="small muted">What a naive "cut every 500 characters" does to the same document.</p>
+              <p style="margin-top:var(--s3)">
+                <button type="button" class="btn btn--ghost" id="naive-btn" aria-expanded="false"
+                        aria-controls="naive-panel">Show me a naive split</button>
+              </p>
+              <div id="naive-panel" hidden>
+                <div class="verdict verdict--bad" style="margin-bottom:var(--s3)">
+                  <h3>Look at what it did</h3>
+                  <p id="naive-note"></p>
+                </div>
+                <div class="naive" id="naive"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
+        <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
+      </span>
+      <p class="footer-text">Built for the SDAIA Academy course · Instructor: Musa Ibn Rashid</p>
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+        <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+      </span>
+    </div>
+  </footer>
+
+  <script src="../assets/store.js"></script>
+  <script src="../assets/tokenize.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var ACTIVITY_ID = 'chunk-lab';
+      var MAX = 8;
+
+      /* ---- The document ------------------------------------
+         type: h = heading, p = paragraph, t = table block.
+         Indices are stable and the questions below refer to them. */
+      var DOC = [
+        { t: 'h', text: 'SDAIA-F-CRS-201-01-V1 — Employee Leave and Training Policy' },
+        { t: 'p', text: 'This policy applies to all permanent and fixed-term employees of the Authority. It does not apply to contractors or seconded staff, who remain subject to the terms of their own agreements. This version supersedes all previous editions of the policy issued before January 2026.' },
+        { t: 'h', text: '1. Purpose' },
+        { t: 'p', text: 'The purpose of this policy is to set out a single, consistent basis for leave entitlement, leave approval and training support across all departments, so that employees in different units are treated on the same terms.' },
+        { t: 'h', text: '2. Definitions' },
+        { t: 'p', text: 'Working day means any day other than a public holiday or a weekend day. Grade refers to the employee grade recorded in the human resources system at the time the request is submitted. Line manager means the manager to whom the employee formally reports.' },
+        { t: 'h', text: '3. Annual leave entitlement' },
+        { t: 'p', text: 'Annual leave is granted according to employee grade, as set out in the table below. Entitlement is calculated in working days and accrues monthly from the first day of service.' },
+        { t: 't', text: 'Grade 9  — 21 days\nGrade 10 — 24 days\nGrade 11 — 30 days\nGrade 12 — 30 days plus 5 discretionary days' },
+        { t: 'p', text: 'Unused annual leave may be carried over into the following year up to a maximum of ten days, and must be taken before the end of March. Any balance above ten days is forfeited unless the line manager has granted a written exception.' },
+        { t: 'h', text: '4. Sick leave' },
+        { t: 'p', text: 'Employees are entitled to thirty days of paid sick leave per calendar year. A medical certificate is required for any absence of more than three consecutive working days. Sick leave does not reduce the annual leave entitlement set out in section 3.' },
+        { t: 'h', text: '5. Training and development' },
+        { t: 'p', text: 'The Authority supports professional development through the SDAIA Academy programme catalogue. Employees may attend up to two funded programmes per year, subject to the approval of their line manager and the availability of departmental budget.' },
+        { t: 'p', text: 'Requests to attend a funded programme must be submitted using form SDAIA-F-CRS-201-01-V1 at least two weeks before the programme start date. Late requests will not be processed, and the employee will be placed on the waiting list for the next available cohort.' },
+        { t: 'h', text: '6. Data protection' },
+        { t: 'p', text: 'All personal data processed under this policy is handled in accordance with the Personal Data Protection Law and the Authority’s own data governance framework. Personal data may not be shared with any external party without written consent.' },
+        { t: 'p', text: 'Any suspected breach of personal data must be reported to the data protection officer within twenty-four hours of discovery. The officer maintains the breach register and decides whether onward notification is required.' }
+      ];
+
+      /* ---- The six test questions --------------------------
+         span [a, b] — paragraphs a..b must all land in ONE chunk
+         for the question to be answerable. */
+      var QS = [
+        { q: 'How many annual leave days does a grade 11 employee get?', span: [6, 8],
+          why: 'The answer is in the table, but the table only means "annual leave" because of the heading above it.' },
+        { q: 'Which form do I use to request a funded training programme?', span: [12, 14],
+          why: 'The form number is in the second training paragraph; without the section heading the chunk is ambiguous.' },
+        { q: 'How long do I have to use carried-over leave?', span: [7, 9],
+          why: 'The carry-over rule only makes sense next to the entitlement it refers to.' },
+        { q: 'Who do I report a suspected data breach to, and how fast?', span: [15, 17],
+          why: 'The heading, the rule and the twenty-four hour deadline are three separate paragraphs.' },
+        { q: 'Does this policy apply to contractors?', span: [0, 1],
+          why: 'The exclusion is in the opening paragraph, which needs its title for context.' },
+        { q: 'How much paid sick leave is there per year?', span: [10, 11],
+          why: 'Heading plus paragraph. The shortest span in the set — most chunkings pass this one.' }
+      ];
+
+      var boundaries = {};      // { afterIndex: true }
+      var docEl = document.getElementById('doc');
+
+      /* ---- Rendering --------------------------------------- */
+      function chunkIndexOf(paraIndex) {
+        var c = 0;
+        for (var i = 0; i < paraIndex; i++) if (boundaries[i]) c++;
+        return c;
+      }
+
+      function render() {
+        docEl.innerHTML = '';
+        DOC.forEach(function (item, i) {
+          var p = document.createElement('p');
+          p.className = 'para para--' + item.t + ' chunk-' + (chunkIndexOf(i) % 4);
+          p.textContent = item.text;
+          docEl.appendChild(p);
+
+          if (i < DOC.length - 1) {
+            var gap = document.createElement('button');
+            gap.type = 'button';
+            gap.className = 'gap';
+            gap.setAttribute('aria-pressed', boundaries[i] ? 'true' : 'false');
+            gap.setAttribute('aria-label', 'Chunk boundary after paragraph ' + (i + 1));
+            gap.innerHTML = '<span class="gap__label"></span>';
+            gap.addEventListener('click', function () {
+              if (boundaries[i]) delete boundaries[i]; else boundaries[i] = true;
+              render();
+              stats();
+              gap.focus();
+            });
+            docEl.appendChild(gap);
+          }
+        });
+      }
+
+      /* ---- Live statistics --------------------------------- */
+      function chunks() {
+        var out = [], cur = [];
+        DOC.forEach(function (item, i) {
+          cur.push(item);
+          if (boundaries[i] || i === DOC.length - 1) { out.push(cur); cur = []; }
+        });
+        return out;
+      }
+
+      function chunkTokens(chunk) {
+        return Tok.estimate(chunk.map(function (c) { return c.text; }).join('\n\n'));
+      }
+
+      function stats() {
+        var cs = chunks();
+        var sizes = cs.map(chunkTokens);
+        var sum = sizes.reduce(function (a, b) { return a + b; }, 0);
+        document.getElementById('s-chunks').textContent = cs.length;
+        document.getElementById('s-avg').textContent = Math.round(sum / cs.length);
+        document.getElementById('s-max').textContent = Math.max.apply(null, sizes);
+        document.getElementById('s-min').textContent = Math.min.apply(null, sizes);
+        return sizes;
+      }
+
+      /* ---- Testing ----------------------------------------- */
+      document.getElementById('test').addEventListener('click', function () {
+        var out = document.getElementById('qresult');
+        out.innerHTML = '';
+        var passed = 0;
+
+        QS.forEach(function (item, n) {
+          /* Answerable if no boundary sits strictly inside the span. */
+          var split = false, at = -1;
+          for (var i = item.span[0]; i < item.span[1]; i++) {
+            if (boundaries[i]) { split = true; at = i; break; }
+          }
+          if (!split) passed++;
+
+          var row = document.createElement('div');
+          row.className = 'qrow ' + (split ? 'qrow--fail' : 'qrow--pass');
+          row.innerHTML =
+            '<b>' + (split ? '✕' : '✓') + '</b>' +
+            '<div><strong>' + item.q + '</strong>' +
+            '<p>' + (split
+              ? 'This answer was split across two chunks — the boundary after paragraph ' +
+                (at + 1) + ' cuts it. ' + item.why
+              : 'Answerable. The text that answers it stayed in one chunk.') +
+            '</p></div>';
+          out.appendChild(row);
+        });
+
+        var sizes = stats();
+        var biggest = Math.max.apply(null, sizes);
+        var bonus = biggest <= 800 ? 2 : 0;
+        var score = passed + bonus;
+
+        var line = document.getElementById('scoreline');
+        line.hidden = false;
+        line.className = 'verdict ' + (score >= 7 ? 'verdict--good' : score >= 4 ? 'verdict--warn' : 'verdict--bad');
+        line.innerHTML =
+          '<h3>' + score + ' / ' + MAX + ' points</h3>' +
+          '<p>' + passed + ' of 6 questions answerable' +
+          (bonus ? ', plus 2 bonus — your largest chunk is ' + biggest + ' tokens.'
+                 : '. No bonus: your largest chunk is ' + biggest + ' tokens, over the 800 limit.') +
+          '</p>';
+
+        Store.saveScore(ACTIVITY_ID, score, MAX);
+        showBest();
+      });
+
+      document.getElementById('clear').addEventListener('click', function () {
+        boundaries = {};
+        render();
+        stats();
+      });
+
+      /* ---- The naive split --------------------------------- */
+      document.getElementById('naive-btn').addEventListener('click', function () {
+        var panel = document.getElementById('naive-panel');
+        var open = !panel.hidden;
+        panel.hidden = open;
+        this.setAttribute('aria-expanded', String(!open));
+        this.textContent = open ? 'Show me a naive split' : 'Hide the naive split';
+        if (!open) buildNaive();
+      });
+
+      function buildNaive() {
+        var full = DOC.map(function (d) { return d.text; }).join('\n\n');
+        var SIZE = 500;
+        var target = document.getElementById('naive');
+        target.innerHTML = '';
+
+        var pieces = 0, midWord = 0;
+        for (var i = 0; i < full.length; i += SIZE) {
+          var slice = full.slice(i, i + SIZE);
+          var span = document.createElement('span');
+          span.className = 'nchunk-' + (pieces % 2);
+          span.textContent = slice;
+          target.appendChild(span);
+          pieces++;
+
+          if (i + SIZE < full.length) {
+            /* Did the cut land inside a word? */
+            var before = full[i + SIZE - 1], after = full[i + SIZE];
+            if (before && after && /\S/.test(before) && /\S/.test(after)) midWord++;
+
+            var mark = document.createElement('span');
+            mark.className = 'cutmark';
+            mark.textContent = 'CUT';
+            target.appendChild(mark);
+          }
+        }
+
+        document.getElementById('naive-note').textContent =
+          pieces + ' chunks, cut on a character count with no regard for structure. ' +
+          midWord + ' of the ' + (pieces - 1) + ' cuts land inside a word. ' +
+          'Look for the leave table: its heading is in one chunk and its rows are in another, ' +
+          'so a chunk full of numbers arrives at the model with nothing to say it is about leave.';
+      }
+
+      function showBest() {
+        var best = Store.getScore(ACTIVITY_ID);
+        document.getElementById('s-best').textContent = best ? best.score + ' / ' + best.max : '—';
+      }
+
+      /* Start with one sensible boundary so the page is not a wall of
+         text, but leave the real work to them. */
+      boundaries[5] = true;
+      render();
+      stats();
+      showBest();
+    })();
+  </script>
+</body>
+</html>

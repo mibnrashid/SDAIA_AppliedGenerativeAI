@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The project · Applied Generative AI</title>
+  <link rel="stylesheet" href="../assets/theme.css">
+  <link rel="stylesheet" href="../assets/site.css">
+  <style>
+    .pj-hero {
+      background-color: var(--ink);
+      color: var(--text-on-dark);
+      padding-block: var(--s6);
+      background-image:
+        radial-gradient(50rem 26rem at 82% -10%, rgba(102,204,255,.16), transparent 60%),
+        radial-gradient(34rem 22rem at 2% 115%, rgba(55,204,149,.14), transparent 60%);
+    }
+    .pj-hero h1 { font-size: var(--fs-display); margin-bottom: var(--s4); max-width: 14ch; }
+    .pj-hero p { color: var(--text-muted-on-dark); max-width: 58ch; font-size: 1.09rem; }
+    .pj-hero .back { display: inline-block; margin-bottom: var(--s3); color: var(--teal-bright); font-size: var(--fs-small); font-weight: 600; text-decoration: none; }
+
+    /* The rubric is the most prominent thing on the page. */
+    .rubric-wrap {
+      border: 3px solid var(--teal);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      background: var(--card);
+    }
+    .rubric-head {
+      background: var(--teal); color: #fff;
+      padding: var(--s4) var(--s5);
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: var(--s4); flex-wrap: wrap;
+    }
+    .rubric-head h2 { color: #fff; margin: 0; font-size: 1.9rem; }
+    .rubric-head p { margin: 0; font-weight: 700; }
+    .tablewrap { overflow-x: auto; }
+    table.rubric { width: 100%; border-collapse: collapse; min-width: 42rem; }
+    table.rubric th, table.rubric td { text-align: left; padding: var(--s3) var(--s4); border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.rubric thead th { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); background: var(--card-2); }
+    table.rubric td.pts { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--teal); text-align: right; white-space: nowrap; }
+    table.rubric td.crit { font-weight: 700; white-space: nowrap; }
+    table.rubric td.full { font-size: var(--fs-small); color: var(--text-muted); }
+    tr.total td { background: var(--ink); color: var(--text-on-dark); font-weight: 700; border-bottom: 0; }
+    tr.total td.pts { color: var(--teal-bright); }
+
+    .checklist { display: grid; gap: var(--s2); }
+    .checklist label {
+      display: grid; grid-template-columns: 1.4rem 1fr; gap: var(--s3);
+      align-items: start; padding: var(--s3);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--card); cursor: pointer; font-size: var(--fs-small);
+    }
+    .checklist label:hover { border-color: var(--teal); }
+    .checklist input { margin-top: .2rem; accent-color: var(--teal); width: 1.05rem; height: 1.05rem; }
+    .checklist input:checked + span { color: var(--text-muted); text-decoration: line-through; }
+
+    .timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s3); }
+    @media (max-width: 780px) { .timeline { grid-template-columns: 1fr 1fr; } }
+    .timeline div { padding: var(--s4); border-radius: var(--radius-sm); background: var(--card); border: 1px solid var(--border); }
+    .timeline b { display: block; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin-bottom: var(--s2); }
+    .timeline p { margin: 0; font-size: var(--fs-small); color: var(--text-muted); }
+    .timeline div:nth-child(1) { border-top: 4px solid var(--teal); }
+    .timeline div:nth-child(2) { border-top: 4px solid var(--teal-bright); }
+    .timeline div:nth-child(3) { border-top: 4px solid var(--coral); }
+    .timeline div:nth-child(4) { border-top: 4px solid var(--amber); }
+
+    pre.readme {
+      background: var(--ink); color: #e8ecf5;
+      padding: var(--s4); border-radius: var(--radius-sm);
+      overflow-x: auto; font-size: .82rem; line-height: 1.6;
+      max-height: 30rem; overflow-y: auto;
+    }
+    .copyrow { display: flex; gap: var(--s3); align-items: center; flex-wrap: wrap; margin-bottom: var(--s3); }
+    .copied { color: var(--teal-dark); font-weight: 700; font-size: var(--fs-small); }
+    .section-head h2 { margin-bottom: var(--s2); }
+    .section-head { margin-bottom: var(--s4); }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="logo" href="../index.html" aria-label="Applied Generative AI — course home">
+        <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
+        <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
+      </a>
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+        <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <section class="pj-hero on-dark">
+      <div class="container">
+        <a class="back" href="../index.html">← Course home</a>
+        <p class="eyebrow">SDAIA Academy · Applied Generative AI</p>
+        <h1>The project</h1>
+        <p>Build a generative AI assistant over documents you care about.
+           Ship it to GitHub. Defend the architecture you chose.</p>
+      </div>
+    </section>
+
+    <!-- ---------- Rubric: the most prominent thing here ---------- -->
+    <section class="section--tight">
+      <div class="container">
+        <div class="rubric-wrap">
+          <div class="rubric-head">
+            <h2>How it is scored</h2>
+            <p>100 points · pass at 60 · marked live on Thursday</p>
+          </div>
+          <div class="tablewrap">
+            <table class="rubric">
+              <thead>
+                <tr><th>Criterion</th><th>Points</th><th>What full marks looks like</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="crit">Architecture choice<br>&amp; justification</td>
+                  <td class="pts">25</td>
+                  <td class="full">You picked RAG, an agent, or a hybrid, and can say <strong>why</strong> in one sentence tied to your use case. <strong>Wrong-but-justified beats right-but-unexplained.</strong></td>
+                </tr>
+                <tr>
+                  <td class="crit">Working retrieval</td>
+                  <td class="pts">25</td>
+                  <td class="full">Your own documents, sensible chunking, relevant results, and answers that are visibly grounded — with citations to source and page.</td>
+                </tr>
+                <tr>
+                  <td class="crit">Tool integration</td>
+                  <td class="pts">15</td>
+                  <td class="full">At least one function-calling tool that actually executes, and whose result reaches the final answer.</td>
+                </tr>
+                <tr>
+                  <td class="crit">Safety &amp; reliability</td>
+                  <td class="pts">10</td>
+                  <td class="full">At least one guardrail demonstrated, and the system handles a failure without crashing.</td>
+                </tr>
+                <tr>
+                  <td class="crit">Repository quality</td>
+                  <td class="pts">15</td>
+                  <td class="full">All six SDAIA requirements met, and a README a stranger could follow without asking you anything.</td>
+                </tr>
+                <tr>
+                  <td class="crit">Presentation</td>
+                  <td class="pts">10</td>
+                  <td class="full">Four minutes, kept to time. The demo works — <strong>or the failure is explained honestly</strong>, which scores better than a fake working one.</td>
+                </tr>
+                <tr class="total">
+                  <td>Total</td>
+                  <td class="pts">100</td>
+                  <td>Pass at 60. Published on day one, not on Thursday.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- Required components ---------- -->
+    <section class="section--tight">
+      <div class="container">
+        <div class="section-head">
+          <h2>The five required components</h2>
+          <p class="muted">Tick these off as you go. "Working" means it runs in Colab — no deployment, no frontend, no Docker.</p>
+        </div>
+        <div class="checklist">
+          <label><input type="checkbox"><span><strong>1 · Your own documents.</strong> 10–30 pages you actually care about — a policy, a manual, a handbook. Not a demo set, and nothing confidential (we are on a free tier).</span></label>
+          <label><input type="checkbox"><span><strong>2 · A working retrieval pipeline.</strong> Ingested, chunked, embedded, stored, and returning relevant chunks for a real question.</span></label>
+          <label><input type="checkbox"><span><strong>3 · Grounded answers with citations.</strong> Every fact traceable to a source and a page, and "I don't know" when the documents do not cover it.</span></label>
+          <label><input type="checkbox"><span><strong>4 · At least one tool.</strong> A function the model can request, that your code executes, whose result reaches the answer.</span></label>
+          <label><input type="checkbox"><span><strong>5 · At least one guardrail.</strong> A step cap, an output validator, a topic check — something demonstrable, plus a failure handled without a crash.</span></label>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- Timeline ---------- -->
+    <section class="section--tight">
+      <div class="container">
+        <div class="section-head"><h2>The week</h2></div>
+        <div class="timeline">
+          <div><b>Monday</b><p><strong>Pitch.</strong> Teams form, ideas go on the board, you choose your document set.</p></div>
+          <div><b>Tuesday</b><p><strong>Build.</strong> Gate by 2:30 — documents loaded, chunked, embedded, one query returning something. Running, not polished.</p></div>
+          <div><b>Wednesday</b><p><strong>Harden + README.</strong> Retries, caching, your numbers table. README clinic 2:00–2:20, written in the room.</p></div>
+          <div><b>Thursday</b><p><strong>Present.</strong> Red team in the morning, four minutes each in the afternoon, scored live.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- SDAIA GitHub requirements ---------- -->
+    <section class="section--tight">
+      <div class="container">
+        <div class="section-head">
+          <h2>SDAIA repository requirements</h2>
+          <p class="muted">All six are required. Together they are the 15 repository-quality points — the cheapest marks on the rubric.</p>
+        </div>
+        <div class="checklist">
+          <label><input type="checkbox"><span>A clear, comprehensive project description</span></label>
+          <label><input type="checkbox"><span>A professional <code>README.md</code>: the idea, how to run it, how to use it</span></label>
+          <label><input type="checkbox"><span>Appropriate technical documentation</span></label>
+          <label><input type="checkbox"><span>Git version-control best practice — real, meaningful commits, not one dump at the end</span></label>
+          <label><input type="checkbox"><span>The training programme named: <strong>Applied Generative AI, SDAIA Academy, August 2026</strong></span></label>
+          <label><input type="checkbox"><span>A link to <a href="https://github.com/SDAIAAcademy" target="_blank" rel="noopener">https://github.com/SDAIAAcademy</a></span></label>
+        </div>
+        <p style="margin-top:var(--s4)">
+          <button type="button" class="btn btn--ghost" id="copy-reqs">Copy this checklist</button>
+          <span id="reqs-status" class="small" aria-live="polite"></span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------- Starting point ---------- -->
+    <section class="section--tight">
+      <div class="container">
+        <div class="card" style="padding:var(--s5)">
+          <h2 style="font-family:var(--font-display);font-size:1.6rem;margin-bottom:var(--s3)">Start from the scaffold</h2>
+          <p class="muted" style="max-width:60ch">
+            <code>project_scaffold.ipynb</code> is handed out on Monday afternoon and is the file you
+            build on. Twelve sections — config, ingest, chunk, index, retrieve, tools, agent loop,
+            guardrails, instrumentation, <code>demo()</code>, golden set, and this README template.
+            The structure is written; the <code>TODO</code> markers are yours. Nobody starts from an
+            empty cell.
+          </p>
+          <p style="margin-top:var(--s4)">
+            <a class="btn" href="../notebooks/index.html">Open the notebooks →</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- README template ---------- -->
+    <section class="section--tight">
+      <div class="container">
+        <div class="section-head">
+          <h2>README template</h2>
+          <p class="muted">Copy this into <code>README.md</code> in your repository and replace every <code>TODO</code>.</p>
+        </div>
+        <div class="copyrow">
+          <button type="button" class="btn" id="copy-readme">Copy README template</button>
+          <span id="readme-status" class="small" aria-live="polite"></span>
+        </div>
+<pre class="readme" id="readme-text"># TODO: Project name
+
+TODO: One sentence on what this does and who it is for.
+
+## The problem
+
+TODO: Two or three sentences. What was hard before this existed?
+
+## Architecture
+
+TODO: RAG, agent, or hybrid — and **why**, in one sentence tied to your use
+case. Wrong-but-justified beats right-but-unexplained.
+
+```
+documents -> chunking -> embeddings -> vector store -> hybrid retrieval -> model -> answer with citations
+```
+
+TODO: Adjust that diagram to what you actually built.
+
+## How to run it
+
+1. Open `project_scaffold.ipynb` in Google Colab.
+2. Add your `GEMINI_API_KEY` to Colab Secrets (the key icon, left sidebar).
+3. Upload your documents to the `my_docs` folder.
+4. Run all cells, then call `demo()`.
+
+## How to use it
+
+TODO: Two or three example questions and the answers you get back.
+
+## What works, and what does not
+
+TODO: Be honest. Retrieval hit rate on our golden set: __/5.
+TODO: One known limitation.
+
+## Technical notes
+
+- Model: `gemini-2.5-flash-lite`
+- Embeddings: `gemini-embedding-001`
+- Vector store: Chroma
+- Retrieval: hybrid (BM25 + vector), alpha = TODO
+- Chunking: TODO tokens, TODO overlap
+- Guardrails: TODO
+
+## Training programme
+
+Built during **Applied Generative AI**, SDAIA Academy, Riyadh,
+2-6 August 2026.
+
+More SDAIA Academy projects: https://github.com/SDAIAAcademy
+
+## Authors
+
+TODO: names
+</pre>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
+        <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
+      </span>
+      <p class="footer-text">Built for the SDAIA Academy course · Instructor: Musa Ibn Rashid</p>
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+        <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+      </span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var REQS = [
+        "SDAIA repository requirements",
+        "[ ] Clear, comprehensive project description",
+        "[ ] Professional README.md: the idea, how to run it, how to use it",
+        "[ ] Appropriate technical documentation",
+        "[ ] Git version-control best practice - real commits, not one dump",
+        "[ ] Training programme named: Applied Generative AI, SDAIA Academy, August 2026",
+        "[ ] Link to https://github.com/SDAIAAcademy"
+      ].join("\n");
+
+      function copy(text, statusEl, label) {
+        function ok() { statusEl.innerHTML = '<span class="copied">' + label + '</span>'; }
+        function fail() { statusEl.textContent = 'Could not copy — select the text and copy it manually.'; }
+
+        function fallback() {
+          try {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.setAttribute('readonly', '');
+            ta.style.cssText = 'position:absolute;left:-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            var done = document.execCommand('copy');
+            document.body.removeChild(ta);
+            done ? ok() : fail();
+          } catch (e) { fail(); }
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(ok, fallback);
+        } else {
+          fallback();
+        }
+      }
+
+      document.getElementById('copy-readme').addEventListener('click', function () {
+        copy(document.getElementById('readme-text').textContent,
+             document.getElementById('readme-status'),
+             'Copied — now paste it into README.md');
+      });
+
+      document.getElementById('copy-reqs').addEventListener('click', function () {
+        copy(REQS, document.getElementById('reqs-status'), 'Checklist copied');
+      });
+    })();
+  </script>
+</body>
+</html>

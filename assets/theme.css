@@ -1,0 +1,98 @@
+/* ============================================================
+   theme.css — design tokens only. No selectors beyond :root.
+   Applied Generative AI · SDAIA Academy
+
+   Colours are sampled from the supplied logo PNGs, not guessed:
+     academy_color.png  dominant sky blue  #66CCFF
+                        orange ramp        #FF7337 → #FEA145
+     sdaia_color.png    green-teal         #37CC95
+                        orange             #FE833C
+                        indigo             #5A50A0
+   The brand hues are bright and fail text contrast on white, so each
+   one has a darkened "-ink" sibling for small text. Bright originals
+   are used on dark surfaces and for large type only.
+   ============================================================ */
+
+:root {
+  /* ---- Dark surfaces -------------------------------------- */
+  /* No navy exists in the logos; both --ink values are derived from
+     the SDAIA indigo #5A50A0, desaturated and taken very dark. */
+  --ink:          #0d1330;   /* hero + footer background        */
+  --ink-2:        #1a2246;   /* cards sitting on --ink          */
+  --ink-3:        #2a3560;   /* borders/dividers on dark        */
+
+  /* ---- Primary accent ------------------------------------- */
+  --teal:         #0b7457;   /* buttons, links, active states — 5.4:1 on --paper */
+  --teal-dark:    #0a6650;   /* hover / pressed                 */
+  --teal-bright:  #37cc95;   /* brand green, highlights on dark */
+
+  /* ---- Secondary accents ---------------------------------- */
+  --coral:        #e4602a;   /* activity + day cards            */
+  --coral-ink:    #b8410f;   /* coral as small text on white    */
+  --amber:        #f0a03c;   /* activity + day cards            */
+  --amber-ink:    #96590a;   /* amber as small text on white    */
+  --sky:          #66ccff;   /* Academy blue; focus ring on dark */
+
+  /* ---- Light surfaces ------------------------------------- */
+  --paper:        #f7f8fa;   /* page background                 */
+  --card:         #ffffff;   /* card surface                    */
+  --card-2:       #eef1f5;   /* subtle fill inside cards        */
+
+  /* ---- Text and lines ------------------------------------- */
+  --text:         #14181f;
+  --text-muted:   #5a6473;   /* 5.6:1 on --paper                */
+  --text-on-dark: #eef1f7;
+  --text-muted-on-dark: #a9b4cc; /* 7.4:1 on --ink              */
+  --border:       #e1e5eb;
+  --border-dark:  #2a3560;
+
+  /* ---- Typography ----------------------------------------- */
+  /* System stacks only. No webfonts, no network requests.
+     Arabic fallbacks are included so inline <span lang="ar"> text
+     renders in a real Arabic face on Windows, macOS and Linux. */
+  --font-display: Georgia, "Iowan Old Style", "Times New Roman", Times, serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, "Segoe UI Emoji", sans-serif;
+  --font-arabic: "Segoe UI", Tahoma, "Geeza Pro", "Noto Naskh Arabic",
+                 "Traditional Arabic", serif;
+  --font-mono: ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas,
+               "Liberation Mono", monospace;
+
+  /* Fluid display sizes — no JS, no overflow on a phone. */
+  --fs-display: clamp(2.25rem, 1.2rem + 4.4vw, 4rem);
+  --fs-h1:      clamp(1.9rem, 1.2rem + 2.6vw, 2.75rem);
+  --fs-h2:      clamp(1.4rem, 1.1rem + 1.2vw, 1.9rem);
+  --fs-h3:      1.15rem;
+  --fs-body:    1rem;
+  --fs-small:   0.875rem;
+  --fs-eyebrow: 0.78rem;
+
+  --lh-tight:   1.15;
+  --lh-body:    1.6;
+  --tracking-eyebrow: 0.14em;
+
+  /* ---- Spacing -------------------------------------------- */
+  --s1: 0.25rem;   /*  4px */
+  --s2: 0.5rem;    /*  8px */
+  --s3: 1rem;      /* 16px */
+  --s4: 1.5rem;    /* 24px */
+  --s5: 2.5rem;    /* 40px */
+  --s6: 4rem;      /* 64px */
+
+  /* ---- Shape and layout ----------------------------------- */
+  --radius:     14px;
+  --radius-sm:  8px;
+  --radius-pill: 999px;
+  --maxw:       1120px;
+
+  --shadow-sm: 0 1px 2px rgba(13, 19, 48, 0.06),
+               0 2px 8px rgba(13, 19, 48, 0.05);
+  --shadow-md: 0 2px 4px rgba(13, 19, 48, 0.07),
+               0 12px 28px rgba(13, 19, 48, 0.10);
+
+  /* ---- Focus ---------------------------------------------- */
+  --focus:         var(--teal);
+  --focus-on-dark: var(--sky);
+  --focus-width:   3px;
+  --focus-offset:  2px;
+}

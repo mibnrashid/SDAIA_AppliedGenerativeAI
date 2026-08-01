@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Day 1 — From token to typed output · Applied Generative AI</title>
+  <link rel="stylesheet" href="../assets/theme.css">
+  <link rel="stylesheet" href="../assets/site.css">
+  <link rel="stylesheet" href="../assets/deck.css">
+  <style>
+    /* Day 1 only: a few small layout helpers. */
+    .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .cols3 .slide-card { padding: 16px 18px; font-size: 19px; }
+    .cols3 h3 { font-size: 19px; margin-bottom: 6px; }
+    .temp-tag {
+      display: inline-block; font-family: var(--font-mono); font-size: 15px;
+      padding: 2px 8px; border-radius: var(--radius-pill);
+      background: var(--card-2); border: 1px solid var(--border); margin-bottom: 8px;
+    }
+    .numbered { list-style: none; padding: 0; counter-reset: n; }
+    .numbered li {
+      counter-increment: n; position: relative; padding-left: 52px; margin-bottom: 14px;
+    }
+    .numbered li::before {
+      content: counter(n, decimal-leading-zero);
+      position: absolute; left: 0; top: -2px;
+      font-family: var(--font-display); font-size: 26px; font-weight: 700;
+      color: var(--teal);
+    }
+    .weekmap { display: grid; gap: 10px; }
+    .weekmap div {
+      display: grid; grid-template-columns: 90px 1fr; gap: 16px; align-items: baseline;
+      padding: 10px 14px; border-radius: var(--radius-sm); font-size: 20px;
+      border: 1px solid var(--border); background: var(--card);
+    }
+    .weekmap div span:first-child { font-weight: 700; color: var(--text-muted); font-size: 17px; letter-spacing: .06em; text-transform: uppercase; }
+    .weekmap div.is-today { background: var(--ink); color: var(--text-on-dark); border-color: var(--ink); }
+    .weekmap div.is-today span:first-child { color: var(--teal-bright); }
+    .tokenbits span {
+      display: inline-block; padding: 3px 7px; margin: 0 3px 6px 0;
+      border-radius: 5px; font-family: var(--font-mono); font-size: 18px;
+      background: rgba(14,130,100,.12); border: 1px solid rgba(14,130,100,.3);
+    }
+    .tokenbits span:nth-child(even) { background: rgba(228,96,42,.12); border-color: rgba(228,96,42,.32); }
+    .bigstat { font-family: var(--font-display); font-size: 44px; font-weight: 700; line-height: 1; color: var(--teal); }
+    .layers { display: grid; gap: 8px; }
+    .layers div {
+      padding: 9px 16px; border-radius: var(--radius-sm); font-size: 19px;
+      background: var(--card); border: 1px solid var(--border);
+      display: grid; grid-template-columns: 190px 1fr; gap: 16px;
+    }
+    .layers div strong { color: var(--teal-dark); }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .steps div { padding: 14px 16px; border-radius: var(--radius-sm); background: var(--card); border: 1px solid var(--border); font-size: 18px; }
+    .steps div b { display: block; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin-bottom: 4px; }
+    .tok-out { font-size: 19px; margin-top: 10px; }
+    .tok-out output { font-family: var(--font-mono); font-weight: 700; color: var(--teal-dark); font-size: 22px; }
+  </style>
+</head>
+<body>
+
+<div class="deck" data-title="Day 1 — From token to typed output">
+
+  <!-- ══════════ 1 · Title ══════════ -->
+  <section class="slide slide--title">
+    <p class="slide__eyebrow">SDAIA Academy · Applied Generative AI</p>
+    <h2>From token to typed output</h2>
+    <p class="slide__kicker">Day 1 · Sunday 2 August 2026 · Musa Ibn Rashid</p>
+    <p class="muted">The model is a function. Today we make it a reliable one.</p>
+    <aside class="notes">
+      <p>Good morning, and welcome. Over the next five days we are going to build generative AI that actually ships, not slides about generative AI.</p>
+      <p>Today has one destination: by half past two you will have written a function that sends a prompt and gets back JSON that your own code can branch on.</p>
+      <p>That is the moment this stops being a chat toy and becomes a component in a system, and everything for the rest of the week sits on top of it.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 2 · Objectives ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Day 1</p>
+    <h2>What you will be able to do by 2:30</h2>
+    <ol class="numbered">
+      <li>Explain what a token is, and why the same sentence costs more in Arabic than in English.</li>
+      <li>Call a generative model from Python and read the token counts off the response.</li>
+      <li>Turn temperature and a system instruction and predict what will change.</li>
+      <li>Force the model to return JSON that matches a schema you defined.</li>
+      <li>Wrap all of it in one reusable <code>ask()</code> function with retries.</li>
+    </ol>
+    <aside class="notes">
+      <p>I want you to read these five as promises, not as a wish list. At half past two I am going to put this slide back up and ask you which ones you can do.</p>
+      <p>Number four is the one that matters most, and it is the one nobody teaches. Almost every course stops at number three.</p>
+      <p>If you finish early, help the person next to you — I have paired coders with non-coders deliberately.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 3 · Week map ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">The week</p>
+    <h2>Where today sits</h2>
+    <div class="weekmap">
+      <div class="is-today"><span>Sunday</span><span><strong>From token to typed output.</strong> The model as a reliable function.</span></div>
+      <div><span>Monday</span><span>Retrieval you can measure — RAG, hybrid search, and a golden set that scores it.</span></div>
+      <div><span>Tuesday</span><span>Tools and agents — the model requests, your code executes. Yesterday's retriever becomes a tool.</span></div>
+      <div><span>Wednesday</span><span>Production and the numbers — latency, caching, and what this costs per user per month.</span></div>
+      <div><span>Thursday</span><span>Break it, then defend it — prompt injection, red teaming, and your demo.</span></div>
+    </div>
+    <p class="slide-callout">Each day ends higher than it started. If Thursday feels reachable today, tell me.</p>
+    <aside class="notes">
+      <p>Notice that every day builds on the one before it. Monday's retriever becomes Tuesday's tool, and Tuesday's agent is what you instrument on Wednesday and attack on Thursday.</p>
+      <p>That means falling behind on any one day is expensive, so please tell me the moment you are stuck rather than at the end of the block.</p>
+      <p>Thursday afternoon you present to the room, in pairs, for four minutes.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 4 · Divider ══════════ -->
+  <section class="slide slide--section">
+    <p class="slide__eyebrow">Part one</p>
+    <h2>How the thing actually works</h2>
+    <p class="slide__kicker">Forty minutes of mechanics. Everything after this depends on it.</p>
+    <aside class="notes">
+      <p>We are going to spend the next forty minutes under the bonnet, and some of you will find the first ten minutes of it easy.</p>
+      <p>Stay with me anyway, because the vocabulary we set here is what I will use for the rest of the week without re-explaining it.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 5 · Discriminative vs generative ══════════ -->
+  <section class="slide slide--split">
+    <h2>Two kinds of model</h2>
+    <div class="slide__cols">
+      <div class="slide-card">
+        <h3>Discriminative</h3>
+        <p class="muted">Draws a boundary. Given input, pick a label.</p>
+        <p style="margin-top:10px">"Is this transaction fraud?" → <strong>yes / no</strong></p>
+        <p class="muted" style="margin-top:10px">Fixed set of answers. You can measure accuracy directly.</p>
+      </div>
+      <div class="slide-card">
+        <h3>Generative</h3>
+        <p class="muted">Models the distribution. Given input, produce new content.</p>
+        <p style="margin-top:10px">"Write the fraud alert for this customer." → <strong>a paragraph that never existed</strong></p>
+        <p class="muted" style="margin-top:10px">Infinite possible answers. "Correct" is much harder to define.</p>
+      </div>
+    </div>
+    <p class="slide-callout">That second column is why everything this week is about <strong>constraining</strong> the output.</p>
+    <aside class="notes">
+      <p>The practical difference is not the architecture, it is what you can promise your users. A classifier has a fixed set of answers, so you can test it exhaustively.</p>
+      <p>A generative model can return anything, which is exactly why the rest of today is about narrowing what it is allowed to say.</p>
+      <p>That is one slide on theory. We are moving on.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 6 · Tokens ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Mechanics</p>
+    <h2>A token is not a word</h2>
+    <p>The model never sees letters or words. Text is cut into <strong>tokens</strong> — common chunks, learned from data — and each one becomes a number.</p>
+    <div class="slide-card">
+      <p class="muted" style="font-size:18px;margin-bottom:8px">"Generative models are unbelievably useful."</p>
+      <div class="tokenbits">
+        <span>Gener</span><span>ative</span><span> models</span><span> are</span><span> un</span><span>bel</span><span>iev</span><span>ably</span><span> useful</span><span>.</span>
+      </div>
+      <p class="muted" style="font-size:18px">6 words · <strong>10 tokens</strong>. Common words are one token; rare ones get broken up.</p>
+    </div>
+    <p class="slide-callout">You are billed per token, in and out. Tokens are the unit of everything: cost, limits, speed.</p>
+    <aside class="notes">
+      <p>Look at "unbelievably". It is one word to you and four pieces to the model, because it is rare enough that the tokenizer never learned it whole.</p>
+      <p>The rule of thumb for English is about four characters per token, so a hundred words is roughly a hundred and thirty tokens.</p>
+      <p>Hold on to that number, because in two slides it is going to be very different for Arabic.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 7 · Arabic vs English + widget ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Mechanics · live</p>
+    <h2>The same sentence costs more in Arabic</h2>
+    <div class="slide__cols" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start">
+      <div>
+        <div class="slide-card" style="margin-bottom:12px">
+          <p class="muted" style="font-size:17px;margin-bottom:4px">English</p>
+          <p style="font-size:19px">"The National Data Governance policy applies to every entity."</p>
+          <p class="bigstat">≈ 11 tokens</p>
+        </div>
+        <div class="slide-card">
+          <p class="muted" style="font-size:17px;margin-bottom:4px">Arabic — the same meaning</p>
+          <p style="font-size:19px" lang="ar" dir="rtl">تنطبق سياسة حوكمة البيانات الوطنية على كل جهة.</p>
+          <p class="bigstat" style="color:var(--coral-ink)">≈ 26 tokens</p>
+        </div>
+      </div>
+      <div class="slide-widget">
+        <label for="tok-input">Type here — approximate token count</label>
+        <textarea id="tok-input" rows="5" spellcheck="false">تنطبق سياسة حوكمة البيانات الوطنية على كل جهة.</textarea>
+        <p class="tok-out">
+          <output id="tok-count" for="tok-input">0</output> tokens ·
+          <span id="tok-chars" class="muted">0 characters</span>
+        </p>
+        <p class="muted" style="font-size:15px">Approximate. A heuristic, not the real tokenizer: ~4 characters per token for Latin script, ~2 for Arabic.</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Two to three times the tokens for the same sentence. That is not a rounding error, it is your budget, and nobody warns you about it.</p>
+      <p>Type something of your own into the box on the right and watch the count. Then paste the Arabic translation of it underneath and watch it jump.</p>
+      <p>This comes back on Wednesday when we price an internal assistant, and the Arabic version of the same product costs noticeably more to run.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 8 · Context window ══════════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Mechanics</p>
+    <h2>The context window</h2>
+    <div class="slide__cols">
+      <div>
+        <p>Everything the model can see at once: your system instruction, the conversation so far, any documents you pasted in, <em>and</em> the answer it is writing.</p>
+        <p style="margin-top:14px">Measured in tokens. Go over it and the call fails, or the earliest content silently falls out.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>The consequences</h3>
+        <ul>
+          <li>You cannot paste a 400-page policy manual into a prompt.</li>
+          <li>A long chat quietly forgets its own beginning.</li>
+          <li>Bigger windows are real, but you pay for every token you fill.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="slide-callout"><strong>This is why chunking exists tomorrow.</strong></p>
+    <aside class="notes">
+      <p>The window is not memory. Nothing is remembered between calls — every request re-sends the entire conversation, which is why long chats get expensive.</p>
+      <p>Say the last line slowly, because tomorrow morning somebody will ask why we bother cutting documents up, and this slide is the answer.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 9 · Next-token prediction ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Mechanics</p>
+    <h2>It is predicting the next token. That is the whole trick.</h2>
+    <div class="slide-card">
+      <p style="font-size:20px;margin-bottom:8px" class="muted">"The capital of Saudi Arabia is"</p>
+      <div class="tokenbits">
+        <span>Riyadh — 94%</span><span>the — 2%</span><span>located — 1%</span><span>a — 0.4%</span>
+      </div>
+      <p class="muted" style="font-size:18px">It picks one, appends it, and asks the same question again. Hundreds of times.</p>
+    </div>
+    <p>Nothing in that loop checks whether the sentence is <strong>true</strong>. It checks whether it is <strong>likely</strong>.</p>
+    <p class="slide-callout">Fluent and wrong are not opposites here. Fluency is the objective; truth never was.</p>
+    <aside class="notes">
+      <p>This is the single most useful thing to understand about these models, and it explains almost every failure you will hit this week.</p>
+      <p>There is no lookup, no database, no fact check in that loop. It is picking a likely next piece of text, over and over.</p>
+      <p>When you understand that, hallucination stops being surprising and starts being something you design around.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 10 · Temperature ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">The dial you actually turn</p>
+    <h2>Temperature</h2>
+    <p class="slide__kicker">Same prompt three times: "Write one line describing a data governance policy."</p>
+    <div class="cols3">
+      <div class="slide-card">
+        <span class="temp-tag">temperature = 0.0</span>
+        <p>"A data governance policy defines how data is managed."</p>
+        <p class="muted" style="margin-top:8px;font-size:17px">Run it three times, get this three times. Predictable.</p>
+      </div>
+      <div class="slide-card">
+        <span class="temp-tag">temperature = 0.7</span>
+        <p>"A data governance policy sets the rules for how an organisation handles its data."</p>
+        <p class="muted" style="margin-top:8px;font-size:17px">Varied wording, same substance.</p>
+      </div>
+      <div class="slide-card">
+        <span class="temp-tag">temperature = 1.2</span>
+        <p>"Think of governance as the traffic law of your data highways — signs, lanes, and fines."</p>
+        <p class="muted" style="margin-top:8px;font-size:17px">Creative. Also where it starts inventing.</p>
+      </div>
+    </div>
+    <p class="slide-callout">Extraction, classification, anything you parse: <strong>0.0 to 0.2</strong>. Drafting and ideation: 0.7 up.</p>
+    <aside class="notes">
+      <p>Temperature reshapes the probability list before it samples. Near zero it always takes the most likely token, which is why the output repeats exactly.</p>
+      <p>The mistake I see constantly is people running extraction tasks at the default temperature and then complaining that the output is inconsistent.</p>
+      <p>In the lab you will run the same prompt three times at zero and three times at one point two, and see this for yourself.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 11 · Hallucination ══════════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Mechanics</p>
+    <h2>Hallucination is a property, not a bug</h2>
+    <div class="slide__cols">
+      <div>
+        <p>The model produces likely text. When it has no grounding, likely text still arrives — confident, well formatted, and wrong.</p>
+        <p style="margin-top:14px">It will invent a policy number, a citation, an article, a date. Fluently.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>You design around it</h3>
+        <ul>
+          <li><strong>Ground it</strong> — give it the document. That is tomorrow.</li>
+          <li><strong>Cite it</strong> — make it show which chunk it used.</li>
+          <li><strong>Type it</strong> — a schema removes room to waffle. That is this afternoon.</li>
+          <li><strong>Check it</strong> — validate in code before you act.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="slide-callout">There is no patch coming. Every mitigation on this slide is architecture, not a setting.</p>
+    <aside class="notes">
+      <p>I want to be honest with you here: this is not a defect that gets fixed in the next model release. It is what next-token prediction does when it lacks grounding.</p>
+      <p>So we do not try to stop it. We build systems where a made-up answer is caught, or cannot be acted on, or is visibly unsupported by a citation.</p>
+      <p>Every one of those four bullets is a day of this course.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 12 · Four ways ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">The spine of the week</p>
+    <h2>Four ways to make a model useful</h2>
+    <table>
+      <thead>
+        <tr><th style="width:150px">Approach</th><th>What it is</th><th style="width:150px">Cost</th><th style="width:290px">When</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Prompting</strong></td><td>Better instructions, examples, output format</td><td>Minutes. Free.</td><td>Always first. Try this before anything else.</td></tr>
+        <tr><td><strong>RAG</strong></td><td>Retrieve your documents, put them in the prompt</td><td>Days. Low.</td><td>The model needs knowledge it does not have.</td></tr>
+        <tr><td><strong>Tools</strong></td><td>The model requests, your code executes</td><td>Days. Low.</td><td>It needs live data, or needs to <em>do</em> something.</td></tr>
+        <tr><td><strong>Fine-tuning</strong></td><td>Retrain weights on your examples</td><td>Weeks. High.</td><td>You need a style or format that prompting cannot hold.</td></tr>
+      </tbody>
+    </table>
+    <p class="slide-callout">Most people reach for fine-tuning and should have reached for RAG.</p>
+    <aside class="notes">
+      <p>This is the most useful table in the whole course and I will point back at it every single day.</p>
+      <p>Read the cost column across. Prompting is minutes, retrieval is days, fine-tuning is weeks and needs data you probably do not have.</p>
+      <p>Fine-tuning teaches a model how to say things. It does not teach it new facts, and that is the confusion that burns budgets.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 13 · Divider ══════════ -->
+  <section class="slide slide--section">
+    <p class="slide__eyebrow">Part two</p>
+    <h2>Make it reliable</h2>
+    <p class="slide__kicker">Same model, better instructions. This is the cheapest win you will ever get.</p>
+    <aside class="notes">
+      <p>Everything so far has been how the model works. From here it is what you do about it.</p>
+      <p>And we start with prompting, because it costs nothing and it is where most of the improvement actually lives.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 14 · System vs user ══════════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Roles</p>
+    <h2>System instruction vs user message</h2>
+    <div class="slide__cols">
+      <div class="slide-card">
+        <h3>System</h3>
+        <p class="muted">Who the model is, what it may do, how it answers. Set by <strong>you</strong>, the developer. Sent on every call.</p>
+        <p style="margin-top:10px;font-size:19px">"You are an HR policy assistant. Answer only from the provided documents. If the answer is not there, say so."</p>
+      </div>
+      <div class="slide-card">
+        <h3>User</h3>
+        <p class="muted">The question. Comes from <strong>outside</strong> — possibly from someone who does not wish you well.</p>
+        <p style="margin-top:10px;font-size:19px">"How many annual leave days do I get?"</p>
+      </div>
+    </div>
+    <p class="slide-callout">That separation is a <strong>security boundary</strong> — and on Thursday you will spend the morning attacking it.</p>
+    <aside class="notes">
+      <p>Everything on the left is your policy. Everything on the right is untrusted input, in exactly the way a web form is untrusted input.</p>
+      <p>The uncomfortable part, and we will prove it on Thursday, is that both of these end up as text in the same window, so the boundary is a convention rather than a wall.</p>
+      <p>Remember this slide. I will put it back up on day five before we break it.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 15 · Anatomy of a prompt ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Prompting</p>
+    <h2>Anatomy of a prompt that holds</h2>
+    <div class="layers">
+      <div><strong>Role</strong><span>Who is answering, and what they are responsible for.</span></div>
+      <div><strong>Context</strong><span>The documents, the data, the conversation so far — clearly delimited.</span></div>
+      <div><strong>Task</strong><span>One instruction, in the imperative. Not three questions in a paragraph.</span></div>
+      <div><strong>Format</strong><span>Exactly what shape the answer takes. JSON, a table, three bullets, under 50 words.</span></div>
+      <div><strong>Examples</strong><span>One or two done correctly. Worth more than another paragraph of instruction.</span></div>
+    </div>
+    <p class="slide-callout">Delimit your context: <code>&lt;document&gt; … &lt;/document&gt;</code>. Vague prompts fail in ways you cannot debug.</p>
+    <aside class="notes">
+      <p>When a prompt misbehaves, walk these five and find the missing one. Nine times out of ten it is format, and the tenth time it is that you asked three things at once.</p>
+      <p>The delimiters matter more than they look. They tell the model where your instructions end and untrusted content begins, which is also a first line of defence on Thursday.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 16 · Few-shot ══════════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Prompting</p>
+    <h2>Show it, don't tell it</h2>
+    <div class="slide__cols">
+      <div class="slide-card">
+        <h3>Before — zero-shot</h3>
+        <p class="muted" style="font-size:18px">"Classify this support ticket."</p>
+        <p style="margin-top:10px;font-size:19px">→ "This appears to be a complaint about slow service, possibly urgent."</p>
+        <p class="muted" style="margin-top:8px;font-size:17px">A different shape every time. Unparseable.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>After — two examples</h3>
+        <p class="muted" style="font-size:18px">"Ticket: 'Portal is down.' → outage | high<br>Ticket: 'How do I reset my password?' → account | low<br>Ticket: '…' →"</p>
+        <p style="margin-top:10px;font-size:19px">→ "billing | medium"</p>
+        <p class="muted" style="margin-top:8px;font-size:17px">Same shape every time. Now you can split on the pipe.</p>
+      </div>
+    </div>
+    <p class="slide-callout">Two examples usually beat two paragraphs of instruction. Cheaper, too.</p>
+    <aside class="notes">
+      <p>Examples do something instructions cannot: they demonstrate the output shape, the level of detail and the vocabulary all at once.</p>
+      <p>Two or three is normally enough. If you find yourself at ten examples, that is the signal that the task might genuinely need fine-tuning.</p>
+      <p>And notice what the right-hand column bought us — output we can parse, which is exactly where we are going after the break.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 17 · Divider ══════════ -->
+  <section class="slide slide--section">
+    <p class="slide__eyebrow">Part three · the ceiling</p>
+    <h2>Make it typed</h2>
+    <p class="slide__kicker">The difference between a chatbot and a component in a system.</p>
+    <aside class="notes">
+      <p>This last half hour is the part of today that earns the word "applied", and it is missing from almost every generative AI course I have seen.</p>
+      <p>Everything up to now made the model behave better. What follows makes its output something software can depend on.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 18 · Why free text fails ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">The ceiling</p>
+    <h2>Free text is unusable inside software</h2>
+    <p class="slide__kicker">You ask for the customer's name and how urgent the request is. You get:</p>
+    <div class="cols3">
+      <div class="slide-card"><p style="font-size:19px">"The customer is Sara Al-Otaibi and this seems quite urgent."</p></div>
+      <div class="slide-card"><p style="font-size:19px">"Name: Sara Al-Otaibi<br>Urgency: High"</p></div>
+      <div class="slide-card"><p style="font-size:19px">"Sure! Here's what I found — the sender appears to be Sara…"</p></div>
+    </div>
+    <p>Three runs, three shapes. Now write the <code>if</code> statement that routes the urgent ones.</p>
+    <p class="slide-callout">Regex over model output is a bug you have not hit yet. The fix is not a better parser — it is a <strong>contract</strong>.</p>
+    <aside class="notes">
+      <p>Everybody in this room who has tried to build on top of a model has written a fragile parser like this, and watched it break in production on a Thursday.</p>
+      <p>The instinct is to write a smarter regex. That is the wrong move — you are patching a symptom of an unconstrained interface.</p>
+      <p>What we want is a contract the model has to satisfy before the response even reaches our code.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 19 · Code: JSON mode ══════════ -->
+  <section class="slide slide--code">
+    <p class="slide__eyebrow">The ceiling · code</p>
+    <h2>Ask for JSON, and define the shape</h2>
+    <div class="slide__cols">
+      <div>
+<pre><code><span class="k">from</span> google <span class="k">import</span> genai
+<span class="k">from</span> google.genai <span class="k">import</span> types
+
+client = genai.Client(api_key=API_KEY)
+
+schema = {
+    <span class="s">"type"</span>: <span class="s">"object"</span>,
+    <span class="s">"properties"</span>: {
+        <span class="s">"name"</span>:    {<span class="s">"type"</span>: <span class="s">"string"</span>},
+        <span class="s">"intent"</span>:  {<span class="s">"type"</span>: <span class="s">"string"</span>,
+                     <span class="s">"enum"</span>: [<span class="s">"question"</span>, <span class="s">"complaint"</span>, <span class="s">"request"</span>]},
+        <span class="s">"urgency"</span>: {<span class="s">"type"</span>: <span class="s">"string"</span>,
+                     <span class="s">"enum"</span>: [<span class="s">"low"</span>, <span class="s">"medium"</span>, <span class="s">"high"</span>]},
+    },
+    <span class="s">"required"</span>: [<span class="s">"name"</span>, <span class="s">"intent"</span>, <span class="s">"urgency"</span>],
+}
+
+resp = client.models.generate_content(
+    model=<span class="s">"gemini-2.5-flash-lite"</span>,
+    contents=message,
+    config=types.GenerateContentConfig(
+        <span class="hl">response_mime_type=<span class="s">"application/json"</span>,</span>
+        <span class="hl">response_schema=schema,</span>
+        temperature=<span class="n">0</span>,
+    ),
+)</code></pre>
+        </div>
+        <div class="slide__caption">
+          <h3>Argument by argument</h3>
+          <ul>
+            <li><code>enum</code> — the model cannot return "quite urgent". Only these three strings.</li>
+            <li><code>required</code> — these keys will be present.</li>
+            <li><code>response_mime_type</code> — no prose, no markdown fence.</li>
+            <li><code>response_schema</code> — the contract itself.</li>
+            <li><code>temperature=0</code> — extraction, so no creativity wanted.</li>
+          </ul>
+        </div>
+    </div>
+    <aside class="notes">
+      <p>Walk it top to bottom. The schema is ordinary JSON Schema — the same thing you would write for an API, which is the point.</p>
+      <p>The two highlighted lines are what actually change the behaviour: one says the response must be JSON, the other says which JSON.</p>
+      <p>Look at the enum on urgency. That single line is the difference between branching on three known values and parsing English adjectives forever.</p>
+      <p>The SDK also accepts a Pydantic model in place of that dict, which is what I would use in a real project.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 20 · Code: parse and branch ══════════ -->
+  <section class="slide slide--code">
+    <p class="slide__eyebrow">The ceiling · code</p>
+    <h2>This is the moment</h2>
+    <div class="slide__cols">
+      <div>
+<pre><code><span class="k">import</span> json
+
+data = json.loads(resp.text)   <span class="c"># a real dict now</span>
+
+<span class="k">if</span> data[<span class="s">"urgency"</span>] == <span class="s">"high"</span>:
+    page_duty_officer(data)
+
+<span class="k">elif</span> data[<span class="s">"intent"</span>] == <span class="s">"complaint"</span>:
+    open_ticket(data, queue=<span class="s">"complaints"</span>)
+
+<span class="k">else</span>:
+    reply_from_template(data)
+
+<span class="c"># Token counts for every call — this is your bill.</span>
+u = resp.usage_metadata
+print(u.prompt_token_count, u.candidates_token_count)</code></pre>
+        </div>
+        <div class="slide__caption">
+          <h3>Why this matters</h3>
+          <p>No regex. No string matching. No "if the answer contains the word urgent".</p>
+          <p style="margin-top:12px">The model is now a <strong>function that returns a typed value</strong>, and the rest of your system does not need to know an LLM was involved.</p>
+          <p style="margin-top:12px" class="muted">Everything on Tuesday — tools, agents — is this idea again, in a loop.</p>
+        </div>
+    </div>
+    <aside class="notes">
+      <p>Stop here for a second, because this is the slide the whole day was built towards.</p>
+      <p>That if-statement is ordinary Python. It does not know or care that a language model produced the dictionary it is branching on.</p>
+      <p>When you can do this, generative AI stops being a chat window and becomes a component you can put inside a system, with everything that follows — testing, monitoring, and being on call for it.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 21 · Code: ask() ══════════ -->
+  <section class="slide slide--code">
+    <p class="slide__eyebrow">The ceiling · code</p>
+    <h2>Wrap it once, use it all week</h2>
+    <div class="slide__cols">
+      <div>
+<pre><code><span class="k">import</span> json, time
+
+MODEL = <span class="s">"gemini-2.5-flash-lite"</span>
+
+<span class="k">def</span> ask(prompt, system=<span class="k">None</span>, temperature=<span class="n">0.2</span>,
+        schema=<span class="k">None</span>, tries=<span class="n">3</span>):
+    <span class="c"># Build config; only ask for JSON if a schema was given.</span>
+    opts = {<span class="s">"system_instruction"</span>: system,
+            <span class="s">"temperature"</span>: temperature}
+    <span class="k">if</span> schema:
+        opts[<span class="s">"response_mime_type"</span>] = <span class="s">"application/json"</span>
+        opts[<span class="s">"response_schema"</span>] = schema
+    cfg = types.GenerateContentConfig(**opts)
+
+    <span class="k">for</span> n <span class="k">in</span> range(tries):
+        <span class="k">try</span>:
+            r = client.models.generate_content(
+                model=MODEL, contents=prompt, config=cfg)
+            <span class="k">return</span> json.loads(r.text) <span class="k">if</span> schema <span class="k">else</span> r.text
+        <span class="k">except</span> Exception:
+            <span class="k">if</span> n == tries - <span class="n">1</span>: <span class="k">raise</span>
+            time.sleep(<span class="n">2</span> ** n)   <span class="c"># 1s, 2s, 4s</span></code></pre>
+        </div>
+        <div class="slide__caption">
+          <h3>What it buys you</h3>
+          <ul>
+            <li>One place to change the model name.</li>
+            <li>Retries with backoff — you <em>will</em> hit rate limits tomorrow.</li>
+            <li>Schema optional: prose when you want prose, typed data when you don't.</li>
+          </ul>
+          <p class="muted" style="margin-top:10px">Given complete in the notebook. Read it, don't retype it.</p>
+        </div>
+    </div>
+    <aside class="notes">
+      <p>You are given this one complete, because the lesson is in reading it, not in typing it.</p>
+      <p>Catching bare Exception is deliberately blunt for teaching; on Wednesday we replace it with a proper retry decorator that only retries the errors worth retrying.</p>
+      <p>The sleep line doubles each attempt — one second, two, four. That is exponential backoff, and it is what keeps you from making a rate limit worse.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 22 · Six layers ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Zoom out</p>
+    <h2>The model is not the solution</h2>
+    <div class="layers">
+      <div><strong>Application</strong><span>What the user actually touches. Streaming, citations, honest failure states.</span></div>
+      <div><strong>Orchestration</strong><span>Prompts, chains, the agent loop, retries. Where your logic lives.</span></div>
+      <div><strong>Model</strong><span>The generative model itself. Swappable — and it should be.</span></div>
+      <div><strong>Tools</strong><span>Functions, APIs, search. How it reaches the world. Tuesday.</span></div>
+      <div><strong>Data</strong><span>Your documents, chunks, embeddings, vector store. Monday.</span></div>
+      <div><strong>Governance</strong><span>Guardrails, logging, audit, privacy, evaluation. Thursday.</span></div>
+    </div>
+    <p class="slide-callout">You spend maybe 10% of your time on the model layer. The other five are the job.</p>
+    <aside class="notes">
+      <p>When somebody says "we are building an AI solution", ask which of these six layers they have actually designed. Usually the answer is the middle one only.</p>
+      <p>Notice the model sits in the middle and is the easiest layer to replace. The expensive parts are your data and your governance.</p>
+      <p>Every one of these layers has a day of this course attached to it, and by Thursday you will have touched all six.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 23 · Lifecycle ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">How the work goes</p>
+    <h2>The solution lifecycle</h2>
+    <div class="steps">
+      <div><b>01 · Frame</b>The use case, the user, and what "good" means before you write anything.</div>
+      <div><b>02 · Choose</b>Prompting, RAG, tools or fine-tuning. Simplest thing that could work.</div>
+      <div><b>03 · Prototype</b>One notebook, one happy path, real data. Days, not months.</div>
+      <div><b>04 · Evaluate</b>A golden set and a number. "It looked right" is not a result.</div>
+      <div><b>05 · Harden</b>Retries, caching, guardrails, cost and latency you have measured.</div>
+      <div><b>06 · Operate</b>Log, trace, watch, re-evaluate. It drifts. So do your documents.</div>
+    </div>
+    <p class="slide-callout">Most teams skip step 4, and then cannot tell whether step 5 helped.</p>
+    <aside class="notes">
+      <p>Your project this week walks steps one to five, and Thursday morning is a compressed version of step six.</p>
+      <p>Step four is the one people skip, and it is why so many pilots never reach production — nobody can prove the thing works.</p>
+      <p>Tomorrow afternoon you will build the golden set that makes step four possible, on your own documents.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 24 · Lab ══════════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Lab · Notebook 1</p>
+    <h2>Now you build it</h2>
+    <div class="slide__cols">
+      <div>
+        <h3 style="font-size:21px">day1_first_calls.ipynb</h3>
+        <ul>
+          <li>Your first call, and the token counts.</li>
+          <li>Arabic vs English on the same sentence.</li>
+          <li>Temperature at 0.0 and at 1.2, three runs each.</li>
+          <li>System instructions — two personas, one prompt.</li>
+          <li>JSON mode, a schema, and branching on the result.</li>
+          <li>The <code>ask()</code> wrapper, given complete.</li>
+        </ul>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>Before you start</h3>
+        <ul>
+          <li>Get your own key at <strong>aistudio.google.com</strong>. Never share one.</li>
+          <li>Put it in Colab <strong>Secrets</strong> (the 🔑 panel) as <code>GEMINI_API_KEY</code>.</li>
+          <li>Free tier: no real SDAIA data, no personal data. It may train the model.</li>
+        </ul>
+        <p style="margin-top:14px"><a class="btn" href="../notebooks/index.html">Open the notebooks →</a></p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Everyone creates their own key. If we share one, the whole room shares one rate limit, and the first person to write a loop throttles everybody else.</p>
+      <p>The most common failure in the next ten minutes is the key not being in Colab secrets, so I will put the key panel on the screen before you start.</p>
+      <p>Take the privacy warning seriously — this is a free tier, so nothing confidential goes into it. We come back to that on Thursday.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 25 · Summary ══════════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Day 1</p>
+    <h2>What today was</h2>
+    <ol class="numbered">
+      <li><strong>Tokens are the unit of everything</strong> — cost, limits, speed. And Arabic costs two to three times more.</li>
+      <li><strong>It predicts likely text, not true text</strong> — so fluent and wrong arrive together, by design.</li>
+      <li><strong>Prompting is the cheapest improvement available</strong> — role, context, task, format, examples.</li>
+      <li><strong>A schema turns output into a contract</strong> — and that is what makes it a component instead of a chat.</li>
+    </ol>
+    <p class="slide-callout">Tomorrow: the model still does not know <em>your</em> documents. We fix that, and then we measure it.</p>
+    <aside class="notes">
+      <p>Four things. If you remember nothing else from today, remember that the schema is what made the output safe to build on.</p>
+      <p>Tomorrow is the longest and most important day of the week, and it starts by asking you three questions from this list, so have them ready.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 26 · Homework ══════════ -->
+  <section class="slide slide--full">
+    <p class="slide__eyebrow">Before 9:15 tomorrow</p>
+    <h2>Two things tonight</h2>
+    <p><strong>1 · A GitHub account</strong> — you will push your project to it on Thursday.</p>
+    <p><strong>2 · Pick your documents</strong> — 10 to 30 pages you actually care about. A policy, a manual, a handbook. Yours, not a demo set.</p>
+    <p class="muted">Everything you build for the rest of the week runs on that document set. Choose something you would genuinely like to be able to ask questions of.</p>
+    <aside class="notes">
+      <p>Please do pick real documents. The people who bring a document set they care about are the people who are still working on this in three weeks' time.</p>
+      <p>Nothing confidential though — remember it is going through a free tier. A public policy or a manual is ideal.</p>
+      <p>See you at nine. We start at nine fifteen.</p>
+    </aside>
+  </section>
+
+</div>
+
+<script src="../assets/deck.js"></script>
+<script>
+  /* ----------------------------------------------------------
+     Slide 7 · approximate token counter.
+
+     Deliberately a heuristic, not a real tokenizer: this page must
+     work with the wifi off, and the teaching point is the ratio
+     between scripts, not an exact number.
+
+       Arabic / Persian block   ~2 characters per token
+       everything else (Latin)  ~4 characters per token
+       digits and punctuation   tend to be their own token
+     ---------------------------------------------------------- */
+  (function () {
+    'use strict';
+    var input = document.getElementById('tok-input');
+    var out = document.getElementById('tok-count');
+    var chars = document.getElementById('tok-chars');
+    if (!input) return;
+
+    /* Arabic, Arabic Supplement, Extended-A, and the presentation
+       forms — written as escapes so the file's own encoding can
+       never break the test. */
+    var ARABIC = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+    var PUNCT = /[.,!?;:()\[\]{}"'\u2014\u2013\/\\@#$%^&*+=<>|~`\u060C\u061B\u061F]/;
+
+    function estimate(text) {
+      var arabic = 0, latin = 0, punct = 0;
+      for (var i = 0; i < text.length; i++) {
+        var ch = text[i];
+        if (/\s/.test(ch)) continue;          // whitespace rides along
+        if (ARABIC.test(ch)) arabic++;
+        else if (PUNCT.test(ch)) punct++;
+        else latin++;
+      }
+      return Math.ceil(arabic / 2) + Math.ceil(latin / 4) + punct;
+    }
+
+    function update() {
+      out.textContent = estimate(input.value);
+      chars.textContent = input.value.length + ' characters';
+    }
+
+    input.addEventListener('input', update);
+    update();
+  })();
+</script>
+</body>
+</html>

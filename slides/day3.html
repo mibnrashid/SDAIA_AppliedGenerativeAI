@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Day 3 — Tools and agents · Applied Generative AI</title>
+  <link rel="stylesheet" href="../assets/theme.css">
+  <link rel="stylesheet" href="../assets/site.css">
+  <link rel="stylesheet" href="../assets/deck.css">
+  <style>
+    .numbered { list-style: none; padding: 0; counter-reset: n; }
+    .numbered li { counter-increment: n; position: relative; padding-left: 52px; margin-bottom: 13px; }
+    .numbered li::before {
+      content: counter(n, decimal-leading-zero);
+      position: absolute; left: 0; top: -2px;
+      font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--teal);
+    }
+    .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .cols3 .slide-card { padding: 15px 17px; font-size: 18px; }
+    .cols3 h3 { font-size: 18px; margin-bottom: 6px; }
+    .loop { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .loop div {
+      padding: 14px 14px; border-radius: var(--radius-sm); background: var(--card);
+      border: 1px solid var(--border); font-size: 17px;
+    }
+    .loop b { display: block; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin-bottom: 5px; }
+    .patterns { display: grid; gap: 7px; }
+    .patterns div {
+      display: grid; grid-template-columns: 210px 1fr 1fr; gap: 14px; align-items: baseline;
+      padding: 8px 14px; border-radius: var(--radius-sm); font-size: 18px;
+      background: var(--card); border: 1px solid var(--border);
+    }
+    .patterns strong { color: var(--teal-dark); }
+    .patterns em { font-style: normal; color: var(--text-muted); }
+    .trace {
+      font-family: var(--font-mono); font-size: 15px; line-height: 1.6;
+      background: var(--ink); color: #e8ecf5; padding: 16px 18px; border-radius: var(--radius-sm);
+    }
+    .trace .t-think { color: #93a4c4; }
+    .trace .t-call { color: #79d2ff; }
+    .trace .t-obs { color: #7ee2b8; }
+    .trace .t-final { color: #ffc07a; }
+  </style>
+</head>
+<body>
+
+<div class="deck" data-title="Day 3 — Tools and agents">
+
+  <!-- 1 -->
+  <section class="slide slide--title">
+    <p class="slide__eyebrow">SDAIA Academy · Applied Generative AI</p>
+    <h2>Tools and agents</h2>
+    <p class="slide__kicker">Day 3 · Tuesday 4 August 2026 · Musa Ibn Rashid</p>
+    <p class="muted">Let it act — but keep the leash short.</p>
+    <aside class="notes">
+      <p>Today the model stops only answering and starts doing, which is the point where this technology gets genuinely useful and genuinely risky at the same time.</p>
+      <p>The whole morning builds to one thing: an agent that uses yesterday's retriever as one of its tools.</p>
+      <p>The afternoon is project time, so this is the last full teaching morning of the week.</p>
+    </aside>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide">
+    <p class="slide__eyebrow">Day 3</p>
+    <h2>What you will be able to do by 12:00</h2>
+    <ol class="numbered">
+      <li>Explain exactly who executes a tool call, and who does not.</li>
+      <li>Write a tool schema whose description the model can actually act on.</li>
+      <li>Run the request-execute-return loop by hand, then automate it.</li>
+      <li>Put a step cap, a tool allow-list and an output validator around an agent.</li>
+      <li><strong>Give the agent your Day 2 retriever as a tool, and read its decision trace.</strong></li>
+    </ol>
+    <aside class="notes">
+      <p>Number one sounds trivial and is the thing most people get wrong, including people who have shipped agents.</p>
+      <p>Number five is the payoff of the whole week — your Monday work becomes a component inside your Tuesday work.</p>
+      <p>We stop teaching at twelve today, because you need the whole afternoon on your projects.</p>
+    </aside>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide">
+    <p class="slide__eyebrow">Yesterday · questions to the room</p>
+    <h2>Three questions before we start</h2>
+    <ol class="numbered">
+      <li>Why did vector search fail on the reference number, and what fixed it?</li>
+      <li>What does re-ranking buy you that a bigger top-k does not?</li>
+      <li>What is a golden set actually measuring?</li>
+    </ol>
+    <p class="slide-callout">Ask three people who did not answer yesterday. Then move.</p>
+    <aside class="notes">
+      <p>Keep this to five minutes. The purpose is to surface who did not follow yesterday, not to re-teach it.</p>
+      <p>If two or more people stumble on the third question, that is worth two minutes, because their project score depends on it.</p>
+    </aside>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide slide--section">
+    <p class="slide__eyebrow">Part one</p>
+    <h2>Giving the model hands</h2>
+    <p class="slide__kicker">Function calling: what it is, and who is really in control.</p>
+    <aside class="notes">
+      <p>Everything in the next hour rests on one idea about where execution happens, so I am going to repeat it more than you think is necessary.</p>
+      <p>By the end of this section you will have run the loop manually, by hand, before we let any library do it for you.</p>
+    </aside>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide">
+    <p class="slide__eyebrow">Why bother</p>
+    <h2>Three things a model cannot do alone</h2>
+    <div class="cols3">
+      <div class="slide-card">
+        <h3>No live data</h3>
+        <p>It cannot see today's exchange rate, your ticket queue, or whether that employee is still on leave.</p>
+        <p class="muted" style="margin-top:8px">Its knowledge stopped at a training cut-off.</p>
+      </div>
+      <div class="slide-card">
+        <h3>No actions</h3>
+        <p>It can write a beautiful email. It cannot send one, book anything, or update a record.</p>
+        <p class="muted" style="margin-top:8px">Text in, text out. That is the whole interface.</p>
+      </div>
+      <div class="slide-card">
+        <h3>Unreliable arithmetic</h3>
+        <p>It predicts the next token, so "1,247 × 0.83" produces a plausible-looking number.</p>
+        <p class="muted" style="margin-top:8px">A calculator is right. Use the calculator.</p>
+      </div>
+    </div>
+    <p class="slide-callout">Tools fix all three the same way: the model asks, your code does the work.</p>
+    <aside class="notes">
+      <p>The arithmetic one always gets a laugh and it deserves to be taken seriously, because the wrong number arrives formatted exactly like a right one.</p>
+      <p>Anything with a correct answer — arithmetic, dates, lookups, conversions — should be a tool, not something you hope the model gets right.</p>
+    </aside>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide slide--full slide--dark">
+    <h2>The model does not run your code.</h2>
+    <p>It returns a request. Your application decides whether to honour it.</p>
+    <aside class="notes">
+      <p>I am going to say this three times today and this is the first. The model never executes anything — not your function, not a shell command, not a database query.</p>
+      <p>It emits a structured message that says "I would like calculate, with this argument". Your code reads that message and chooses what to do with it.</p>
+      <p>That is not a technicality. It is the only place where you can enforce permissions, and on Thursday it is the difference between a nuisance and a breach.</p>
+    </aside>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide">
+    <p class="slide__eyebrow">The mechanism</p>
+    <h2>The loop, in five steps</h2>
+    <div class="loop">
+      <div><b>1 · Declare</b>You send the prompt plus a list of tools the model may request.</div>
+      <div><b>2 · Decide</b>It answers directly, or it returns a tool call with arguments.</div>
+      <div><b>3 · Execute</b><strong>Your code</strong> runs the function. Or refuses to.</div>
+      <div><b>4 · Return</b>You append the result to the conversation and send it back.</div>
+      <div><b>5 · Repeat</b>Until it gives a final answer, or your step cap fires.</div>
+    </div>
+    <p class="slide-callout">Steps 2 to 4 are one round trip. An agent is this loop with a goal and a cap on how many times it may go round.</p>
+    <aside class="notes">
+      <p>Walk left to right and put your finger on step three as you say it, because that is the step everyone skips when they describe this.</p>
+      <p>Notice that nothing here is magic — it is a while loop with a network call in it. The intelligence is in the model's choice at step two.</p>
+      <p>And notice step five is where every runaway cost story of the last two years comes from.</p>
+    </aside>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide slide--code">
+    <p class="slide__eyebrow">Code</p>
+    <h2>A tool declaration, argument by argument</h2>
+    <div class="slide__cols">
+      <div>
+<pre><code><span class="k">from</span> google.genai <span class="k">import</span> types
+
+<span class="k">def</span> get_leave_balance(employee_id: str, year: int) -&gt; dict:
+    <span class="c"># A perfectly ordinary Python function.</span>
+    <span class="k">return</span> hr_system.lookup(employee_id, year)
+
+leave_tool = types.FunctionDeclaration(
+    name=<span class="s">"get_leave_balance"</span>,
+    <span class="hl">description=(<span class="s">"Look up an employee's remaining annual "</span></span>
+    <span class="hl">             <span class="s">"leave in working days for a given year. "</span></span>
+    <span class="hl">             <span class="s">"Use when asked how much leave someone "</span></span>
+    <span class="hl">             <span class="s">"has left."</span>),</span>
+    parameters={
+        <span class="s">"type"</span>: <span class="s">"object"</span>,
+        <span class="s">"properties"</span>: {
+            <span class="s">"employee_id"</span>: {<span class="s">"type"</span>: <span class="s">"string"</span>,
+                <span class="s">"description"</span>: <span class="s">"HR id, e.g. E-10482"</span>},
+            <span class="s">"year"</span>: {<span class="s">"type"</span>: <span class="s">"integer"</span>,
+                <span class="s">"description"</span>: <span class="s">"Four-digit year"</span>},
+        },
+        <span class="s">"required"</span>: [<span class="s">"employee_id"</span>, <span class="s">"year"</span>],
+    },
+)</code></pre>
+      </div>
+      <div class="slide__caption">
+        <h3>Line by line</h3>
+        <ul>
+          <li><code>name</code> — what comes back in the request. Match it to your function.</li>
+          <li><code>description</code> — the highlighted block. This is what the model reads.</li>
+          <li><code>properties</code> — each argument typed, each with its own description.</li>
+          <li><code>required</code> — what the model must supply. Everything else is optional.</li>
+        </ul>
+        <p class="muted" style="margin-top:10px">Same JSON Schema you wrote on Day 1. The idea keeps coming back.</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Point out that the function above the declaration is entirely ordinary Python. There is nothing AI about it, and that is the point.</p>
+      <p>The declaration is a menu written for the model. Everything the model knows about that tool is on this slide, so anything you leave out, it has to guess.</p>
+      <p>Note the argument-level descriptions. "HR id, e.g. E-10482" is what stops it inventing an identifier format.</p>
+    </aside>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">The field that matters</p>
+    <h2>A vague description is a broken tool</h2>
+    <div class="slide__cols">
+      <div class="slide-card">
+        <h3>Bad</h3>
+        <p style="font-family:var(--font-mono);font-size:18px">"Gets leave data."</p>
+        <p class="muted" style="margin-top:10px">When should it be called? What does it return? What is "leave data"? The model guesses, and calls it for sick leave, for policy questions, for anything with the word leave in it.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>Good</h3>
+        <p style="font-family:var(--font-mono);font-size:18px">"Look up an employee's remaining <em>annual</em> leave in working days for a given year. Use when asked how much leave someone has left. Does not cover sick leave."</p>
+        <p class="muted" style="margin-top:10px">Scope, units, and an explicit exclusion.</p>
+      </div>
+    </div>
+    <p class="slide-callout">Write descriptions for a competent new colleague who cannot ask you a follow-up question.</p>
+    <aside class="notes">
+      <p>When an agent misbehaves, the first place to look is not the prompt and not the model — it is the tool descriptions.</p>
+      <p>The exclusion in the good example is the part people never write, and it is what stops a tool being called for a job it cannot do.</p>
+      <p>Tell them: if your agent keeps calling the wrong tool, you have a documentation problem, not an intelligence problem.</p>
+    </aside>
+  </section>
+
+  <!-- 10 -->
+  <section class="slide slide--code">
+    <p class="slide__eyebrow">Code · the round trip</p>
+    <h2>Doing it by hand, once</h2>
+    <div class="slide__cols">
+      <div>
+<pre><code>tools = types.Tool(function_declarations=[leave_tool])
+cfg = types.GenerateContentConfig(tools=[tools])
+
+<span class="c"># 1 · Ask. The model does NOT answer the question.</span>
+r = client.models.generate_content(
+    model=MODEL, contents=history, config=cfg)
+
+<span class="c"># 2 · Inspect what came back: a REQUEST, not an answer.</span>
+call = r.candidates[<span class="n">0</span>].content.parts[<span class="n">0</span>].function_call
+print(call.name)   <span class="c"># get_leave_balance</span>
+print(call.args)   <span class="c"># {'employee_id': 'E-10482', ...}</span>
+
+<span class="c"># 3 · YOUR code executes it. Check permissions here.</span>
+result = get_leave_balance(**call.args)
+
+<span class="c"># 4 · Hand the result back and ask again.</span>
+history.append(r.candidates[<span class="n">0</span>].content)
+history.append(types.Content(role=<span class="s">"user"</span>, parts=[
+    types.Part.from_function_response(
+        name=call.name, response={<span class="s">"result"</span>: result})]))
+
+final = client.models.generate_content(
+    model=MODEL, contents=history, config=cfg)</code></pre>
+      </div>
+      <div class="slide__caption">
+        <h3>Watch step 3</h3>
+        <p>Nothing ran until <em>you</em> called the function. If you delete that line, nothing happens at all.</p>
+        <p style="margin-top:12px">This is also where you check whether this user is allowed to look up that employee.</p>
+        <p style="margin-top:12px" class="muted">In the notebook these four steps are four separate cells, so the round trip is impossible to miss.</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>In the notebook I have split this into four cells deliberately, so you run each one and see the state in between.</p>
+      <p>The most common bug in the room today will be forgetting to append the tool result to the history, and then wondering why the model asks for the same tool again.</p>
+      <p>Say it a second time: nothing executed until line three, and line three is yours.</p>
+    </aside>
+  </section>
+
+  <!-- 11 -->
+  <section class="slide slide--code">
+    <p class="slide__eyebrow">Code · automating it</p>
+    <h2>The agent loop</h2>
+    <div class="slide__cols">
+      <div>
+<pre><code><span class="k">def</span> run_agent(goal, tools, max_steps=<span class="n">5</span>, verbose=<span class="k">True</span>):
+    history = [user_message(goal)]
+
+    <span class="k">for</span> step <span class="k">in</span> range(max_steps):
+        r = client.models.generate_content(
+            model=MODEL, contents=history, config=cfg)
+        part = r.candidates[<span class="n">0</span>].content.parts[<span class="n">0</span>]
+
+        <span class="c"># No tool requested? It's finished.</span>
+        <span class="k">if</span> <span class="k">not</span> getattr(part, <span class="s">"function_call"</span>, <span class="k">None</span>):
+            <span class="k">return</span> r.text
+
+        call = part.function_call
+        <span class="k">if</span> verbose:
+            print(<span class="s">f"step {step}: {call.name}({dict(call.args)})"</span>)
+
+        <span class="c"># Allow-list: never call by name blindly.</span>
+        fn = TOOLS.get(call.name)
+        result = fn(**call.args) <span class="k">if</span> fn <span class="k">else</span> {<span class="s">"error"</span>: <span class="s">"unknown tool"</span>}
+
+        history.append(r.candidates[<span class="n">0</span>].content)
+        history.append(tool_result(call.name, result))
+
+    <span class="hl"><span class="k">return</span> <span class="s">"Stopped: step limit reached."</span></span></code></pre>
+      </div>
+      <div class="slide__caption">
+        <h3>Four guardrails, already here</h3>
+        <ul>
+          <li><code>max_steps</code> — the loop is bounded.</li>
+          <li><code>TOOLS.get</code> — an allow-list, not <code>eval</code>.</li>
+          <li>Unknown tool returns an <em>error the model can read</em>.</li>
+          <li><code>verbose</code> — you can see every decision it made.</li>
+        </ul>
+        <p class="muted" style="margin-top:10px">Given complete in the notebook. Read it, don't retype it.</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Twenty lines. That is an agent — there is no hidden machinery, and every framework you will meet is a wrapper around this shape.</p>
+      <p>Look at the allow-list line. Looking the function up in a dictionary rather than calling whatever name came back is a one-line security control.</p>
+      <p>And the last line matters: when the cap fires you return something honest rather than pretending you have an answer.</p>
+    </aside>
+  </section>
+
+  <!-- 12 -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">What goes wrong</p>
+    <h2>Take the cap off and watch</h2>
+    <div class="slide__cols">
+      <div>
+        <div class="trace">
+<span class="t-think">step 0</span>: search_flights(dest=<span class="t-obs">"JED"</span>)
+<span class="t-think">step 1</span>: search_flights(dest=<span class="t-obs">"JED"</span>)
+<span class="t-think">step 2</span>: search_flights(dest=<span class="t-obs">"Jeddah"</span>)
+<span class="t-think">step 3</span>: search_flights(dest=<span class="t-obs">"JED"</span>)
+<span class="t-think">step 4</span>: search_flights(dest=<span class="t-obs">"JED "</span>)
+<span class="t-think">step 5</span>: ...
+        </div>
+        <p class="muted" style="margin-top:12px;font-size:19px">A goal it cannot satisfy, a tool that keeps returning nothing, and no reason to stop.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>What that costs</h3>
+        <ul>
+          <li>Every step is a paid call, and the history grows each time — so <strong>each step costs more than the last</strong>.</li>
+          <li>Left overnight, this is the invoice that ends up in a post-mortem.</li>
+          <li>On a free tier you hit a rate limit and stop. That is luck, not design.</li>
+        </ul>
+        <p style="margin-top:10px"><strong>Every agent gets a cap. No exceptions.</strong></p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>We do this deliberately in the notebook — you remove the cap, run it, watch it spiral, and interrupt the cell yourself.</p>
+      <p>The detail people miss is that the conversation grows with every step, so step twenty is far more expensive than step one. The cost curve is not flat.</p>
+      <p>Ask the room what a sensible cap is. The answer is usually between three and ten, and it should be based on how many steps the task actually needs.</p>
+    </aside>
+  </section>
+
+  <!-- 13 -->
+  <section class="slide">
+    <p class="slide__eyebrow">Patterns</p>
+    <h2>Six shapes, and when to use them</h2>
+    <div class="patterns">
+      <div><strong>ReAct</strong><span>Think, act, observe, repeat.</span><em>Use when: the next step depends on what you just found.</em></div>
+      <div><strong>Plan-and-Execute</strong><span>Plan all steps first, then run them.</span><em>Use when: the task is predictable and you want the plan reviewable.</em></div>
+      <div><strong>Reflection</strong><span>Produce, critique its own output, revise.</span><em>Use when: quality matters more than latency or cost.</em></div>
+      <div><strong>Routing</strong><span>A cheap classifier picks the specialist.</span><em>Use when: you have several narrow jobs, not one broad one.</em></div>
+      <div><strong>Hierarchical</strong><span>A manager agent delegates to workers.</span><em>Use when: genuinely separable sub-tasks. Rarely. It is expensive.</em></div>
+      <div><strong>Human-in-the-loop</strong><span>It pauses for approval before acting.</span><em>Use when: the action is irreversible. Money, messages, deletions.</em></div>
+    </div>
+    <p class="slide-callout">Start with ReAct and a step cap. Add a pattern only when you can name the failure it fixes.</p>
+    <aside class="notes">
+      <p>One line each and keep moving; this slide is a reference they will come back to, not something to teach in depth.</p>
+      <p>Linger only on the last one. Anything irreversible — sending, paying, deleting — gets a human in the loop, and no amount of model quality changes that.</p>
+      <p>Hierarchical is fashionable and usually wrong. Say so.</p>
+    </aside>
+  </section>
+
+  <!-- 14 -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Control</p>
+    <h2>Guardrails, concretely</h2>
+    <div class="slide__cols">
+      <div class="slide-card slide-card--accent">
+        <h3>Before the call</h3>
+        <ul>
+          <li><strong>Step cap</strong> — a bounded loop, always.</li>
+          <li><strong>Tool allow-list</strong> — dictionary lookup, never dynamic dispatch on a model-supplied name.</li>
+          <li><strong>Least privilege</strong> — read-only tools where reading is enough.</li>
+          <li><strong>Argument validation</strong> — the model can produce any string it likes.</li>
+        </ul>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>After the call</h3>
+        <ul>
+          <li><strong>Output validation</strong> — check the shape before you act on it.</li>
+          <li><strong>Stop conditions</strong> — budget, wall clock, repeated identical calls.</li>
+          <li><strong>Human approval</strong> — for anything you cannot undo.</li>
+          <li><strong>A trace</strong> — every decision logged, so you can explain what happened.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="slide-callout">The agent is the easy part. This slide is the work.</p>
+    <aside class="notes">
+      <p>Building an agent takes an afternoon. Making one you would leave running takes weeks, and it is all on this slide.</p>
+      <p>The repeated-identical-call stop condition is worth calling out — it catches the spiral we just watched, cheaply.</p>
+      <p>And the trace is what you will want at nine in the morning when somebody asks why the system did something strange.</p>
+    </aside>
+  </section>
+
+  <!-- 15 -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Control</p>
+    <h2>What a tool returns when it fails</h2>
+    <div class="slide__cols">
+      <div class="slide-card">
+        <h3>Bad</h3>
+        <p style="font-family:var(--font-mono);font-size:17px">raise ValueError("not found")</p>
+        <p class="muted" style="margin-top:10px">The exception kills your loop, or worse, you swallow it and the model sees nothing and invents an answer.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>Good</h3>
+        <p style="font-family:var(--font-mono);font-size:17px">{"error": "No employee with id E-99999. Ids look like E-10482. Ask the user to confirm."}</p>
+        <p class="muted" style="margin-top:10px">The model can read this, correct itself, and recover — which is the whole reason the loop exists.</p>
+      </div>
+    </div>
+    <p class="slide-callout">Error messages are prompts. Write them for the model, not for your log file.</p>
+    <aside class="notes">
+      <p>This is a small idea that changes how well an agent behaves, and almost nobody does it.</p>
+      <p>Your tool's failure message is the only thing the model has to work with when something goes wrong, so tell it what was wrong and what a valid input looks like.</p>
+      <p>In the Be the Agent activity you will hit exactly this — a tool returns an error and you have to recover from it. That recovery is worth points.</p>
+    </aside>
+  </section>
+
+  <!-- 16 -->
+  <section class="slide slide--section">
+    <p class="slide__eyebrow">Part two · the ceiling</p>
+    <h2>Agentic RAG</h2>
+    <p class="slide__kicker">Yesterday's retriever becomes today's tool.</p>
+    <aside class="notes">
+      <p>Say this one clearly, because it is the moment the week joins up.</p>
+      <p>Everything you built yesterday — chunking, hybrid search, re-ranking — is about to become a single function that an agent can choose to call, or not.</p>
+    </aside>
+  </section>
+
+  <!-- 17 -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">The ceiling</p>
+    <h2>Retrieval as one tool among several</h2>
+    <div class="slide__cols">
+      <div>
+        <h3>Plain RAG</h3>
+        <p class="muted">Always retrieves. Always once. Even when the question needs no documents at all, or needs three different searches.</p>
+        <h3 style="margin-top:16px">Agentic RAG</h3>
+        <p class="muted">The model decides <em>whether</em> to search, <em>what</em> to search for, and whether the first result was good enough to answer from.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>What that unlocks</h3>
+        <ul>
+          <li>"What is our leave policy, and how many days would I have left after two weeks off?" — retrieval <em>and</em> arithmetic.</li>
+          <li>A bad first search can be retried with better terms.</li>
+          <li>Questions that need nothing from the corpus skip retrieval entirely.</li>
+        </ul>
+        <p class="muted" style="margin-top:10px">Cost: unpredictable calls per question. It is a trade, not an upgrade.</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Be honest about the trade here. Agentic retrieval is more capable and less predictable, and predictability is worth a lot in a government context.</p>
+      <p>My advice for your projects: build plain retrieval first, prove it works with your golden set, then add the agent on top if you actually need multi-step behaviour.</p>
+    </aside>
+  </section>
+
+  <!-- 18 -->
+  <section class="slide slide--code">
+    <p class="slide__eyebrow">The ceiling · code</p>
+    <h2>Your retriever, as a tool</h2>
+    <div class="slide__cols">
+      <div>
+<pre><code><span class="c"># Yesterday's function. Unchanged.</span>
+<span class="k">from</span> day2 <span class="k">import</span> hybrid_search
+
+<span class="k">def</span> search_documents(query: str, k: int = <span class="n">4</span>) -&gt; list:
+    <span class="c"># Return text AND the citation, so the answer can cite.</span>
+    <span class="k">return</span> [{<span class="s">"text"</span>: r[<span class="s">"text"</span>][:<span class="n">600</span>],
+             <span class="s">"source"</span>: r[<span class="s">"source"</span>],
+             <span class="s">"page"</span>: r[<span class="s">"page"</span>]}
+            <span class="k">for</span> r <span class="k">in</span> hybrid_search(query, k=k)]
+
+search_decl = types.FunctionDeclaration(
+    name=<span class="s">"search_documents"</span>,
+    <span class="hl">description=(<span class="s">"Search the organisation's policy "</span></span>
+    <span class="hl">             <span class="s">"documents and return the most relevant "</span></span>
+    <span class="hl">             <span class="s">"passages with their source and page. "</span></span>
+    <span class="hl">             <span class="s">"Use for any question about internal "</span></span>
+    <span class="hl">             <span class="s">"policy, procedure or entitlement."</span>),</span>
+    parameters={<span class="s">"type"</span>: <span class="s">"object"</span>,
+        <span class="s">"properties"</span>: {<span class="s">"query"</span>: {<span class="s">"type"</span>: <span class="s">"string"</span>,
+            <span class="s">"description"</span>: <span class="s">"Search terms, not the raw question"</span>}},
+        <span class="s">"required"</span>: [<span class="s">"query"</span>]})
+
+TOOLS = {<span class="s">"search_documents"</span>: search_documents,
+         <span class="s">"calculate"</span>: calculate}</code></pre>
+      </div>
+      <div class="slide__caption">
+        <h3>Three things to notice</h3>
+        <ul>
+          <li>Yesterday's code is <strong>imported, not rewritten</strong>.</li>
+          <li>The truncation to 600 characters keeps the loop affordable.</li>
+          <li>"Search terms, not the raw question" is query rewriting, delegated to the model.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Notice the first import line. Monday's work is now a dependency of Tuesday's work, which is exactly how real systems accumulate.</p>
+      <p>The truncation matters more than it looks: every retrieved passage is re-sent on every subsequent step of the loop, so long passages get expensive quickly.</p>
+      <p>And that one phrase in the parameter description gets you query rewriting for free, because the model reformulates before it searches.</p>
+    </aside>
+  </section>
+
+  <!-- 19 -->
+  <section class="slide">
+    <p class="slide__eyebrow">The ceiling</p>
+    <h2>Reading the trace</h2>
+    <div class="trace">
+<span class="t-think">goal</span>: "What is the annual leave for grade 11, and what would I have left after taking 12 days?"
+
+<span class="t-call">step 0</span>: search_documents(query=<span class="t-obs">"annual leave entitlement grade 11"</span>)
+<span class="t-obs">  → </span>"Grade 11 — 30 days"  [leave_policy.pdf, p.4]
+
+<span class="t-call">step 1</span>: calculate(expression=<span class="t-obs">"30 - 12"</span>)
+<span class="t-obs">  → </span>18
+
+<span class="t-final">final</span>: "Grade 11 is entitled to 30 working days of annual leave
+        (leave_policy.pdf, page 4). After 12 days you would have 18 left."
+    </div>
+    <p class="slide-callout">Two tools, chosen in the right order, by the model — and a citation in the answer.</p>
+    <aside class="notes">
+      <p>Read this trace out loud, line by line. It is the clearest picture of the week that exists.</p>
+      <p>Step zero is Monday's work. Step one is a tool because we do not trust the model with arithmetic. The final line carries a citation because we kept the metadata on Monday morning.</p>
+      <p>Every decision on this screen was the model's, and every execution was yours.</p>
+    </aside>
+  </section>
+
+  <!-- 20 -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Judgement</p>
+    <h2>When not to build an agent</h2>
+    <div class="slide__cols">
+      <div class="slide-card">
+        <h3>Do not, when…</h3>
+        <ul>
+          <li>The task is one retrieval and one answer.</li>
+          <li>The path is always the same — that is a script, and scripts are testable.</li>
+          <li>The action is irreversible and nobody is checking.</li>
+          <li>You cannot afford unpredictable per-question cost.</li>
+        </ul>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>Do, when…</h3>
+        <ul>
+          <li>The next step genuinely depends on what the last step returned.</li>
+          <li>Several tools are needed and you cannot know which in advance.</li>
+          <li>The system must recover from partial failure on its own.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="slide-callout">"Could I write this as a fixed sequence?" If yes, write the fixed sequence.</p>
+    <aside class="notes">
+      <p>This slide will save somebody in this room a quarter of their project time.</p>
+      <p>Agents are the most interesting thing we cover and the least often the right answer. Both of those are true at once.</p>
+      <p>For your project, an agent is not required for full marks. A justified architecture is.</p>
+    </aside>
+  </section>
+
+  <!-- 21 -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Lab · Notebook 3</p>
+    <h2>Build the loop yourself</h2>
+    <div class="slide__cols">
+      <div>
+        <h3 style="font-size:21px">day3_agents.ipynb</h3>
+        <ul>
+          <li>Two real tools, then the schemas.</li>
+          <li>The round trip by hand, in four separate cells.</li>
+          <li><code>run_agent</code> with a step cap and a printed trace.</li>
+          <li>Remove the cap and watch it spiral — deliberately.</li>
+          <li>Your Day 2 retriever registered as <code>search_documents</code>.</li>
+        </ul>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>Then: project time, 1:00–2:30</h3>
+        <p><strong>The gate by 2:30:</strong> documents loaded, chunked, embedded, and one query returning something. Not polished — running.</p>
+        <p style="margin-top:10px" class="muted">Anyone still stuck at 2:00 gets me sitting next to them.</p>
+        <p style="margin-top:12px"><a class="btn" href="../notebooks/index.html">Open the notebooks →</a></p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>The spiral cell is deliberate and I want you to actually run it, then interrupt it yourself. Watching it happen once is worth more than the warning.</p>
+      <p>This afternoon I am not presenting anything. I will be circulating, and I will check on every pair at least twice.</p>
+      <p>We finish with a five minute stand-up: one sentence per pair on where you got to.</p>
+    </aside>
+  </section>
+
+  <!-- 22 -->
+  <section class="slide slide--full">
+    <p class="slide__eyebrow">Day 3</p>
+    <h2>What today was</h2>
+    <p><strong>1 ·</strong> The model requests. Your code executes. That boundary is where all your control lives.</p>
+    <p><strong>2 ·</strong> The tool description is the interface. Vague description, broken tool.</p>
+    <p><strong>3 ·</strong> An agent is a bounded loop. The cap, the allow-list and the trace are not optional extras.</p>
+    <p><strong>4 ·</strong> Yesterday's retriever is now a tool — and that is the whole week joining up.</p>
+    <aside class="notes">
+      <p>Four things, and the first one is the one I have said three times today on purpose.</p>
+      <p>Tomorrow we stop adding capability and start measuring what you have: latency, tokens, cost, and a cache hit rate from your own project.</p>
+      <p>Bring your project running, even if it is ugly. Tomorrow only works if there is something to instrument.</p>
+    </aside>
+  </section>
+
+</div>
+
+<script src="../assets/deck.js"></script>
+</body>
+</html>

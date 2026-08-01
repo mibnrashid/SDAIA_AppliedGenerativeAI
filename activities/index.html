@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>All activities · Applied Generative AI</title>
+  <link rel="stylesheet" href="../assets/theme.css">
+  <link rel="stylesheet" href="../assets/site.css">
+  <link rel="stylesheet" href="../assets/activity.css">
+  <style>
+    .grid { display: grid; gap: var(--s4); grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); }
+    .actcard { display: flex; flex-direction: column; overflow: hidden; }
+    .actcard__head {
+      display: flex; align-items: baseline; justify-content: space-between; gap: var(--s3);
+      padding: var(--s3) var(--s4); color: #fff;
+    }
+    .actcard__num { font-family: var(--font-display); font-size: 2.4rem; font-weight: 700; line-height: 1; }
+    .actcard--day1 .actcard__head { background: var(--teal); }
+    .actcard--day2 .actcard__head { background: var(--ink); }
+    .actcard--day3 .actcard__head { background: var(--teal-bright); color: var(--ink); }
+    .actcard--day4 .actcard__head { background: var(--coral); }
+    .actcard--day5 .actcard__head { background: var(--amber); color: var(--ink); }
+    .actcard__head .badge { background: rgba(0,0,0,.22); color: inherit; }
+    .actcard--day3 .actcard__head .badge,
+    .actcard--day5 .actcard__head .badge { background: rgba(255,255,255,.5); }
+
+    .actcard__body { padding: var(--s4); flex: 1 1 auto; }
+    .actcard__body h2 { font-family: var(--font-display); font-size: 1.35rem; margin: 0 0 var(--s2); }
+    .actcard__body p { color: var(--text-muted); font-size: var(--fs-small); margin: 0; }
+    .actcard__foot {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--s3);
+      padding: var(--s3) var(--s4); border-top: 1px solid var(--border);
+      background: var(--card-2); font-size: var(--fs-small);
+    }
+    .actcard__best { font-weight: 700; color: var(--teal-dark); }
+    .actcard__best--none { color: var(--text-muted); font-weight: 600; }
+    .actcard__foot a { font-weight: 700; text-decoration: none; }
+    .actcard__foot a:hover { text-decoration: underline; }
+
+    .totalcard { padding: var(--s5); text-align: center; }
+    .totalcard h2 { font-family: var(--font-sans); font-size: var(--fs-h3); margin-bottom: var(--s2); }
+    .totalcard .big {
+      font-family: var(--font-display); font-size: clamp(2.5rem, 1.5rem + 5vw, 3.6rem);
+      line-height: 1; color: var(--teal); margin: 0 0 var(--s3); font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="logo" href="../index.html" aria-label="Applied Generative AI — course home">
+        <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
+        <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
+      </a>
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+        <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="act-hero on-dark">
+      <div class="container">
+        <a class="back" href="../index.html">← Course home</a>
+        <p class="eyebrow">SDAIA Academy · Applied Generative AI</p>
+        <h1>All activities</h1>
+        <p>One scored activity per day. They all run offline, they all keep your best score on
+           this device, and you can replay any of them as many times as you like.</p>
+      </div>
+    </section>
+
+    <section class="section--tight">
+      <div class="container">
+        <div class="grid" id="grid"></div>
+      </div>
+    </section>
+
+    <section class="section--tight">
+      <div class="container">
+        <div class="card totalcard">
+          <h2>Session total</h2>
+          <p class="big" id="total">0 / 0</p>
+          <p class="muted" id="attempted">No activities attempted yet.</p>
+          <p><button type="button" class="btn btn--ghost" id="reset">Reset my progress</button></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
+        <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
+      </span>
+      <p class="footer-text">Built for the SDAIA Academy course · Instructor: Musa Ibn Rashid</p>
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+        <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+      </span>
+    </div>
+  </footer>
+
+  <script src="../assets/store.js"></script>
+  <script src="../assets/activities.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var grid = document.getElementById('grid');
+
+      function render() {
+        grid.innerHTML = '';
+        var total = 0, attempted = 0;
+
+        ACTIVITIES.forEach(function (a) {
+          var best = Store.getScore(a.id);
+          if (best) { attempted++; total += best.score; }
+
+          var card = document.createElement('article');
+          card.className = 'card actcard actcard--day' + a.day;
+          card.innerHTML =
+            '<div class="actcard__head">' +
+              '<span class="actcard__num" aria-hidden="true">' + a.num + '</span>' +
+              '<span class="badge">Day ' + a.day + '</span>' +
+            '</div>' +
+            '<div class="actcard__body">' +
+              '<h2>' + a.title + '</h2>' +
+              '<p>' + a.desc + '</p>' +
+              '<p class="small muted" style="margin-top:.75rem">' + a.minutes +
+                ' minutes · max ' + a.max + ' points</p>' +
+            '</div>' +
+            '<div class="actcard__foot">' +
+              (best
+                ? '<span class="actcard__best">✓ Best ' + best.score + ' / ' + best.max + '</span>'
+                : '<span class="actcard__best--none">Not started</span>') +
+              '<a href="./' + a.file + '">' + (best ? 'Play again →' : 'Start →') + '</a>' +
+            '</div>';
+          grid.appendChild(card);
+        });
+
+        document.getElementById('total').textContent = total + ' / ' + ACTIVITIES_MAX;
+        document.getElementById('attempted').textContent =
+          attempted + ' of ' + ACTIVITIES.length + ' activities attempted';
+      }
+
+      document.getElementById('reset').addEventListener('click', function () {
+        if (window.confirm('Clear every saved score and test result on this device?')) {
+          Store.reset();
+          render();
+        }
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

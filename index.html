@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Applied Generative AI · SDAIA Academy</title>
+  <meta name="description" content="Five days building generative AI that actually ships. SDAIA Academy, Riyadh, 2–6 August 2026.">
+  <link rel="stylesheet" href="./assets/theme.css">
+  <link rel="stylesheet" href="./assets/site.css">
+  <style>
+    /* ---- Home page only ------------------------------------ */
+    /* The header sits inside the hero on the same navy, so there is no
+       white bar across the top. The hexagon mesh is the SDAIA mark's
+       own geometry, drawn as an inline SVG data URI — no file, no
+       network request. */
+    .hero {
+      background-color: var(--ink);
+      color: var(--text-on-dark);
+      background-image:
+        radial-gradient(60rem 30rem at 78% -10%, rgba(102, 204, 255, 0.16), transparent 60%),
+        radial-gradient(40rem 26rem at 4% 115%, rgba(55, 204, 149, 0.14), transparent 60%),
+        url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='96'%20height='56'%20viewBox='0%200%2096%2056'%3E%3Cg%20fill='none'%20stroke='%2337cc95'%20stroke-width='1.4'%20opacity='0.15'%3E%3Cpath%20d='M-32%200L-16%20-28L16%20-28L32%200L16%2028L-16%2028Z'/%3E%3Cpath%20d='M-32%2056L-16%2028L16%2028L32%2056L16%2084L-16%2084Z'/%3E%3Cpath%20d='M16%2028L32%200L64%200L80%2028L64%2056L32%2056Z'/%3E%3Cpath%20d='M64%200L80%20-28L112%20-28L128%200L112%2028L80%2028Z'/%3E%3Cpath%20d='M64%2056L80%2028L112%2028L128%2056L112%2084L80%2084Z'/%3E%3C/g%3E%3C/svg%3E");
+      background-repeat: no-repeat, no-repeat, repeat;
+      background-position: center, center, center;
+    }
+    .hero-inner { padding-block: var(--s6) var(--s6); }
+
+    /* Header, transparent, on the hero. */
+    .site-header--hero {
+      background: transparent;
+      border-bottom: 0;
+    }
+    .site-header--hero .container { min-height: 72px; }
+
+    .hero h1 {
+      font-size: var(--fs-display);
+      margin: 0 0 var(--s4);
+      max-width: 16ch;
+    }
+    /* Small teal diamond marking the eyebrow, echoing the logo tiles. */
+    .hero .eyebrow::before {
+      content: "";
+      display: inline-block;
+      width: 0.62em;
+      height: 0.62em;
+      margin-right: 0.7em;
+      background: var(--teal-bright);
+      transform: rotate(45deg) translateY(-0.06em);
+      vertical-align: baseline;
+    }
+    .hero p {
+      color: var(--text-muted-on-dark);
+      max-width: 58ch;
+      font-size: 1.09rem;
+      margin-bottom: var(--s5);
+    }
+    .hero-meta {
+      margin-top: var(--s5);
+      color: var(--text-muted-on-dark);
+      font-size: var(--fs-small);
+    }
+
+    /* ---- Pre-test call to action --------------------------- */
+    .cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--s4);
+      flex-wrap: wrap;
+      background: var(--teal);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: var(--s4) var(--s5);
+      box-shadow: var(--shadow-md);
+    }
+    .cta h2 { margin: 0 0 var(--s2); color: #fff; font-size: var(--fs-h3); font-family: var(--font-sans); }
+    .cta p { margin: 0; max-width: 60ch; color: rgba(255, 255, 255, 0.94); }
+
+    /* ---- Day cards ----------------------------------------- */
+    .grid {
+      display: grid;
+      gap: var(--s4);
+      grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    }
+    .daycard { display: flex; flex-direction: column; overflow: hidden; }
+    .daycard__head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--s3);
+      padding: var(--s3) var(--s4);
+      color: #fff;
+    }
+    .daycard__num {
+      font-family: var(--font-display);
+      font-size: 2.6rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .daycard__badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: var(--tracking-eyebrow);
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-pill);
+      background: rgba(0, 0, 0, 0.22);
+    }
+    /* Alternating header colours, straight from the theme.
+       teal-bright and amber are light, so their text goes ink-dark
+       to stay above 4.5:1. */
+    .daycard--teal   .daycard__head { background: var(--teal); }
+    .daycard--ink    .daycard__head { background: var(--ink); }
+    .daycard--bright .daycard__head { background: var(--teal-bright); color: var(--ink); }
+    .daycard--coral  .daycard__head { background: var(--coral); }
+    .daycard--amber  .daycard__head { background: var(--amber); color: var(--ink); }
+    .daycard--bright .daycard__badge,
+    .daycard--amber  .daycard__badge { background: rgba(255, 255, 255, 0.55); }
+
+    .daycard__body { padding: var(--s4); flex: 1 1 auto; }
+    .daycard__body h3 {
+      margin: 0 0 var(--s2);
+      font-family: var(--font-display);
+      font-size: 1.32rem;
+      font-weight: 700;
+    }
+    .daycard__theme {
+      margin: 0 0 var(--s2);
+      font-size: var(--fs-small);
+      font-style: italic;
+      color: var(--teal);
+    }
+    .daycard__body p { color: var(--text-muted); font-size: var(--fs-small); margin: 0; }
+    .daycard__when {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: var(--tracking-eyebrow);
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: var(--s1);
+    }
+    .daycard__foot {
+      display: flex;
+      gap: var(--s3);
+      flex-wrap: wrap;
+      padding: var(--s3) var(--s4);
+      border-top: 1px solid var(--border);
+      background: var(--card-2);
+      font-size: var(--fs-small);
+      font-weight: 600;
+    }
+    .daycard__foot a { text-decoration: none; }
+    .daycard__foot a:hover { text-decoration: underline; }
+
+    /* ---- Two-card row -------------------------------------- */
+    .duo { display: grid; gap: var(--s4); grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); }
+    .linkcard { display: block; padding: var(--s5); text-decoration: none; color: inherit; }
+    .linkcard:hover { border-color: var(--teal); }
+    .linkcard h3 { font-family: var(--font-display); font-size: 1.5rem; margin: 0 0 var(--s2); color: var(--text); }
+    .linkcard p { color: var(--text-muted); margin: 0 0 var(--s3); }
+    .linkcard .go { color: var(--teal); font-weight: 700; }
+
+    /* ---- Progress ------------------------------------------ */
+    .progress { padding: var(--s4) var(--s5); }
+    .progress__row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--s4);
+      flex-wrap: wrap;
+    }
+    .progress h2 { font-family: var(--font-sans); font-size: var(--fs-h3); margin: 0 0 var(--s1); }
+    .progress__stats { margin: 0; color: var(--text-muted); }
+    .progress__stats strong { color: var(--text); }
+
+    .section-head { margin-bottom: var(--s4); }
+    .section-head h2 { margin-bottom: var(--s2); }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <main id="main">
+
+    <!-- ---------- Hero (the header lives inside it) ---------- -->
+    <section class="hero on-dark">
+
+      <header class="site-header site-header--hero">
+        <div class="container">
+          <a class="logo" href="./index.html" aria-label="Applied Generative AI — course home">
+            <img class="logo--dark"  src="./assets/academy_color.png" alt="SDAIA Academy">
+            <img class="logo--light" src="./assets/academy_white.png" alt="SDAIA Academy">
+          </a>
+          <span class="logo">
+            <img class="logo--dark"  src="./assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+            <img class="logo--light" src="./assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+          </span>
+        </div>
+      </header>
+
+      <div class="container hero-inner">
+        <p class="eyebrow">SDAIA Academy</p>
+        <h1>Applied Generative AI</h1>
+        <p>From a prompt to a system. Five days building generative AI that actually ships. Retrieval you can
+           measure, tools that do real work, and the numbers to prove it runs.
+           Slides, labs, and activities all live here.</p>
+        <ul class="chips">
+          <li class="chip">Foundations</li>
+          <li class="chip">Retrieval</li>
+          <li class="chip">Agents</li>
+          <li class="chip">Production</li>
+          <li class="chip">Security</li>
+        </ul>
+        <p class="hero-meta">Riyadh · Sunday 2 August – Thursday 6 August 2026</p>
+        <p class="hero-meta">Instructor: Musa Ibn Rashid</p>
+      </div>
+    </section>
+
+    <!-- ---------- Pre-test CTA ---------- -->
+    <section class="section--tight">
+      <div class="container">
+        <div class="cta">
+          <div>
+            <h2>New here? Take the pre-test first</h2>
+            <p>20 questions across the whole course. It measures the course, not you.</p>
+          </div>
+          <a class="btn btn--on-teal" href="./assessment/pretest.html">Start pre-test →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- Five days ---------- -->
+    <section class="section--tight">
+      <div class="container">
+        <div class="section-head">
+          <h2>The five days</h2>
+          <p class="muted">Each day: slides, one Colab lab, one scored activity.</p>
+        </div>
+
+        <div class="grid">
+
+          <article class="card daycard daycard--teal">
+            <div class="daycard__head">
+              <span class="daycard__num" aria-hidden="true">01</span>
+              <span class="daycard__badge">Day 1</span>
+            </div>
+            <div class="daycard__body">
+              <span class="daycard__when">Sunday 2 August</span>
+              <h3>From token to typed output</h3>
+              <p class="daycard__theme">“The model is a function. Make it a reliable one.”</p>
+              <p>How the model works, and how to make it return data your code can trust.</p>
+            </div>
+            <div class="daycard__foot">
+              <a href="./slides/day1.html">Slides →</a>
+              <a href="./notebooks/index.html">Lab →</a>
+              <a href="./activities/tokenizer-race.html">Activity →</a>
+            </div>
+          </article>
+
+          <article class="card daycard daycard--ink">
+            <div class="daycard__head">
+              <span class="daycard__num" aria-hidden="true">02</span>
+              <span class="daycard__badge">Day 2</span>
+            </div>
+            <div class="daycard__body">
+              <span class="daycard__when">Monday 3 August</span>
+              <h3>Retrieval you can measure</h3>
+              <p class="daycard__theme">“Everyone builds RAG. Almost nobody measures it.”</p>
+              <p>Build RAG, then prove it works with hybrid search and a golden set.</p>
+            </div>
+            <div class="daycard__foot">
+              <a href="./slides/day2.html">Slides →</a>
+              <a href="./notebooks/index.html">Lab →</a>
+              <a href="./activities/chunk-lab.html">Activity →</a>
+            </div>
+          </article>
+
+          <article class="card daycard daycard--bright">
+            <div class="daycard__head">
+              <span class="daycard__num" aria-hidden="true">03</span>
+              <span class="daycard__badge">Day 3</span>
+            </div>
+            <div class="daycard__body">
+              <span class="daycard__when">Tuesday 4 August</span>
+              <h3>Tools and agents</h3>
+              <p class="daycard__theme">“Let it act — but keep the leash short.”</p>
+              <p>Let the model act, then keep it on a short leash.</p>
+            </div>
+            <div class="daycard__foot">
+              <a href="./slides/day3.html">Slides →</a>
+              <a href="./notebooks/index.html">Lab →</a>
+              <a href="./activities/be-the-agent.html">Activity →</a>
+            </div>
+          </article>
+
+          <article class="card daycard daycard--coral">
+            <div class="daycard__head">
+              <span class="daycard__num" aria-hidden="true">04</span>
+              <span class="daycard__badge">Day 4</span>
+            </div>
+            <div class="daycard__body">
+              <span class="daycard__when">Wednesday 5 August</span>
+              <h3>Production and the numbers</h3>
+              <p class="daycard__theme">“What does this cost per user per month?”</p>
+              <p>Latency, caching, and what this actually costs per user.</p>
+            </div>
+            <div class="daycard__foot">
+              <a href="./slides/day4.html">Slides →</a>
+              <a href="./notebooks/index.html">Lab →</a>
+              <a href="./activities/cost-auction.html">Activity →</a>
+            </div>
+          </article>
+
+          <article class="card daycard daycard--amber">
+            <div class="daycard__head">
+              <span class="daycard__num" aria-hidden="true">05</span>
+              <span class="daycard__badge">Day 5</span>
+            </div>
+            <div class="daycard__body">
+              <span class="daycard__when">Thursday 6 August</span>
+              <h3>Break it, then defend it</h3>
+              <p class="daycard__theme">“Would you actually let this loose?”</p>
+              <p>Prompt injection, red teaming, and governance.</p>
+            </div>
+            <div class="daycard__foot">
+              <a href="./slides/day5.html">Slides →</a>
+              <a href="./notebooks/index.html">Lab →</a>
+              <a href="./activities/red-team.html">Activity →</a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- Project + activities ---------- -->
+    <section class="section--tight">
+      <div class="container">
+        <div class="duo">
+          <a class="card linkcard" href="./project/index.html">
+            <h3>The project</h3>
+            <p>What you're building, and exactly how it's scored — 100 points, due Thursday.</p>
+            <span class="go">Open the brief →</span>
+          </a>
+          <a class="card linkcard" href="./activities/index.html">
+            <h3>All activities</h3>
+            <p>Six scored activities you can replay any time.</p>
+            <span class="go">See all activities →</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- Progress ---------- -->
+    <section class="section--tight">
+      <div class="container">
+        <div class="card progress">
+          <div class="progress__row">
+            <div>
+              <h2 id="progress-label">Your progress</h2>
+              <p class="progress__stats" id="progress-stats" role="status">
+                Loading your saved progress…
+              </p>
+            </div>
+            <button type="button" class="btn btn--ghost" id="reset-progress">
+              Reset my progress
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span class="logo">
+        <img class="logo--dark"  src="./assets/academy_color.png" alt="SDAIA Academy">
+        <img class="logo--light" src="./assets/academy_white.png" alt="SDAIA Academy">
+      </span>
+      <p class="footer-text">Built for the SDAIA Academy course · Instructor: Musa Ibn Rashid</p>
+      <span class="logo">
+        <img class="logo--dark"  src="./assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+        <img class="logo--light" src="./assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+      </span>
+    </div>
+  </footer>
+
+  <script src="./assets/store.js"></script>
+  <script src="./assets/activities.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      /* ACTIVITIES comes from assets/activities.js — one registry,
+         shared with the activities hub, so ids and maximums cannot drift. */
+
+      var statsEl = document.getElementById('progress-stats');
+      var resetBtn = document.getElementById('reset-progress');
+
+      function render() {
+        var attempted = 0;
+        var total = 0;
+        var possible = 0;
+
+        ACTIVITIES.forEach(function (activity) {
+          var result = Store.getScore(activity.id);
+          possible += activity.max;
+          if (result) {
+            attempted += 1;
+            total += result.score;
+          }
+        });
+
+        var pretest = Store.get('pretest', null);
+        var pretestDone = pretest && typeof pretest.score === 'number';
+
+        statsEl.innerHTML =
+          '<strong>' + attempted + '</strong> of ' + ACTIVITIES.length +
+          ' activities attempted · pre-test: <strong>' +
+          (pretestDone ? 'done (' + pretest.score + '/' + pretest.max + ')' : 'not done') +
+          '</strong> · session total <strong>' + total + ' / ' + possible + '</strong>';
+      }
+
+      resetBtn.addEventListener('click', function () {
+        if (window.confirm('Clear every saved score and test result on this device?')) {
+          Store.reset();
+          render();
+          statsEl.focus && statsEl.focus();
+        }
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

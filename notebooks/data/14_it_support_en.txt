@@ -1,0 +1,10 @@
+IT Support - Service Levels
+Reference: SDAIA-IT-SVC-041-01-V3
+
+Priority 1 (service down for a department): response within 30 minutes.
+Priority 2 (individual blocked from working): response within 4 hours.
+Priority 3 (degraded but working): response within 2 working days.
+Priority 4 (request or question): response within 5 working days.
+
+Requests for new software require a security review under
+SDAIA-SEC-POL-002-04-V5.

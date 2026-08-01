@@ -1,0 +1,19 @@
+National Data Governance - Internal Implementation Note
+Reference: SDAIA-DG-POL-007-01-V2
+
+1. Classification
+All datasets are classified as Public, Internal, Confidential or Restricted
+before they are stored. Classification is recorded in the data catalogue and
+reviewed annually.
+
+2. Ownership
+Every dataset has a named data owner. Where ownership is unclear, the
+default owner is the head of the originating department.
+
+3. Sharing
+Personal data may not be shared with any external party without written
+consent and a completed data sharing agreement.
+
+4. Retention
+Datasets are retained only for as long as the stated purpose requires.
+Retention schedules are reviewed under reference SDAIA-DG-RET-011-03-V1.

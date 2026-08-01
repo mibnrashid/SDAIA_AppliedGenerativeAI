@@ -1,0 +1,522 @@
+/* ============================================================
+   deck.css — HTML slide engine.
+
+   The slide canvas is a fixed 1280 x 720 box. deck.js measures the
+   viewport and applies transform: scale() so a deck never scrolls and
+   never reflows: what you author is exactly what the projector shows.
+   Everything inside a slide can therefore be sized in px against that
+   canvas.
+   ============================================================ */
+
+/* ---- Page shell ------------------------------------------ */
+.deck-body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--ink);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+/* ---- Top bar --------------------------------------------- */
+.deck-bar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: 0.5rem 1rem;
+  background: rgba(13, 19, 48, 0.82);
+  color: var(--text-on-dark);
+  font-size: 0.8rem;
+}
+.deck-bar__title {
+  flex: 1 1 auto;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.deck-bar__home {
+  color: var(--teal-bright);
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.deck-bar__home:hover { text-decoration: underline; }
+
+.deck-btn {
+  border: 1px solid var(--ink-3);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-on-dark);
+  font: inherit;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.deck-btn:hover { background: rgba(255, 255, 255, 0.14); }
+.deck-btn[aria-pressed="true"] {
+  background: var(--teal-bright);
+  color: var(--ink);
+  border-color: transparent;
+}
+
+.deck-bar :focus-visible,
+.deck-dots :focus-visible,
+.deck-help :focus-visible,
+.deck-notes :focus-visible {
+  outline: var(--focus-width) solid var(--focus-on-dark);
+  outline-offset: 2px;
+}
+
+/* ---- Stage and canvas ------------------------------------ */
+.deck-stage {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+}
+
+.deck {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+  flex: none;
+  transform-origin: center center;
+  background: var(--paper);
+  overflow: hidden;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+}
+
+.slide-wrap { position: absolute; inset: 0; }
+
+/* ---- A slide --------------------------------------------- */
+.slide {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  padding: 96px 76px 60px;   /* top room for the per-slide logos */
+  background: var(--paper);
+  color: var(--text);
+  font-size: 22px;
+  line-height: 1.5;
+}
+.slide.is-active { display: flex; }
+
+.slide h2 {
+  font-family: var(--font-display);
+  font-size: 46px;
+  line-height: 1.1;
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+.slide h3 {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+.slide p { margin: 0; max-width: 46ch; }
+.slide ul, .slide ol { margin: 0; padding-left: 1.2em; }
+.slide li { margin-bottom: 10px; }
+.slide li::marker { color: var(--teal); font-weight: 700; }
+.slide .muted { color: var(--text-muted); }
+
+.slide__eyebrow {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--teal);
+  margin: 0;
+}
+.slide__kicker {
+  font-size: 20px;
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 60ch;
+}
+.slide__rule {
+  width: 72px;
+  height: 5px;
+  background: var(--teal-bright);
+  border-radius: 3px;
+}
+
+/* ---- Per-slide logos ------------------------------------- */
+/* Academy left, SDAIA right, on every slide. Small and low-contrast
+   in the body of the deck; large on the first and last slide. */
+.slide__logos {
+  position: absolute;
+  left: 76px;
+  right: 76px;
+  top: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  pointer-events: none;         /* never steals a click from nav */
+}
+.slide__logos img { display: block; width: auto; height: 19px; opacity: 0.62; }
+.slide--logos-big .slide__logos { top: 46px; }
+.slide--logos-big .slide__logos img { height: 46px; opacity: 1; }
+
+/* Colour on light slides, white on dark ones. */
+.slide__logos .l-white { display: none; }
+.slide__logos .l-color { display: block; }
+.slide--title .slide__logos .l-white,
+.slide--section .slide__logos .l-white,
+.slide--dark .slide__logos .l-white { display: block; }
+.slide--title .slide__logos .l-color,
+.slide--section .slide__logos .l-color,
+.slide--dark .slide__logos .l-color { display: none; }
+.slide--title .slide__logos img,
+.slide--section .slide__logos img,
+.slide--dark .slide__logos img { opacity: 0.78; }
+.slide--logos-big .slide__logos img { opacity: 1; }
+
+/* Title and closing slides give the big logos their own band. */
+.slide--logos-big { padding-top: 150px; }
+
+/* ---- Layout: title --------------------------------------- */
+.slide--title {
+  background: var(--ink);
+  color: var(--text-on-dark);
+  background-image:
+    radial-gradient(50rem 26rem at 85% 0%, rgba(102, 204, 255, 0.18), transparent 60%),
+    radial-gradient(36rem 22rem at 0% 100%, rgba(55, 204, 149, 0.15), transparent 60%);
+}
+.slide--title h2 { font-size: 68px; max-width: 18ch; }
+.slide--title .slide__eyebrow { color: var(--teal-bright); }
+.slide--title .slide__kicker,
+.slide--title .muted { color: var(--text-muted-on-dark); }
+
+/* ---- Layout: section divider ----------------------------- */
+.slide--section {
+  background: var(--ink-2);
+  color: var(--text-on-dark);
+  align-items: flex-start;
+}
+.slide--section h2 { font-size: 58px; max-width: 20ch; }
+.slide--section .slide__eyebrow { color: var(--teal-bright); }
+.slide--section .slide__kicker { color: var(--text-muted-on-dark); }
+
+/* ---- Layout: full statement ------------------------------ */
+.slide--full { align-items: center; text-align: center; }
+.slide--full h2 { font-size: 62px; max-width: 22ch; }
+.slide--full p { max-width: 40ch; font-size: 24px; color: var(--text-muted); }
+.slide--full.slide--dark { background: var(--ink); color: var(--text-on-dark); }
+.slide--full.slide--dark p { color: var(--text-muted-on-dark); }
+
+/* ---- Layout: split --------------------------------------- */
+.slide--split .slide__cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 44px;
+  align-items: start;
+}
+.slide--split .slide__cols > * { min-width: 0; }
+
+/* ---- Layout: code ---------------------------------------- */
+.slide--code .slide__cols {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+.slide pre {
+  margin: 0;
+  padding: 20px 22px;
+  background: var(--ink);
+  color: #e8ecf5;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 17px;
+  line-height: 1.55;
+  overflow: hidden;          /* a slide never scrolls: trim, don't scroll */
+  tab-size: 2;
+}
+.slide pre .c  { color: #93a4c4; font-style: italic; }  /* comment */
+.slide pre .k  { color: #79d2ff; }                      /* keyword */
+.slide pre .s  { color: #7ee2b8; }                      /* string  */
+.slide pre .n  { color: #ffc07a; }                      /* number  */
+.slide pre .hl { background: rgba(55, 204, 149, 0.18); }
+.slide code:not(pre code) {
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.05em 0.35em;
+  font-size: 0.92em;
+}
+.slide__caption { font-size: 19px; color: var(--text-muted); }
+.slide__caption h3 { font-size: 20px; color: var(--text); }
+.slide__caption ul { padding-left: 1.1em; }
+
+/* ---- Bits used inside slides ----------------------------- */
+.slide table { width: 100%; border-collapse: collapse; font-size: 19px; }
+.slide th, .slide td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.slide thead th {
+  background: var(--ink);
+  color: var(--text-on-dark);
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.slide-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+}
+.slide-card--accent { border-left: 6px solid var(--teal); }
+.slide-callout {
+  background: rgba(14, 130, 100, 0.08);
+  border-left: 6px solid var(--teal);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  font-size: 20px;
+}
+
+/* Live widget chrome inside a slide (tokenizer, cost calculator…). */
+.slide-widget {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.slide-widget label { display: block; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.slide-widget textarea,
+.slide-widget input {
+  width: 100%;
+  font: inherit;
+  font-size: 18px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--text);
+}
+.slide-widget textarea { resize: none; }
+
+/* Arabic inside a slide: isolated so it cannot flip the LTR line. */
+.slide [lang="ar"] { font-family: var(--font-arabic); unicode-bidi: isolate; }
+
+/* ---- Presenter notes ------------------------------------- */
+/* Authored inside a slide; deck.js lifts them to the wrapper so they
+   can drive the panel and print underneath their slide. */
+.notes { display: none; }
+
+.deck-notes {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 40;
+  max-height: 38vh;
+  overflow-y: auto;
+  padding: 14px 20px 18px;
+  background: #fffbe9;
+  border-top: 4px solid var(--amber);
+  color: #241c05;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+.deck-notes[hidden] { display: none; }
+.deck-notes__label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: #7a5f09;
+  margin: 0 0 6px;
+}
+.deck-notes p { margin: 0 0 8px; max-width: 90ch; }
+.deck-notes p:last-child { margin-bottom: 0; }
+
+/* ---- Dot strip and counter ------------------------------- */
+.deck-dots {
+  position: fixed;
+  inset: auto 0 10px 0;
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 0 130px;
+}
+.deck-dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+}
+.deck-dot:hover { background: rgba(255, 255, 255, 0.65); }
+.deck-dot[aria-current="true"] { background: var(--teal-bright); transform: scale(1.35); }
+
+.deck-counter {
+  position: fixed;
+  right: 14px;
+  bottom: 8px;
+  z-index: 30;
+  color: var(--text-muted-on-dark);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Lift the dots clear of the notes panel when it is open. */
+.deck-body.notes-open .deck-dots { bottom: calc(38vh + 12px); }
+.deck-body.notes-open .deck-counter { bottom: calc(38vh + 10px); }
+
+/* ---- Help overlay ---------------------------------------- */
+.deck-help {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: rgba(5, 8, 20, 0.72);
+  padding: var(--s4);
+}
+.deck-help[hidden] { display: none; }
+.deck-help__panel {
+  background: var(--card);
+  color: var(--text);
+  border-radius: var(--radius);
+  padding: var(--s5);
+  max-width: 34rem;
+  width: 100%;
+  box-shadow: var(--shadow-md);
+}
+.deck-help h2 { font-family: var(--font-display); margin: 0 0 var(--s3); font-size: 1.6rem; }
+.deck-help dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px 18px;
+  margin: 0 0 var(--s4);
+  align-items: baseline;
+}
+.deck-help dt { margin: 0; }
+.deck-help dd { margin: 0; color: var(--text-muted); }
+
+/* ---- Print-only furniture (hidden on screen) ------------- */
+.slide-print-head { display: none; }
+
+/* ============================================================
+   PRINT — one landscape A4 page per slide, notes underneath.
+   The 1280x720 canvas is scaled to 1000x563 CSS px, which fits inside
+   A4 landscape (277 x 190 mm printable) and leaves room for notes.
+   ============================================================ */
+@media print {
+  @page { size: A4 landscape; margin: 9mm; }
+
+  html, body, .deck-body {
+    height: auto;
+    overflow: visible;
+    background: #fff;
+  }
+
+  /* Screen chrome off. */
+  .deck-bar,
+  .deck-dots,
+  .deck-counter,
+  .deck-help,
+  .deck-notes,
+  .skip-link { display: none !important; }
+
+  .deck-stage { position: static; display: block; background: #fff; }
+  .deck {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    transform: none !important;
+    box-shadow: none;
+    background: #fff;
+  }
+
+  /* One wrapper = one page. */
+  .slide-wrap {
+    position: static;
+    display: block;
+    width: 1000px;
+    margin: 0 auto;
+    page-break-after: always;
+    break-after: page;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .slide-wrap:last-child { page-break-after: auto; break-after: auto; }
+
+  /* Running head. The logos print from inside the slide itself, so
+     they carry the right colour variant for that slide's background. */
+  .slide-print-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 5px;
+  }
+  .slide-print-head span { font-size: 10px; color: #5a6473; }
+
+  /* The box is sized to the SCALED slide so nothing overflows the
+     page; the slide itself keeps its 1280x720 authoring geometry. */
+  .slide-print-box {
+    width: 1000px;
+    height: 563px;
+    overflow: hidden;
+    border: 1px solid #d8dde5;
+  }
+  .slide {
+    position: relative;
+    display: flex !important;
+    width: 1280px;
+    height: 720px;
+    transform: scale(0.78125);   /* 1000 / 1280 */
+    transform-origin: top left;
+  }
+
+  /* Keep the navy, teal and code backgrounds — a printed deck with
+     white holes where the dark slides were is useless. */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Notes below their slide, small. */
+  .slide-wrap > .notes {
+    display: block;
+    margin-top: 7px;
+    padding: 7px 10px;
+    border-left: 3px solid var(--amber);
+    background: #fffbe9;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    line-height: 1.4;
+    color: #241c05;
+  }
+  .slide-wrap > .notes::before {
+    content: "Presenter notes";
+    display: block;
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7a5f09;
+    margin-bottom: 3px;
+  }
+  .slide-wrap > .notes p { margin: 0 0 4px; }
+}

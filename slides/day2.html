@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Day 2 — Retrieval you can measure · Applied Generative AI</title>
+  <link rel="stylesheet" href="../assets/theme.css">
+  <link rel="stylesheet" href="../assets/site.css">
+  <link rel="stylesheet" href="../assets/deck.css">
+  <style>
+    /* Day 2 only. */
+    .numbered { list-style: none; padding: 0; counter-reset: n; }
+    .numbered li { counter-increment: n; position: relative; padding-left: 52px; margin-bottom: 13px; }
+    .numbered li::before {
+      content: counter(n, decimal-leading-zero);
+      position: absolute; left: 0; top: -2px;
+      font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--teal);
+    }
+    .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .cols4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .cols3 .slide-card, .cols4 .slide-card { padding: 15px 17px; font-size: 18px; }
+    .cols3 h3, .cols4 h3 { font-size: 18px; margin-bottom: 6px; }
+    .stages { display: grid; gap: 8px; }
+    .stages div {
+      display: grid; grid-template-columns: 210px 1fr; gap: 16px;
+      padding: 9px 16px; border-radius: var(--radius-sm); font-size: 19px;
+      background: var(--card); border: 1px solid var(--border);
+    }
+    .stages strong { color: var(--teal-dark); }
+    .slide--section .stages div { background: rgba(255,255,255,.06); border-color: var(--ink-3); color: var(--text-on-dark); }
+    .slide--section .stages strong { color: var(--teal-bright); }
+
+    /* RAG diagram: CSS-only reveal. Each step is a real checkbox with a
+       label, so it is clickable AND keyboard reachable, with no JS. */
+    .rag { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; }
+    .rag input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .rag label {
+      display: block; padding: 14px 16px; border-radius: var(--radius-sm);
+      background: var(--card); border: 2px solid var(--border); cursor: pointer;
+      transition: border-color 150ms, background-color 150ms;
+    }
+    .rag b { display: block; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin-bottom: 4px; }
+    .rag label span { display: block; font-size: 19px; font-weight: 700; }
+    .rag label em {
+      display: block; font-style: normal; font-size: 17px; color: var(--text-muted);
+      max-height: 0; opacity: 0; overflow: hidden;
+      transition: max-height 220ms ease, opacity 220ms ease;
+    }
+    .rag input:checked + label { border-color: var(--teal); background: rgba(14,130,100,.07); }
+    .rag input:checked + label em { max-height: 160px; opacity: 1; margin-top: 8px; }
+    .rag input:focus-visible + label { outline: 3px solid var(--teal); outline-offset: 2px; }
+
+    .doc {
+      font-family: var(--font-mono); font-size: 15px; line-height: 1.55;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px 14px;
+    }
+    .cut { display: block; border-top: 3px dashed var(--coral); margin: 6px 0; padding-top: 4px; }
+    .cut::before { content: "chunk boundary"; display: block; font-size: 12px; color: var(--coral-ink); font-family: var(--font-sans); letter-spacing: .06em; text-transform: uppercase; }
+    .bad { background: rgba(228,96,42,.14); }
+    .good { background: rgba(14,130,100,.13); }
+    .bigstat { font-family: var(--font-display); font-size: 38px; font-weight: 700; line-height: 1; color: var(--teal); margin: 6px 0 0; }
+    .scoretable td:last-child, .scoretable th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+    .win { color: var(--teal-dark); font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<div class="deck" data-title="Day 2 — Retrieval you can measure">
+
+  <!-- ══════ 1 · Title ══════ -->
+  <section class="slide slide--title">
+    <p class="slide__eyebrow">SDAIA Academy · Applied Generative AI</p>
+    <h2>Retrieval you can measure</h2>
+    <p class="slide__kicker">Day 2 · Monday 3 August 2026 · Musa Ibn Rashid</p>
+    <p class="muted">Everyone builds RAG. Almost nobody measures it.</p>
+    <aside class="notes">
+      <p>Today is the longest day of the week and the one with the highest ceiling, so pace yourselves.</p>
+      <p>By half past two you will not just have built retrieval over your own documents — you will have a number that says how good it is.</p>
+      <p>That number is the difference between "it looked right in the demo" and something you would put in front of a director.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 2 · Objectives ══════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Day 2</p>
+    <h2>What you will be able to do by 2:30</h2>
+    <ol class="numbered">
+      <li>Explain why the model cannot answer questions about your documents, and what fixes it.</li>
+      <li>Choose between RAG and an agent, and defend the choice in one sentence.</li>
+      <li>Build the pipeline end to end: ingest, chunk, embed, store, retrieve, answer with citations.</li>
+      <li>Pull text out of a scanned Arabic page with a vision model and feed it into that pipeline.</li>
+      <li>Combine keyword and vector search, then re-rank what comes back.</li>
+      <li><strong>Score your retrieval against a golden set you wrote yourself.</strong></li>
+    </ol>
+    <aside class="notes">
+      <p>Six today, and the last one is the one that earns this course its name.</p>
+      <p>Almost nobody who builds retrieval does number six, which means almost nobody can tell you whether their last change helped or hurt.</p>
+      <p>By this afternoon you will be able to say "my retrieval went from six out of ten to nine out of ten", and mean it.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 3 · Recall ══════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Yesterday · questions to the room</p>
+    <h2>Three questions before we start</h2>
+    <ol class="numbered">
+      <li>Why does the same sentence cost more in Arabic than in English?</li>
+      <li>You need extraction that your code will parse. What temperature, and why?</li>
+      <li>What does a response schema buy you that a well-written prompt does not?</li>
+    </ol>
+    <p class="slide-callout">No slide of answers. Ask three different people, and make them say it out loud.</p>
+    <aside class="notes">
+      <p>Do not answer these yourself. Pick three people who did not speak much yesterday and give them the floor.</p>
+      <p>If the room struggles with the third one, spend two minutes back on yesterday's schema slide before you move on, because everything today assumes it.</p>
+      <p>Then close by saying: yesterday the model became a reliable function; today we give it something to be reliable about.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 4 · Divider ══════ -->
+  <section class="slide slide--section">
+    <p class="slide__eyebrow">Part one</p>
+    <h2>Choosing an architecture</h2>
+    <p class="slide__kicker">RAG or an agent? Get this wrong and you spend three weeks building the wrong thing.</p>
+    <aside class="notes">
+      <p>Before any code, the decision. This is the conversation you will have back in your organisation, probably in a meeting where nobody has built either one.</p>
+      <p>The good news is the decision rule fits on a single slide, and we get to it in about fifteen minutes.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 5 · Why it doesn't know ══════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">The floor</p>
+    <h2>It has never seen your documents</h2>
+    <div class="slide__cols">
+      <div>
+        <p>The model learned from public text, up to a cut-off date. Your leave policy, your circulars, your internal manual — none of it was there.</p>
+        <p style="margin-top:14px">Ask anyway and you do not get "I don't know". You get a <strong>plausible invention</strong>, because likely text is the only thing it produces.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>Three ways out</h3>
+        <ul>
+          <li><strong>Paste it in</strong> — works until the document is bigger than the context window. Which it is.</li>
+          <li><strong>Fine-tune</strong> — weeks, expensive, and it teaches style rather than facts.</li>
+          <li><strong>Retrieve it</strong> — find the three relevant paragraphs, put those in the prompt. <strong>This one.</strong></li>
+        </ul>
+      </div>
+    </div>
+    <p class="slide-callout">RAG is not clever. It is "look it up first, then answer" — the thing you would do yourself.</p>
+    <aside class="notes">
+      <p>Ask the room: if I asked you about a policy you had never read, what would you do? Somebody will say "go and read the relevant part". That is the entire idea.</p>
+      <p>The reason we do not simply paste the whole document is yesterday's context window slide, and it is also a cost argument — every token you paste, you pay for on every single call.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 6 · RAG in four steps ══════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Click each step</p>
+    <h2>RAG in four steps</h2>
+    <div class="rag">
+      <input type="checkbox" id="rag1"><label for="rag1"><b>Step 1</b><span>Index, once</span>
+        <em>Cut documents into chunks, turn each into a vector, store it. Done ahead of time, not per question.</em></label>
+      <input type="checkbox" id="rag2"><label for="rag2"><b>Step 2</b><span>Retrieve</span>
+        <em>Turn the user's question into a vector too, then pull the nearest handful of chunks.</em></label>
+      <input type="checkbox" id="rag3"><label for="rag3"><b>Step 3</b><span>Augment</span>
+        <em>Paste those chunks into the prompt: "answer using only the text below". This is the whole trick.</em></label>
+      <input type="checkbox" id="rag4"><label for="rag4"><b>Step 4</b><span>Generate</span>
+        <em>The model answers from what it was given, and cites which chunk it used.</em></label>
+    </div>
+    <p class="slide-callout">Only step 1 happens in advance. Steps 2 to 4 run on every question, in that order, every time.</p>
+    <aside class="notes">
+      <p>Click these one at a time as you talk, so the room watches the pipeline assemble instead of arriving at a finished diagram.</p>
+      <p>The point to hammer is that step three is string concatenation. There is no magic in retrieval-augmented generation — all the intelligence is in choosing which chunks go in.</p>
+      <p>And that choice is exactly what we spend this afternoon improving, and then measuring.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 7 · Agents as a loop ══════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">The other architecture</p>
+    <h2>An agent is a loop</h2>
+    <div class="slide__cols">
+      <div>
+        <ol class="numbered" style="font-size:20px">
+          <li>Give the model a goal and a list of tools.</li>
+          <li>It decides which tool to call, and with what arguments.</li>
+          <li><strong>Your code</strong> runs the tool and hands the result back.</li>
+          <li>Repeat until it says it is done — or until your step cap stops it.</li>
+        </ol>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>What that buys, and costs</h3>
+        <p><strong>Buys:</strong> it can take several steps, react to what it finds, and <em>do</em> things rather than only answer.</p>
+        <p style="margin-top:10px"><strong>Costs:</strong> every step is another call. Unpredictable path, unpredictable bill, and much harder to test.</p>
+      </div>
+    </div>
+    <p class="slide-callout">RAG has one fixed path. An agent chooses its own — that is the whole difference.</p>
+    <aside class="notes">
+      <p>Tomorrow is entirely about this loop, so today all I want is that you can tell the two shapes apart.</p>
+      <p>Say the third step firmly, because it is the most misunderstood thing in this field: the model never runs anything. It emits a request, and your code decides whether to honour it.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 8 · Comparison ══════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Choosing</p>
+    <h2>RAG or agent?</h2>
+    <table>
+      <thead><tr><th style="width:200px"></th><th>RAG</th><th>Agent</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Shape</strong></td><td>One fixed path, every time</td><td>A loop that picks its own path</td></tr>
+        <tr><td><strong>Good at</strong></td><td>Answering from your documents</td><td>Multi-step tasks, live data, taking action</td></tr>
+        <tr><td><strong>Calls per question</strong></td><td>One</td><td>Three to ten, and you cannot be sure</td></tr>
+        <tr><td><strong>Build time</strong></td><td>Days</td><td>Weeks, most of it on guardrails</td></tr>
+        <tr><td><strong>Fails by</strong></td><td>Retrieving the wrong chunk</td><td>Looping, burning money, acting wrongly</td></tr>
+      </tbody>
+    </table>
+    <p class="slide-callout"><strong>The rule:</strong> if the answer is <em>in a document</em>, use RAG. If it needs a <em>decision or an action</em>, consider an agent. Start with the simplest thing that works, then add.</p>
+    <aside class="notes">
+      <p>Read the bottom line twice, because it is the advice most likely to save someone in this room a wasted month.</p>
+      <p>Nearly every "we need an agent" I meet is a retrieval problem with better marketing.</p>
+      <p>And notice the last row: RAG fails by being unhelpful, an agent fails by doing something. Those are very different risks to carry into production.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 9 · Divider + five stages ══════ -->
+  <section class="slide slide--section">
+    <p class="slide__eyebrow">Part two</p>
+    <h2>The pipeline, stage by stage</h2>
+    <div class="stages">
+      <div><strong>1 · Ingestion</strong><span>Get clean text out of whatever you were given — and keep the source.</span></div>
+      <div><strong>2 · Chunking</strong><span>Cut it into pieces small enough to retrieve, large enough to mean something.</span></div>
+      <div><strong>3 · Embedding</strong><span>Turn each chunk into a vector — meaning as coordinates.</span></div>
+      <div><strong>4 · Storage</strong><span>Put the vectors somewhere you can search by nearness.</span></div>
+      <div><strong>5 · Retrieval</strong><span>Embed the question, pull the nearest chunks, hand them to the model.</span></div>
+    </div>
+    <aside class="notes">
+      <p>Five stages, and every one of them has a way of quietly ruining the stage after it.</p>
+      <p>Most broken retrieval systems I have seen were broken in stage one or two, while the team spent their time tuning stage five.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 10 · Ingestion ══════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Stage 1</p>
+    <h2>Ingestion: boring, and decisive</h2>
+    <div class="slide__cols">
+      <div>
+        <h3>Clean it</h3>
+        <ul>
+          <li>Strip headers, footers, page numbers, watermarks.</li>
+          <li>Keep the structure that carries meaning: headings, lists, tables.</li>
+          <li>Fix the encoding before you look at anything else.</li>
+        </ul>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>Keep the metadata</h3>
+        <p>Every chunk travels with <code>source</code> and <code>page</code>, from the very first step.</p>
+        <p style="margin-top:10px">Without it you cannot cite. Without citations nobody in a government context will trust the answer — and they are right not to.</p>
+        <p class="muted" style="margin-top:10px">Adding it later means re-ingesting everything.</p>
+      </div>
+    </div>
+    <p class="slide-callout">Garbage in, confidently-worded garbage out.</p>
+    <aside class="notes">
+      <p>This is the least glamorous stage and the one that decides whether the rest of the pipeline can work at all.</p>
+      <p>The metadata point is the expensive one to learn late. Carry source and page from the first line of code, because retrofitting means re-processing every document you have.</p>
+      <p>In the notebook this part is written for you, but read it, because you will be doing exactly this to your own documents this afternoon.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 11 · Multimodal ingestion ══════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Stage 1 · the applied bit</p>
+    <h2>A scanned page has no text layer</h2>
+    <div class="slide__cols">
+      <div>
+        <p>Half the Arabic PDFs in a government archive are photographs of paper. Open one in Python and you get an empty string back.</p>
+        <p style="margin-top:14px">So make the vision model a <strong>stage in the pipeline</strong>: page image in, text out, into the same chunker as everything else.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>Why not classical OCR</h3>
+        <ul>
+          <li>Handles Arabic script and layout far better than a plain OCR engine.</li>
+          <li>Reads a table as a table, not as scrambled lines.</li>
+          <li>You can instruct it: "transcribe exactly, do not summarise".</li>
+        </ul>
+        <p class="muted" style="margin-top:10px">Cost: one call per page, once, at index time. Never per question.</p>
+      </div>
+    </div>
+    <p class="slide-callout">This is not a modality tour. It is a pipeline stage that solves a problem you will meet this week.</p>
+    <aside class="notes">
+      <p>Ask how many people have a stack of scanned Arabic PDFs somewhere. Most hands go up, and this is the slide they will remember in six months.</p>
+      <p>Say the instruction out loud — transcribe, do not summarise — because a vision model asked vaguely will hand you a helpful summary and silently lose the detail you needed.</p>
+      <p>And it happens once, at index time. If you find yourself calling a vision model per question, something has gone wrong.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 12 · Code: vision ══════ -->
+  <section class="slide slide--code">
+    <p class="slide__eyebrow">Stage 1 · code</p>
+    <h2>Page image in, text out</h2>
+    <div class="slide__cols">
+      <div>
+<pre><code><span class="k">import</span> pathlib
+<span class="k">from</span> google.genai <span class="k">import</span> types
+
+page = pathlib.Path(<span class="s">"scan_p03.png"</span>).read_bytes()
+
+PROMPT = (
+    <span class="s">"Transcribe this page exactly as written. "</span>
+    <span class="s">"Keep Arabic text in Arabic. Keep table rows "</span>
+    <span class="s">"on separate lines. Do not summarise."</span>
+)
+
+resp = client.models.generate_content(
+    model=<span class="s">"gemini-2.5-flash-lite"</span>,
+    contents=[
+        <span class="hl">types.Part.from_bytes(data=page,</span>
+        <span class="hl">              mime_type=<span class="s">"image/png"</span>),</span>
+        PROMPT,
+    ],
+)
+
+docs.append({<span class="s">"text"</span>: resp.text,
+             <span class="s">"source"</span>: <span class="s">"circular_2024.pdf"</span>,
+             <span class="s">"page"</span>: <span class="n">3</span>})   <span class="c"># same shape as the rest</span></code></pre>
+      </div>
+      <div class="slide__caption">
+        <h3>Three things matter here</h3>
+        <ul>
+          <li>The image is a <code>Part</code>; the instruction is plain text in the same list.</li>
+          <li>"Do not summarise" is not politeness — without it you lose detail.</li>
+          <li>The result is appended in <strong>exactly the same shape</strong> as a text-extracted page, so nothing downstream knows the difference.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Look at the last three lines. The scanned page joins the corpus in the same dictionary shape as every other page, and that is what makes this a pipeline stage rather than a party trick.</p>
+      <p>In the notebook this runs against a real scanned page and Arabic comes back as Arabic. Watch the room when it does.</p>
+      <p>One caution to say out loud: it can mis-transcribe a digit, so for anything financial or legal a human still checks the page.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 13 · Chunking ══════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Stage 2</p>
+    <h2>Chunking: the decision nobody documents</h2>
+    <div class="cols3">
+      <div class="slide-card">
+        <h3>Size</h3>
+        <p>Too small and the answer is cut in half. Too big and you retrieve three paragraphs of noise around one useful line.</p>
+        <p class="bigstat">~500</p>
+        <p class="muted" style="font-size:17px">tokens. A starting point, not a law.</p>
+      </div>
+      <div class="slide-card">
+        <h3>Overlap</h3>
+        <p>Repeat the tail of the previous chunk, so a sentence that spans a boundary survives whole in one of them.</p>
+        <p class="bigstat">~10%</p>
+        <p class="muted" style="font-size:17px">of chunk size. Costs storage, saves answers.</p>
+      </div>
+      <div class="slide-card">
+        <h3>Structure-aware</h3>
+        <p>Split on headings, then paragraphs, then sentences — never blindly on character count.</p>
+        <p style="margin-top:8px">Keep a heading attached to the text it introduces.</p>
+      </div>
+    </div>
+    <p class="slide-callout">Start at ~500 tokens with ~10% overlap. Then <strong>measure</strong>, and tune. By 2:30 you will have the tool to do that.</p>
+    <aside class="notes">
+      <p>You will find two different numbers in the wild — some decks say two to five hundred words, others say five hundred to a thousand tokens. Pick one and be consistent; I am using tokens all week.</p>
+      <p>Say plainly that five hundred is a starting point, not a result. The right chunk size for your documents is whichever one scores best on your golden set.</p>
+      <p>The third column is where most of the win is, and it costs nothing.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 14 · Chunking gone wrong ══════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Stage 2 · the failure</p>
+    <h2>What a blind split does</h2>
+    <div class="slide__cols">
+      <div>
+        <p class="muted" style="font-size:17px;margin-bottom:6px">Split every 500 characters:</p>
+        <div class="doc">
+          <span class="good">6.2 Annual leave entitlement by grade</span><br>
+          <span class="good">Grade 9 &nbsp;— 21 days</span><br>
+          <span class="bad">Grade 10 — 24 da</span>
+          <span class="cut"></span>
+          <span class="bad">ys</span><br>
+          <span class="bad">Grade 11 — 30 days</span><br>
+          <span class="bad">Grade 12 — 30 days + 5</span>
+        </div>
+        <p class="muted" style="font-size:17px;margin-top:10px">The second chunk is a table with no heading and no first rows. Retrieved on its own, it means nothing.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>What that costs you</h3>
+        <ul>
+          <li>"How much leave does grade 11 get?" retrieves a fragment with no context.</li>
+          <li>The model sees "Grade 11 — 30 days" with no idea it is about leave.</li>
+          <li>It answers anyway. Fluently. Possibly about something else entirely.</li>
+        </ul>
+        <p style="margin-top:10px"><strong>Fix:</strong> split on the heading boundary, keep the table whole, and repeat the heading into the chunk.</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>This is the most common defect in a first retrieval build, and it stays invisible until somebody asks exactly the wrong question in front of somebody important.</p>
+      <p>Notice what got orphaned: the heading. The word "leave" appears only there, so a chunk without it will never match a question about leave, no matter how good your embedding model is.</p>
+      <p>Chunk Lab this morning is this exact problem, with a real document and your own hands on the boundaries.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 15 · Code: chunker ══════ -->
+  <section class="slide slide--code">
+    <p class="slide__eyebrow">Stage 2 · code</p>
+    <h2>The chunker</h2>
+    <div class="slide__cols">
+      <div>
+<pre><code><span class="k">def</span> chunk(text, size=<span class="n">500</span>, overlap=<span class="n">50</span>):
+    <span class="c"># Paragraphs first — structure before size.</span>
+    paras = [p.strip() <span class="k">for</span> p <span class="k">in</span> text.split(<span class="s">"\n\n"</span>) <span class="k">if</span> p.strip()]
+    chunks, current = [], <span class="s">""</span>
+
+    <span class="k">for</span> para <span class="k">in</span> paras:
+        <span class="c"># Room left? Keep filling this chunk. (~4 chars/token)</span>
+        <span class="k">if</span> len(current) + len(para) &lt; size * <span class="n">4</span>:
+            current += para + <span class="s">"\n\n"</span>
+        <span class="k">else</span>:
+            chunks.append(current.strip())
+            <span class="hl">tail = current[-overlap * <span class="n">4</span>:]  <span class="c"># carry the overlap</span></span>
+            current = tail + para + <span class="s">"\n\n"</span>
+
+    <span class="k">if</span> current.strip():
+        chunks.append(current.strip())
+    <span class="k">return</span> chunks
+
+<span class="c"># Every chunk keeps where it came from.</span>
+records = [{<span class="s">"text"</span>: c, <span class="s">"source"</span>: d[<span class="s">"source"</span>], <span class="s">"page"</span>: d[<span class="s">"page"</span>]}
+           <span class="k">for</span> d <span class="k">in</span> docs <span class="k">for</span> c <span class="k">in</span> chunk(d[<span class="s">"text"</span>])]</code></pre>
+      </div>
+      <div class="slide__caption">
+        <h3>Read the order</h3>
+        <ul>
+          <li>Paragraphs first, size second. Structure wins.</li>
+          <li>The highlighted line is the overlap: the tail of one chunk starts the next.</li>
+          <li>The final comprehension is where <code>source</code> and <code>page</code> survive.</li>
+        </ul>
+        <p class="muted" style="margin-top:8px">In the notebook the loop body is a <code>TODO</code>. You write it.</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>This is twelve lines and it is most of what a chunking library does for you. Writing it once means you can debug it when it misbehaves.</p>
+      <p>The overlap line is the one people delete because it looks wasteful, and then they lose every answer that straddles a boundary.</p>
+      <p>After you write it, print three chunks immediately and check nothing was cut mid-word. That habit will save you an afternoon.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 16 · Embeddings ══════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Stage 3</p>
+    <h2>Meaning as coordinates</h2>
+    <div class="slide__cols">
+      <div>
+        <p>An embedding turns text into a list of numbers — a point in space — placed so that <strong>similar meanings land near each other</strong>.</p>
+        <div class="slide-card" style="margin-top:14px">
+          <p style="font-size:19px">"annual leave" &nbsp;↔&nbsp; "vacation days"</p>
+          <p class="muted" style="font-size:18px;margin-top:4px">Not one word in common. Nearly the same point.</p>
+          <p style="font-size:19px;margin-top:12px">"annual leave" &nbsp;↮&nbsp; "annual budget"</p>
+          <p class="muted" style="font-size:18px;margin-top:4px">One word in common. Far apart.</p>
+        </div>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>What follows from that</h3>
+        <ul>
+          <li>Search stops being about words and starts being about meaning.</li>
+          <li>It works across languages — an Arabic question can find an English chunk.</li>
+          <li>Chunks are embedded once; the question is embedded on every query.</li>
+          <li><code>gemini-embedding-001</code> is free, which is what makes today possible at zero spend.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Give this a beat, because it is where yesterday's mechanics pay off. The system is not matching words, it is matching positions in a space the model learned.</p>
+      <p>The cross-language point matters more here than anywhere else: a question typed in Arabic can retrieve the English policy that answers it, and that is genuinely useful in this building.</p>
+      <p>Flag the cost line too — embeddings are free on this tier and generation is not, and that shapes how you design.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 17 · Code: embed and store ══════ -->
+  <section class="slide slide--code">
+    <p class="slide__eyebrow">Stages 3 &amp; 4 · code</p>
+    <h2>Embed, then store</h2>
+    <div class="slide__cols">
+      <div>
+<pre><code><span class="k">import</span> chromadb, time
+<span class="k">from</span> google.genai <span class="k">import</span> types
+
+db = chromadb.Client()
+col = db.get_or_create_collection(<span class="s">"policies"</span>)
+
+<span class="k">def</span> embed(texts, task=<span class="s">"RETRIEVAL_DOCUMENT"</span>):
+    out = []
+    <span class="c"># Batch and sleep — the free tier rate-limits.</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">0</span>, len(texts), <span class="n">32</span>):
+        r = client.models.embed_content(
+            model=<span class="s">"gemini-embedding-001"</span>,
+            contents=texts[i:i + <span class="n">32</span>],
+            config=types.EmbedContentConfig(task_type=task),
+        )
+        out += [e.values <span class="k">for</span> e <span class="k">in</span> r.embeddings]
+        time.sleep(<span class="n">1</span>)
+    <span class="k">return</span> out
+
+col.add(
+    ids=[<span class="s">f"c{i}"</span> <span class="k">for</span> i <span class="k">in</span> range(len(records))],
+    documents=[r[<span class="s">"text"</span>] <span class="k">for</span> r <span class="k">in</span> records],
+    embeddings=embed([r[<span class="s">"text"</span>] <span class="k">for</span> r <span class="k">in</span> records]),
+    <span class="hl">metadatas=[{<span class="s">"source"</span>: r[<span class="s">"source"</span>],</span>
+    <span class="hl">            <span class="s">"page"</span>: r[<span class="s">"page"</span>]} <span class="k">for</span> r <span class="k">in</span> records],</span>
+)</code></pre>
+      </div>
+      <div class="slide__caption">
+        <h3>Notes</h3>
+        <ul>
+          <li><code>task_type</code> differs for documents and for queries — the wrong one quietly costs accuracy.</li>
+          <li>The <code>sleep</code> is not decoration. You will hit 429s today.</li>
+          <li>The highlighted lines are your citations, surviving into the store.</li>
+        </ul>
+        <h3 style="margin-top:12px">Where else it can live</h3>
+        <p><strong>Chroma</strong> local, zero setup — what we use. <strong>Pinecone</strong> managed. <strong>Weaviate</strong> open source, hybrid built in. <strong>pgvector</strong> if you already run Postgres.</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Two things will bite you here and both are visible in the code. The first is the rate limit, which is why we batch and sleep. The second is re-running this cell and duplicating the collection.</p>
+      <p>The task type distinction is subtle and real: documents and queries are embedded slightly differently, and mixing them degrades results in a way that is very hard to notice.</p>
+      <p>On the database choice — start with Chroma. Nobody was ever fired for prototyping locally.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 18 · Top-k ══════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Stage 5</p>
+    <h2>Top-k: coverage against noise</h2>
+    <div class="slide__cols">
+      <div>
+        <p>Embed the question, ask the store for the <em>k</em> nearest chunks, paste them into the prompt.</p>
+        <div class="slide-card" style="margin-top:12px">
+          <p><strong>k = 1</strong> — one shot. Miss, and the answer is gone.</p>
+          <p style="margin-top:8px"><strong>k = 3–5</strong> — the working range for most document sets.</p>
+          <p style="margin-top:8px"><strong>k = 20</strong> — the answer is probably in there, buried in nineteen distractions you also pay for.</p>
+        </div>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>More is not better</h3>
+        <ul>
+          <li>Every extra chunk is tokens on every single call.</li>
+          <li>Irrelevant context actively pulls the answer off course.</li>
+          <li>The fix for "the right chunk isn't in my top 3" is <strong>better retrieval</strong>, not a bigger k.</li>
+        </ul>
+        <p style="margin-top:10px" class="muted">Unless you re-rank. Then you retrieve twenty on purpose — that is coming up.</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>The instinct when retrieval misses is to raise k, and it feels like it works, because the right chunk is now somewhere in the pile.</p>
+      <p>But you have made every call more expensive and given the model more chances to answer from the wrong paragraph.</p>
+      <p>Hold that thought, because in twenty minutes I am going to tell you to retrieve twenty on purpose — the difference is that sixteen of them get thrown away.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 19 · Divider ══════ -->
+  <section class="slide slide--section">
+    <p class="slide__eyebrow">Part three · the ceiling</p>
+    <h2>Making it actually good</h2>
+    <p class="slide__kicker">You have working RAG. Now: where it fails, and what to do about it.</p>
+    <aside class="notes">
+      <p>Everything up to here gets you a demo that works on the questions you happened to try.</p>
+      <p>The next hour is what separates that from something you would let a colleague use, and it is the part of today that earns the word "applied".</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 20 · Where vector search fails ══════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">The ceiling</p>
+    <h2>Where meaning-based search falls over</h2>
+    <div style="display:grid;grid-template-columns:1.15fr 1fr;gap:32px;align-items:start">
+      <div>
+        <div class="slide-card">
+          <p class="muted" style="font-size:17px;margin-bottom:4px">The query</p>
+          <p style="font-family:var(--font-mono);font-size:21px">SDAIA-F-CRS-201-01-V1</p>
+          <p class="muted" style="font-size:17px;margin-top:12px">What vector search returns</p>
+          <p style="font-size:19px">Chunks about training programmes, course catalogues, form templates. All <em>topically</em> near. None of them the document.</p>
+        </div>
+        <p style="margin-top:12px">That string has no meaning to embed. It is an <strong>identifier</strong>, and identifiers match on characters, not semantics.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>Same failure, everywhere</h3>
+        <ul>
+          <li>Document and form numbers</li>
+          <li>Acronyms the model never learned</li>
+          <li>People's names and place names</li>
+          <li>Article and clause numbers — <span lang="ar" dir="rtl">المادة</span> 12</li>
+          <li>Product codes, error codes</li>
+        </ul>
+        <p style="margin-top:10px"><strong>These are exactly the queries a professional user types.</strong></p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>This is the slide where the room goes quiet, because everyone recognises that query. It is what a real employee types when they know precisely which document they want.</p>
+      <p>An embedding of a reference number is close to meaningless — the model never learned that string, so it lands somewhere arbitrary in the space.</p>
+      <p>The fix is not a better embedding model. It is admitting that keyword search was right about something, and that is exactly what we do next.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 21 · Hybrid ══════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">The ceiling</p>
+    <h2>Hybrid retrieval: run both</h2>
+    <div class="slide__cols">
+      <div class="slide-card">
+        <h3>BM25 — keyword</h3>
+        <p>Decades old, boring, unbeatable at exact strings. Scores a chunk on how often the query's rare words appear in it.</p>
+        <p class="muted" style="margin-top:8px">Finds <code>SDAIA-F-CRS-201-01-V1</code> instantly. Cannot connect "leave" to "vacation".</p>
+      </div>
+      <div class="slide-card">
+        <h3>Vector — meaning</h3>
+        <p>Finds the paragraph that answers the question even when it shares no words with it.</p>
+        <p class="muted" style="margin-top:8px">Connects "leave" to "vacation". Cannot find an ID.</p>
+      </div>
+    </div>
+    <p class="slide-callout">Normalise both score lists, add them with a weight, sort. <strong>Two searches, one ranked list</strong> — each covering the other's blind spot.</p>
+    <aside class="notes">
+      <p>The insight is that these two methods fail in opposite directions, and that is exactly when combining them is worth the extra complexity.</p>
+      <p>Normalising matters: BM25 scores and cosine similarities live on completely different scales, so adding them raw lets one drown the other.</p>
+      <p>Start the weight at fifty-fifty. If your users type a lot of reference numbers, push it towards keyword — and then measure whether that actually helped.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 22 · Code: hybrid ══════ -->
+  <section class="slide slide--code">
+    <p class="slide__eyebrow">The ceiling · code</p>
+    <h2>Hybrid search</h2>
+    <div class="slide__cols">
+      <div>
+<pre><code><span class="k">from</span> rank_bm25 <span class="k">import</span> BM25Okapi
+<span class="k">import</span> numpy <span class="k">as</span> np
+
+<span class="c"># Built once, over the same chunks as the vector index.</span>
+bm25 = BM25Okapi([r[<span class="s">"text"</span>].split() <span class="k">for</span> r <span class="k">in</span> records])
+
+<span class="k">def</span> norm(x):
+    <span class="c"># Squash to 0..1 so two score scales can be added.</span>
+    x = np.array(x, dtype=float)
+    <span class="k">return</span> (x - x.min()) / (np.ptp(x) + <span class="n">1e-9</span>)
+
+<span class="k">def</span> hybrid_search(query, k=<span class="n">5</span>, alpha=<span class="n">0.5</span>):
+    kw  = norm(bm25.get_scores(query.split()))
+    qv  = embed([query], task=<span class="s">"RETRIEVAL_QUERY"</span>)[<span class="n">0</span>]
+    vec = norm(vector_scores(qv))   <span class="c"># same order as records</span>
+
+    <span class="hl">score = alpha * vec + (<span class="n">1</span> - alpha) * kw</span>
+
+    top = np.argsort(score)[::-<span class="n">1</span>][:k]
+    <span class="k">return</span> [records[i] <span class="k">for</span> i <span class="k">in</span> top]</code></pre>
+      </div>
+      <div class="slide__caption">
+        <h3>The one line that matters</h3>
+        <p>The highlighted line is the whole idea. <code>alpha=1.0</code> is pure vector search; <code>alpha=0.0</code> is pure keyword.</p>
+        <p style="margin-top:12px">In the notebook, that line is your <code>TODO</code>.</p>
+        <p style="margin-top:12px" class="muted">Then re-run the query that failed two slides ago and watch it come back first.</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Everything on this slide is plumbing except one line, and that line is a weighted average.</p>
+      <p>The moment in the notebook is when the reference-number query that returned nothing useful comes back at rank one. Wait for that before you move on.</p>
+      <p>And do not tune alpha by feel. Tune it against the golden set you are about to write.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 23 · Re-ranking ══════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">The ceiling</p>
+    <h2>Re-ranking: retrieve 20 cheap, keep the best 4</h2>
+    <div class="slide__cols">
+      <div>
+        <p>Retrieval is fast and shallow. Judging relevance properly is slow and expensive. So do both, in that order.</p>
+        <ol class="numbered" style="margin-top:12px;font-size:19px">
+          <li>Hybrid search returns 20 candidates. Milliseconds.</li>
+          <li>Score each one for relevance, 0 to 10 — a cross-encoder, or the model itself.</li>
+          <li>Keep the best 4. Only those go into the prompt.</li>
+        </ol>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>Why this wins</h3>
+        <ul>
+          <li>Recall comes from the cheap wide net.</li>
+          <li>Precision comes from the expensive judge.</li>
+          <li>The prompt stays small, so generation stays cheap and focused.</li>
+        </ul>
+        <p style="margin-top:10px" class="muted">Cost: one extra call per question. Usually the best value in the whole pipeline.</p>
+      </div>
+    </div>
+    <p class="slide-callout">This is the "k = 20" I told you not to do — the difference is that sixteen of them never reach the model.</p>
+    <aside class="notes">
+      <p>Come back to the top-k slide explicitly here, because this looks like a contradiction and it is not.</p>
+      <p>Wide and cheap first, narrow and expensive second. That pattern shows up all over search, and it is why the two-stage design keeps winning.</p>
+      <p>In the notebook we use the model as the judge, which is slower than a proper cross-encoder but needs nothing extra installed.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 24 · Query rewriting ══════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">The ceiling</p>
+    <h2>The user's question is a bad search string</h2>
+    <div class="slide__cols">
+      <div class="slide-card">
+        <h3>What they type</h3>
+        <p style="font-size:19px">"and what about for part-timers?"</p>
+        <p class="muted" style="margin-top:8px">Meaningless alone. Retrieves nothing useful — the subject was two messages ago.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>What you search for</h3>
+        <p style="font-size:19px">"annual leave entitlement part-time employees"</p>
+        <p class="muted" style="margin-top:8px">One cheap call rewrites it using the conversation so far. Then you retrieve on that.</p>
+      </div>
+    </div>
+    <p class="slide-callout">Also useful: generate two or three variations, retrieve for each, merge the results. Cheap recall.</p>
+    <aside class="notes">
+      <p>This is the fix for the second question in every conversation, which is where most chat-over-documents systems quietly fall apart.</p>
+      <p>The user says "and for part-timers?" and your retriever, which has no memory at all, searches for exactly that.</p>
+      <p>One small rewriting call before retrieval and follow-up questions start working. It is one of the highest-value additions in this deck.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 25 · Divider ══════ -->
+  <section class="slide slide--section">
+    <p class="slide__eyebrow">Part four · the ceiling</p>
+    <h2>Proving it works</h2>
+    <p class="slide__kicker">"It looked right" is not a result. By 2:30 you will have a number.</p>
+    <aside class="notes">
+      <p>This last half hour is the part of the week I care most about, and it is the thing almost nobody does.</p>
+      <p>Everything we just added — hybrid, re-ranking, rewriting — is a guess until you can show that it moved a number.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 26 · Golden set ══════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Evaluation</p>
+    <h2>The golden question set</h2>
+    <div class="slide__cols">
+      <div>
+        <p>Ten questions <strong>you already know the answers to</strong>, written against your own documents, before you tune anything.</p>
+        <p style="margin-top:12px">For each one, record which chunk <em>should</em> come back — or a phrase that must appear in whatever does.</p>
+        <p style="margin-top:12px">Then: what fraction of the ten did retrieval get right? That is your hit rate.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>How to write good ones</h3>
+        <ul>
+          <li>Questions a real user would type, not questions your system will pass.</li>
+          <li>Include the awkward ones: an ID, an acronym, an Arabic question against an English document.</li>
+          <li>Include one whose answer <strong>is not in the corpus</strong> — "I don't know" is the correct output.</li>
+          <li>Ten is enough to be useful today. A hundred is a proper suite.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="slide-callout">Write them <strong>before</strong> you tune. Otherwise you are marking your own homework.</p>
+    <aside class="notes">
+      <p>Ten questions and half an hour buys you the ability to answer "did that change help?" for the rest of the project's life.</p>
+      <p>The third bullet is the one people leave out, and it is the one that catches a system which confidently answers everything.</p>
+      <p>Write yours this afternoon against your own documents. That set is also what you show on Thursday when somebody asks whether your project actually works.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 27 · Code: evaluation ══════ -->
+  <section class="slide slide--code">
+    <p class="slide__eyebrow">Evaluation · code</p>
+    <h2>Score it, three ways</h2>
+    <div class="slide__cols">
+      <div>
+<pre><code>GOLDEN = [
+  {<span class="s">"q"</span>: <span class="s">"How many annual leave days for grade 11?"</span>,
+   <span class="s">"must_contain"</span>: <span class="s">"Grade 11"</span>},
+  {<span class="s">"q"</span>: <span class="s">"What is SDAIA-F-CRS-201-01-V1?"</span>,
+   <span class="s">"must_contain"</span>: <span class="s">"SDAIA-F-CRS-201"</span>},
+  <span class="c"># ... eight more, written by you</span>
+]
+
+<span class="k">def</span> evaluate(search_fn, k=<span class="n">5</span>):
+    hits = <span class="n">0</span>
+    <span class="k">for</span> item <span class="k">in</span> GOLDEN:
+        got = <span class="s">" "</span>.join(r[<span class="s">"text"</span>]
+                      <span class="k">for</span> r <span class="k">in</span> search_fn(item[<span class="s">"q"</span>], k))
+        <span class="k">if</span> item[<span class="s">"must_contain"</span>].lower() <span class="k">in</span> got.lower():
+            hits += <span class="n">1</span>
+    <span class="k">return</span> hits / len(GOLDEN)
+
+<span class="k">for</span> name, fn <span class="k">in</span> [(<span class="s">"naive"</span>, vector_search),
+                 (<span class="s">"hybrid"</span>, hybrid_search),
+                 (<span class="s">"reranked"</span>, reranked_search)]:
+    print(name, evaluate(fn))</code></pre>
+      </div>
+      <div class="slide__caption">
+        <h3>What comes out</h3>
+        <table class="scoretable" style="font-size:18px">
+          <thead><tr><th>Retriever</th><th>Hit rate</th></tr></thead>
+          <tbody>
+            <tr><td>naive vector</td><td>6 / 10</td></tr>
+            <tr><td>hybrid</td><td>8 / 10</td></tr>
+            <tr><td class="win">+ re-ranked</td><td class="win">9 / 10</td></tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top:10px">Now you can say which change helped, and by how much. That sentence is worth more than the code above it.</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Fourteen lines. That is the entire cost of being able to prove your system works.</p>
+      <p>The containment check is crude — it measures whether the right text was retrieved, not whether the answer was good. That is deliberate, because retrieval is the part you can fix today.</p>
+      <p>When your table looks like this one, screenshot it. That is the slide in your Thursday presentation that separates you from the pairs who say "it seemed to work".</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 28 · Common mistakes ══════ -->
+  <section class="slide">
+    <p class="slide__eyebrow">Before you build</p>
+    <h2>The four mistakes everyone makes</h2>
+    <div class="cols4">
+      <div class="slide-card">
+        <h3>Chunks too big</h3>
+        <p>A whole page per chunk. Retrieval "works", answers are vague, every call is expensive.</p>
+      </div>
+      <div class="slide-card">
+        <h3>Top-k too high</h3>
+        <p>Twenty chunks into the prompt. The answer is in there somewhere — and so is everything else.</p>
+      </div>
+      <div class="slide-card">
+        <h3>No metadata</h3>
+        <p>No source, no page, so no citations — and no way to tell a good answer from a confident one.</p>
+      </div>
+      <div class="slide-card">
+        <h3>No evaluation</h3>
+        <p>Changes made on vibes. Nobody can say whether last week's tweak helped or hurt.</p>
+      </div>
+    </div>
+    <p class="slide-callout">The fourth one is why the other three go unnoticed for months.</p>
+    <aside class="notes">
+      <p>I have seen all four of these in production systems built by good engineers, usually all four at once.</p>
+      <p>Read the last line and let it sit, because it is the argument for everything we did after two o'clock today.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 29 · Lab ══════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Lab · Notebook 2</p>
+    <h2>Now you build the whole thing</h2>
+    <div class="slide__cols">
+      <div>
+        <h3 style="font-size:21px">day2_retrieval.ipynb</h3>
+        <ul>
+          <li><strong>Part A</strong> — load, clean, read a scanned page with vision, chunk, embed, store, query, answer with citations.</li>
+          <li><strong>Part B</strong> — watch vector search miss an ID, add BM25, combine, re-rank, rewrite the query.</li>
+          <li><strong>Part C</strong> — write your golden set and score all three retrievers.</li>
+        </ul>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>Two things will break</h3>
+        <ul>
+          <li><strong>429s.</strong> The batching and sleeping is already written. Do not remove it.</li>
+          <li><strong>Re-running the store cell</strong> duplicates your collection. Delete it first — there is a guard in the notebook.</li>
+        </ul>
+        <p style="margin-top:12px"><a class="btn" href="../notebooks/index.html">Open the notebooks →</a></p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Part A before lunch, Parts B and C after. If you finish A early, start pointing it at your own documents rather than waiting for me.</p>
+      <p>The two failures on the right will happen to somebody within ten minutes, and now they will know what it is.</p>
+      <p>And this afternoon we form project teams, so keep an eye on who is working well near you.</p>
+    </aside>
+  </section>
+
+  <!-- ══════ 30 · Summary ══════ -->
+  <section class="slide slide--full">
+    <p class="slide__eyebrow">Day 2</p>
+    <h2>What today was</h2>
+    <p><strong>1 ·</strong> If the answer is in a document, use RAG. If it needs a decision or an action, consider an agent — tomorrow.</p>
+    <p><strong>2 ·</strong> Five stages, and the first two decide whether the rest can work at all.</p>
+    <p><strong>3 ·</strong> Vector search cannot find an ID. Hybrid can. Re-ranking makes what comes back worth reading.</p>
+    <p><strong>4 ·</strong> <strong>You have a number now.</strong> Everything from here is measurable.</p>
+    <aside class="notes">
+      <p>Four things, and close on the fourth. You did not only build retrieval today, you built the ability to tell whether it is any good.</p>
+      <p>Tomorrow your retriever stops being the whole system and becomes one tool that an agent can choose to call. Say that clearly, because it is the payoff of the week.</p>
+      <p>Before anyone leaves: teams and project ideas, using the flipchart from Sunday.</p>
+    </aside>
+  </section>
+
+</div>
+
+<script src="../assets/deck.js"></script>
+</body>
+</html>

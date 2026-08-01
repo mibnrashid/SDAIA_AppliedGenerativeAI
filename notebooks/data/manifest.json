@@ -1,0 +1,29 @@
+{
+  "description": "Document set for Notebook 2 (day2_retrieval.ipynb).",
+  "text_files": [
+    "01_leave_policy_en.txt",
+    "02_training_policy_en.txt",
+    "03_data_governance_en.txt",
+    "04_security_policy_en.txt",
+    "05_procurement_en.txt",
+    "06_remote_work_en.txt",
+    "07_ai_ethics_en.txt",
+    "08_records_en.txt",
+    "09_leave_policy_ar.txt",
+    "10_data_protection_ar.txt",
+    "11_training_ar.txt",
+    "12_security_ar.txt",
+    "13_conduct_en.txt",
+    "14_it_support_en.txt",
+    "15_meeting_rooms_en.txt"
+  ],
+  "scan_image": "scan_p03.png",
+  "identifiers_present": [
+    "SDAIA-F-CRS-201-01-V1",
+    "SDAIA-HR-LEA-014-02-V3",
+    "SDAIA-SEC-POL-002-04-V5",
+    "SDAIA-DG-POL-007-01-V2",
+    "SDAIA-CIR-2024-118-01-V1"
+  ],
+  "note": "SDAIA-CIR-2024-118-01-V1 appears ONLY inside scan_p03.png. Until the vision extraction cell runs, no text search of any kind can find it - which is the point of that cell."
+}

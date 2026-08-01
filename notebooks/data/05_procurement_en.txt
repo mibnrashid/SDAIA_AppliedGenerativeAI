@@ -1,0 +1,11 @@
+Procurement Thresholds - Quick Reference
+Reference: SDAIA-FIN-PRC-030-02-V2
+
+Purchases below 5,000 SAR may be approved by the line manager.
+Purchases between 5,000 and 50,000 SAR require departmental head approval
+and two written quotations.
+Purchases above 50,000 SAR require a competitive process managed by the
+procurement office.
+
+Cloud services and AI services of any value require an additional security
+review under SDAIA-SEC-POL-002-04-V5 before a contract is signed.

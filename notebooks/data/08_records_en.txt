@@ -1,0 +1,12 @@
+Records Management Standard
+Reference: SDAIA-DG-REC-018-02-V1
+
+Official records are stored in the approved document management system. A
+record is any document that evidences a decision, an obligation or a
+transaction.
+
+Email is not a record store. Decisions taken by email must be transferred to
+the document management system within five working days.
+
+Disposal follows the retention schedule and requires sign-off from the
+records officer.

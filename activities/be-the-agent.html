@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Be the Agent · Applied Generative AI</title>
+  <link rel="stylesheet" href="../assets/theme.css">
+  <link rel="stylesheet" href="../assets/site.css">
+  <link rel="stylesheet" href="../assets/activity.css">
+  <style>
+    .split { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: var(--s4); align-items: start; }
+    @media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
+
+    .goal {
+      padding: var(--s4);
+      border-radius: var(--radius-sm);
+      background: rgba(14,130,100,.08);
+      border-left: 5px solid var(--teal);
+      font-size: 1.05rem;
+    }
+    .toolcard {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: var(--s3);
+      margin-bottom: var(--s3);
+      background: var(--paper);
+    }
+    .toolcard h3 { font-family: var(--font-mono); font-size: 0.95rem; margin: 0 0 4px; color: var(--teal-dark); }
+    .toolcard p { margin: 0 0 var(--s2); font-size: var(--fs-small); color: var(--text-muted); }
+    .toolcard .args { display: flex; gap: var(--s2); flex-wrap: wrap; align-items: flex-end; }
+    .toolcard .args .field { flex: 1 1 8rem; }
+    .toolcard input, .toolcard select { width: 100%; font-size: 0.95rem; padding: 0.4rem 0.55rem; }
+
+    /* Trace panel — meant to look like real agent output. */
+    .trace {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      background: var(--ink);
+      color: #e8ecf5;
+      border-radius: var(--radius-sm);
+      padding: var(--s3);
+      min-height: 20rem;
+      max-height: 32rem;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    .trace .t-step { color: #93a4c4; }
+    .trace .t-call { color: #79d2ff; }
+    .trace .t-ok   { color: #7ee2b8; }
+    .trace .t-err  { color: #ff9d7a; }
+    .trace .t-fin  { color: #ffc07a; }
+    .trace .t-note { color: #c9b6ff; }
+
+    .summary li { margin-bottom: var(--s2); }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="logo" href="../index.html" aria-label="Applied Generative AI — course home">
+        <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
+        <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
+      </a>
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+        <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="act-hero on-dark">
+      <div class="container">
+        <a class="back" href="./index.html">← All activities</a>
+        <div class="act-meta">
+          <span class="badge badge--day3">Day 3</span>
+          <span class="badge badge--time">15 minutes</span>
+          <span class="badge badge--time">Max 8 points</span>
+        </div>
+        <h1>Activity 3 · Be the Agent</h1>
+        <p>You are the model. Each turn you may call one tool or give a final answer.
+           You do not execute anything — you request, and the runtime executes for you.
+           6 points for the right answer, −1 per wasted step, +2 for recovering from a tool error.</p>
+      </div>
+    </section>
+
+    <div class="scorestrip">
+      <div class="container">
+        <div class="scorestrip__item">
+          <span class="scorestrip__label">Steps used</span>
+          <span class="scorestrip__value" id="s-steps">0</span>
+        </div>
+        <div class="scorestrip__item">
+          <span class="scorestrip__label">Minimum</span>
+          <span class="scorestrip__value scorestrip__value--muted">3</span>
+        </div>
+        <div class="scorestrip__item">
+          <span class="scorestrip__label">Recovered</span>
+          <span class="scorestrip__value scorestrip__value--muted" id="s-rec">no</span>
+        </div>
+        <div class="scorestrip__item">
+          <span class="scorestrip__label">Best</span>
+          <span class="scorestrip__value scorestrip__value--muted" id="s-best">—</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="section--tight">
+      <div class="container">
+        <div class="split">
+
+          <div>
+            <div class="panel">
+              <h2>Your goal</h2>
+              <p class="goal">"Find the cheapest flight to Jeddah on Tuesday and tell me the
+                 total for 3 passengers."</p>
+              <p class="small muted" style="margin-top:var(--s3)">
+                Answer with the final total in SAR, including taxes.
+              </p>
+            </div>
+
+            <div class="panel" id="tools">
+              <h2>Tools you may request</h2>
+
+              <div class="toolcard">
+                <h3>search_flights(destination, day)</h3>
+                <p>Returns available flights with the base fare per passenger. Does not include taxes.</p>
+                <div class="args">
+                  <div class="field">
+                    <label for="a-dest">destination</label>
+                    <input type="text" id="a-dest" value="Jeddah" autocomplete="off">
+                  </div>
+                  <div class="field">
+                    <label for="a-day">day</label>
+                    <input type="text" id="a-day" value="Tuesday" autocomplete="off">
+                  </div>
+                  <button type="button" class="btn btn--sm" data-tool="search_flights">Call</button>
+                </div>
+              </div>
+
+              <div class="toolcard">
+                <h3>get_price(flight_id, passengers)</h3>
+                <p>Returns the full total for that flight including taxes and fees. This is the number the user asked for.</p>
+                <div class="args">
+                  <div class="field">
+                    <label for="a-fid">flight_id</label>
+                    <input type="text" id="a-fid" placeholder="e.g. SV-1023" autocomplete="off">
+                  </div>
+                  <div class="field">
+                    <label for="a-pax">passengers</label>
+                    <input type="number" id="a-pax" value="3" min="1" max="9">
+                  </div>
+                  <button type="button" class="btn btn--sm" data-tool="get_price">Call</button>
+                </div>
+              </div>
+
+              <div class="toolcard">
+                <h3>calculate(expression)</h3>
+                <p>Arithmetic. Reliable, unlike doing it in your head — or in a model's head.</p>
+                <div class="args">
+                  <div class="field">
+                    <label for="a-expr">expression</label>
+                    <input type="text" id="a-expr" placeholder="e.g. 420 * 3" autocomplete="off">
+                  </div>
+                  <button type="button" class="btn btn--sm" data-tool="calculate">Call</button>
+                </div>
+              </div>
+
+              <div class="toolcard" style="border-color:var(--teal)">
+                <h3>final_answer(total_sar)</h3>
+                <p>Stop the loop and answer the user. You only get one of these.</p>
+                <div class="args">
+                  <div class="field">
+                    <label for="a-final">total in SAR</label>
+                    <input type="number" id="a-final" placeholder="e.g. 1485" autocomplete="off">
+                  </div>
+                  <button type="button" class="btn btn--sm" data-tool="final_answer">Answer</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="panel">
+              <h2>Trace</h2>
+              <div class="trace" id="trace" role="log" aria-live="polite"></div>
+              <p style="margin-top:var(--s3)">
+                <button type="button" class="btn btn--ghost btn--sm" id="restart">Start again</button>
+              </p>
+            </div>
+
+            <div class="panel" id="result" hidden>
+              <h2>What a real agent would have done</h2>
+              <div id="verdict"></div>
+              <ol class="summary small" id="summary"></ol>
+              <p style="margin-top:var(--s4)">
+                <button type="button" class="btn" id="again">Play again</button>
+                <a class="btn btn--ghost" href="./index.html">All activities</a>
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
+        <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
+      </span>
+      <p class="footer-text">Built for the SDAIA Academy course · Instructor: Musa Ibn Rashid</p>
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+        <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+      </span>
+    </div>
+  </footer>
+
+  <script src="../assets/store.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var ACTIVITY_ID = 'be-the-agent';
+      var MAX = 8;
+      var MIN_STEPS = 3;          // search, get_price (errors), get_price (retry)
+
+      /* Fixed dataset. The taxes are the trap: multiplying the base fare
+         by three gives the wrong answer, so get_price must be used. */
+      var FLIGHTS = [
+        { id: 'SV-1023', dep: '06:40', fare: 420, tax: 75 },
+        { id: 'XY-2210', dep: '11:05', fare: 465, tax: 75 },
+        { id: 'SV-1188', dep: '17:30', fare: 510, tax: 75 },
+        { id: 'F3-0447', dep: '21:15', fare: 445, tax: 90 }
+      ];
+      var CORRECT = (420 + 75) * 3;    // 1485
+
+      var steps = 0, priceCalls = 0, recovered = false, searched = false, done = false;
+      var traceEl = document.getElementById('trace');
+
+      function line(cls, text) {
+        var span = document.createElement('span');
+        span.className = cls;
+        span.textContent = text + '\n';
+        traceEl.appendChild(span);
+        traceEl.scrollTop = traceEl.scrollHeight;
+      }
+
+      function reset() {
+        steps = 0; priceCalls = 0; recovered = false; searched = false; done = false;
+        traceEl.innerHTML = '';
+        document.getElementById('result').hidden = true;
+        document.getElementById('tools').hidden = false;
+        updateStrip();
+        line('t-note', 'goal: cheapest flight to Jeddah on Tuesday, total for 3 passengers');
+        line('t-note', 'tools: search_flights, get_price, calculate, final_answer');
+        line('t-note', '');
+      }
+
+      function updateStrip() {
+        document.getElementById('s-steps').textContent = steps;
+        document.getElementById('s-rec').textContent = recovered ? 'yes' : 'no';
+      }
+
+      function showBest() {
+        var b = Store.getScore(ACTIVITY_ID);
+        document.getElementById('s-best').textContent = b ? b.score + ' / ' + b.max : '—';
+      }
+
+      /* ---- The simulated tools ----------------------------- */
+      var TOOLS = {
+        search_flights: function () {
+          var dest = document.getElementById('a-dest').value.trim();
+          var day = document.getElementById('a-day').value.trim();
+          line('t-call', 'search_flights(destination="' + dest + '", day="' + day + '")');
+
+          if (!/jed|\u062C\u062F\u0629/i.test(dest)) {
+            line('t-err', '  → {"error": "No route data for \'' + dest +
+                          '\'. Known destinations: Jeddah, Dammam, Abha."}');
+            return;
+          }
+          searched = true;
+          line('t-ok', '  → ' + JSON.stringify(FLIGHTS.map(function (f) {
+            return { id: f.id, dep: f.dep, base_fare_sar: f.fare };
+          })));
+          line('t-note', '  (base fare only — taxes are not included)');
+        },
+
+        get_price: function () {
+          var fid = document.getElementById('a-fid').value.trim().toUpperCase();
+          var pax = parseInt(document.getElementById('a-pax').value, 10);
+          line('t-call', 'get_price(flight_id="' + fid + '", passengers=' + pax + ')');
+
+          var flight = FLIGHTS.filter(function (f) { return f.id === fid; })[0];
+          if (!flight) {
+            line('t-err', '  → {"error": "Unknown flight id \'' + fid +
+                          '\'. Ids look like SV-1023. Call search_flights first."}');
+            return;
+          }
+          if (!pax || pax < 1) {
+            line('t-err', '  → {"error": "passengers must be a positive integer."}');
+            return;
+          }
+
+          priceCalls++;
+          /* The deliberate error: the pricing service is unavailable on
+             the first attempt. Recovering means simply calling again —
+             which is what a well-written tool error should invite. */
+          if (priceCalls === 1) {
+            line('t-err', '  → {"error": "PRICING_SERVICE_UNAVAILABLE", ' +
+                          '"detail": "Temporary failure. This is retryable — call again."}');
+            return;
+          }
+          if (priceCalls === 2) recovered = true;
+
+          var total = (flight.fare + flight.tax) * pax;
+          line('t-ok', '  → ' + JSON.stringify({
+            flight_id: flight.id, passengers: pax,
+            base: flight.fare * pax, taxes: flight.tax * pax, total_sar: total
+          }));
+        },
+
+        calculate: function () {
+          var expr = document.getElementById('a-expr').value.trim();
+          line('t-call', 'calculate(expression="' + expr + '")');
+          if (!/^[-+*/(). 0-9]+$/.test(expr)) {
+            line('t-err', '  → {"error": "Only arithmetic is allowed: digits, + - * / ( )."}');
+            return;
+          }
+          var value;
+          try { value = Function('"use strict";return (' + expr + ')')(); }
+          catch (e) { value = null; }
+          if (value === null || !isFinite(value)) {
+            line('t-err', '  → {"error": "Could not evaluate that expression."}');
+            return;
+          }
+          line('t-ok', '  → ' + value);
+        },
+
+        final_answer: function () {
+          var v = parseInt(document.getElementById('a-final').value, 10);
+          line('t-fin', 'final_answer(total_sar=' + (isNaN(v) ? 'null' : v) + ')');
+          finish(v);
+        }
+      };
+
+      /* ---- Turn handling ----------------------------------- */
+      document.getElementById('tools').addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-tool]');
+        if (!btn || done) return;
+
+        var name = btn.getAttribute('data-tool');
+        if (name !== 'final_answer') {
+          steps++;
+          line('t-step', 'step ' + steps + ':');
+        }
+        TOOLS[name]();
+        updateStrip();
+      });
+
+      function finish(answer) {
+        done = true;
+        document.getElementById('tools').hidden = true;
+
+        var correct = answer === CORRECT;
+        var wasted = Math.max(0, steps - MIN_STEPS);
+        var score = 0;
+        if (correct) score += 6;
+        score -= wasted;
+        if (recovered) score += 2;
+        score = Math.max(0, Math.min(MAX, score));
+
+        var v = document.getElementById('verdict');
+        v.className = 'verdict ' + (correct ? 'verdict--good' : 'verdict--bad');
+        v.innerHTML =
+          '<h3>' + score + ' / ' + MAX + ' points</h3>' +
+          '<p>' +
+            (correct
+              ? 'Correct: ' + CORRECT + ' SAR.'
+              : 'Not correct. The answer was ' + CORRECT + ' SAR — ' +
+                'the cheapest fare was 420, but taxes of 75 per passenger are only ' +
+                'visible through get_price. Multiplying the base fare gives 1260 and is wrong.') +
+            ' Steps used: ' + steps + ' (minimum ' + MIN_STEPS + ', so ' + wasted +
+            ' wasted). Recovery from the tool error: ' + (recovered ? 'yes, +2.' : 'no.') +
+          '</p>';
+
+        document.getElementById('summary').innerHTML = [
+          '<li><strong>Step 1 — search.</strong> A real agent starts by finding out what exists. It cannot price a flight it has not seen, and inventing a flight id is exactly the hallucination we designed the tool loop to prevent.</li>',
+          '<li><strong>Step 2 — the error.</strong> The pricing service failed once, on purpose. Notice the error text told you it was retryable. That is what a well-written tool error does: it gives the model enough to recover instead of guessing.</li>',
+          '<li><strong>Step 3 — retry.</strong> Calling again is the whole recovery. An agent without a readable error would have hallucinated a total here.</li>',
+          '<li><strong>The trap.</strong> calculate(420 * 3) returns 1260, confidently, and is wrong — taxes were never in the search results. The arithmetic was right and the answer was still wrong, which is the most dangerous kind of failure.</li>',
+          '<li><strong>Every step costs.</strong> The whole conversation is re-sent each turn, so step six is more expensive than step one. This is why the step cap exists.</li>'
+        ].join('');
+
+        document.getElementById('result').hidden = false;
+        Store.saveScore(ACTIVITY_ID, score, MAX);
+        showBest();
+        document.getElementById('result').setAttribute('tabindex', '-1');
+        document.getElementById('result').focus();
+      }
+
+      document.getElementById('restart').addEventListener('click', reset);
+      document.getElementById('again').addEventListener('click', reset);
+
+      showBest();
+      reset();
+    })();
+  </script>
+</body>
+</html>

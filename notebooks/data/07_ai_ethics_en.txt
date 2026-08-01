@@ -1,0 +1,17 @@
+Responsible AI - Internal Principles
+Reference: SDAIA-AI-ETH-001-01-V1
+
+1. Transparency
+Users must be told when they are interacting with an AI system, and given a
+route to a human.
+
+2. Accountability
+Every deployed AI system has a named owner who is accountable for its
+behaviour. "The model decided" is not an acceptable explanation.
+
+3. Fairness
+Systems are tested for differential performance across languages. A service
+that answers well in English and poorly in Arabic is not fit for purpose.
+
+4. Human oversight
+Irreversible actions require human approval before execution.

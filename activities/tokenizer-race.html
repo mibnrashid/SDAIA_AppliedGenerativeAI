@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tokenizer Race · Applied Generative AI</title>
+  <link rel="stylesheet" href="../assets/theme.css">
+  <link rel="stylesheet" href="../assets/site.css">
+  <link rel="stylesheet" href="../assets/activity.css">
+  <style>
+    .sentence {
+      font-size: 1.35rem;
+      line-height: 1.6;
+      padding: var(--s4);
+      background: var(--card-2);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      margin-bottom: var(--s4);
+    }
+    .sentence[lang="ar"] { font-family: var(--font-arabic); font-size: 1.5rem; }
+    .guessrow { display: flex; gap: var(--s3); align-items: flex-end; flex-wrap: wrap; }
+    .reveal[hidden] { display: none; }
+    .pairnote {
+      margin-top: var(--s4);
+      padding: var(--s4);
+      border-radius: var(--radius-sm);
+      background: rgba(240, 160, 60, .13);
+      border-left: 5px solid var(--amber);
+    }
+    .pairnote b { font-family: var(--font-display); font-size: 1.3rem; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="logo" href="../index.html" aria-label="Applied Generative AI — course home">
+        <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
+        <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
+      </a>
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+        <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="act-hero on-dark">
+      <div class="container">
+        <a class="back" href="./index.html">← All activities</a>
+        <div class="act-meta">
+          <span class="badge badge--day1">Day 1</span>
+          <span class="badge badge--time">8 minutes</span>
+          <span class="badge badge--time">Max 24 points</span>
+        </div>
+        <h1>Activity 1 · Tokenizer Race</h1>
+        <p>Eight sentences. Guess how many tokens each one costs before you see the answer.
+           Exact is 3 points, within 2 is 2 points, within 5 is 1 point.</p>
+      </div>
+    </section>
+
+    <div class="scorestrip">
+      <div class="container">
+        <div class="scorestrip__item">
+          <span class="scorestrip__label">Round</span>
+          <span class="scorestrip__value" id="round-num">1 / 8</span>
+        </div>
+        <div class="rounds" id="rounds" aria-hidden="true"></div>
+        <div class="scorestrip__item">
+          <span class="scorestrip__label">Score</span>
+          <span class="scorestrip__value" id="score">0</span>
+        </div>
+        <div class="scorestrip__item">
+          <span class="scorestrip__label">Best</span>
+          <span class="scorestrip__value scorestrip__value--muted" id="best">—</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="section--tight">
+      <div class="container">
+
+        <div class="panel" id="play">
+          <p class="approx">Approximate tokenizer</p>
+          <h2 style="margin-top:var(--s3)">How many tokens is this sentence?</h2>
+
+          <p class="sentence" id="sentence" lang="en" dir="ltr"></p>
+
+          <form id="guess-form">
+            <div class="guessrow">
+              <div class="field">
+                <label for="guess">Your guess</label>
+                <input type="number" id="guess" name="guess" min="1" max="999" required
+                       inputmode="numeric" autocomplete="off">
+              </div>
+              <button type="submit" class="btn" id="submit-guess">Submit guess</button>
+            </div>
+          </form>
+
+          <div class="reveal" id="reveal" hidden>
+            <div class="statgrid" style="margin-bottom:var(--s3)">
+              <div class="stat"><b id="r-actual">0</b><span>Actual tokens</span></div>
+              <div class="stat"><b id="r-guess">0</b><span>Your guess</span></div>
+              <div class="stat"><b id="r-chars">0</b><span>Characters</span></div>
+              <div class="stat"><b id="r-points">0</b><span>Points this round</span></div>
+            </div>
+
+            <p class="small muted" style="margin-bottom:var(--s2)">How the tokenizer split it:</p>
+            <div class="tokens" id="chips"></div>
+
+            <div class="verdict" id="verdict"></div>
+            <div class="pairnote" id="pairnote" hidden></div>
+
+            <p style="margin-top:var(--s4)">
+              <button type="button" class="btn" id="next">Next round →</button>
+            </p>
+          </div>
+        </div>
+
+        <div class="panel finish" id="finish" hidden>
+          <h2 style="font-family:var(--font-display);font-size:1.6rem">Race finished</h2>
+          <p class="finish__score" id="final-score">0 / 24</p>
+          <p class="muted" id="final-note"></p>
+          <div class="rowline" style="margin-top:var(--s4)">
+            <button type="button" class="btn" id="again">Play again</button>
+            <a class="btn btn--ghost" href="./index.html">All activities</a>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Why the number is "approximate"</h2>
+          <p class="small muted">
+            This page uses a documented heuristic rather than a real tokenizer, because every page on
+            this site has to work with the wifi off: roughly four characters per token for Latin
+            script, roughly two for Arabic, punctuation on its own, and whitespace attached to the
+            token that follows it. A real tokenizer would differ by a few either way. The
+            <strong>ratio</strong> between the two scripts — the thing that shows up on your bill — is right.
+          </p>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
+        <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
+      </span>
+      <p class="footer-text">Built for the SDAIA Academy course · Instructor: Musa Ibn Rashid</p>
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+        <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+      </span>
+    </div>
+  </footer>
+
+  <script src="../assets/store.js"></script>
+  <script src="../assets/tokenize.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var ACTIVITY_ID = 'tokenizer-race';
+      var MAX = 24;
+
+      /* Eight rounds, alternating English and Arabic, ending on a pair
+         that says exactly the same thing in both languages so the cost
+         difference lands without anyone having to explain it. */
+      var ROUNDS = [
+        { lang: 'en', text: 'The National Data Governance policy applies to every government entity.' },
+        { lang: 'ar', text: 'يجب على الموظف تقديم طلب الإجازة قبل أسبوعين على الأقل.' },
+        { lang: 'en', text: 'Employees must submit the leave request at least two weeks in advance.' },
+        { lang: 'ar', text: 'تهدف الهيئة السعودية للبيانات والذكاء الاصطناعي إلى تنظيم البيانات الوطنية.' },
+        { lang: 'en', text: 'Reference SDAIA-F-CRS-201-01-V1 supersedes all previous versions of this form.' },
+        { lang: 'ar', text: 'يخضع كل نموذج للمراجعة السنوية من قبل الإدارة المختصة.' },
+        { lang: 'en', text: 'Personal data may not be shared with any external party without written consent.',
+          pairFirst: true },
+        { lang: 'ar', text: 'لا يجوز مشاركة البيانات الشخصية مع أي جهة خارجية دون موافقة مكتوبة.',
+          pairSecond: true }
+      ];
+
+      var i = 0, score = 0, pairEnglishCount = null;
+
+      var el = {
+        sentence: document.getElementById('sentence'),
+        form: document.getElementById('guess-form'),
+        guess: document.getElementById('guess'),
+        reveal: document.getElementById('reveal'),
+        chips: document.getElementById('chips'),
+        verdict: document.getElementById('verdict'),
+        pairnote: document.getElementById('pairnote'),
+        score: document.getElementById('score'),
+        best: document.getElementById('best'),
+        roundNum: document.getElementById('round-num'),
+        rounds: document.getElementById('rounds'),
+        play: document.getElementById('play'),
+        finish: document.getElementById('finish')
+      };
+
+      function buildDots() {
+        el.rounds.innerHTML = '';
+        ROUNDS.forEach(function (_, n) {
+          var s = document.createElement('span');
+          if (n < i) s.className = 'is-done';
+          else if (n === i) s.className = 'is-now';
+          el.rounds.appendChild(s);
+        });
+      }
+
+      function showBest() {
+        var best = Store.getScore(ACTIVITY_ID);
+        el.best.textContent = best ? best.score + ' / ' + best.max : '—';
+      }
+
+      function loadRound() {
+        var r = ROUNDS[i];
+        el.sentence.textContent = r.text;
+        el.sentence.setAttribute('lang', r.lang);
+        el.sentence.setAttribute('dir', r.lang === 'ar' ? 'rtl' : 'ltr');
+        el.roundNum.textContent = (i + 1) + ' / ' + ROUNDS.length;
+        el.reveal.hidden = true;
+        el.pairnote.hidden = true;
+        el.form.hidden = false;
+        el.guess.value = '';
+        buildDots();
+        el.guess.focus();
+      }
+
+      function points(guess, actual) {
+        var d = Math.abs(guess - actual);
+        if (d === 0) return 3;
+        if (d <= 2) return 2;
+        if (d <= 5) return 1;
+        return 0;
+      }
+
+      el.form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var g = parseInt(el.guess.value, 10);
+        if (isNaN(g)) return;
+
+        var r = ROUNDS[i];
+        var actual = Tok.estimate(r.text);
+        var p = points(g, actual);
+        score += p;
+
+        document.getElementById('r-actual').textContent = actual;
+        document.getElementById('r-guess').textContent = g;
+        document.getElementById('r-chars').textContent = r.text.length;
+        document.getElementById('r-points').textContent = '+' + p;
+        el.score.textContent = score;
+
+        el.chips.innerHTML = '';
+        Tok.pieces(r.text).forEach(function (piece) {
+          var span = document.createElement('span');
+          span.className = 'tok';
+          span.textContent = piece;
+          if (Tok.isArabic((piece.trim().charAt(0) || ''))) {
+            span.setAttribute('lang', 'ar');
+            span.setAttribute('dir', 'rtl');
+          }
+          el.chips.appendChild(span);
+        });
+
+        var d = Math.abs(g - actual);
+        el.verdict.className = 'verdict ' +
+          (p === 3 ? 'verdict--good' : p === 0 ? 'verdict--bad' : 'verdict--warn');
+        el.verdict.innerHTML =
+          '<h3>' + (p === 3 ? 'Exact. 3 points.'
+                  : p === 0 ? 'Out by ' + d + '. No points.'
+                  : 'Out by ' + d + '. ' + p + ' point' + (p === 1 ? '' : 's') + '.') + '</h3>' +
+          '<p>' + (r.lang === 'ar'
+              ? 'Arabic runs at roughly two characters per token, so ' + r.text.length +
+                ' characters became ' + actual + ' tokens.'
+              : 'Latin script runs at roughly four characters per token, so ' + r.text.length +
+                ' characters became ' + actual + ' tokens.') + '</p>';
+
+        if (r.pairFirst) pairEnglishCount = actual;
+
+        /* Final round: same sentence as the one before, other language. */
+        if (r.pairSecond && pairEnglishCount) {
+          var ratio = (actual / pairEnglishCount).toFixed(1);
+          el.pairnote.hidden = false;
+          el.pairnote.innerHTML =
+            '<p>Those last two sentences said <strong>exactly the same thing</strong>.</p>' +
+            '<p style="margin-top:.5rem">English: ' + pairEnglishCount + ' tokens. ' +
+            'Arabic: ' + actual + ' tokens. <b>' + ratio + '× the cost</b> for the same meaning — ' +
+            'on every call, in and out, for the life of the product.</p>';
+        }
+
+        el.form.hidden = true;
+        el.reveal.hidden = false;
+        document.getElementById('next').focus();
+      });
+
+      document.getElementById('next').addEventListener('click', function () {
+        i++;
+        if (i >= ROUNDS.length) return finish();
+        loadRound();
+      });
+
+      function finish() {
+        Store.saveScore(ACTIVITY_ID, score, MAX);
+        el.play.hidden = true;
+        el.finish.hidden = false;
+        document.getElementById('final-score').textContent = score + ' / ' + MAX;
+        document.getElementById('final-note').textContent =
+          score >= 18 ? 'Strong. You have a feel for what text actually costs.'
+          : score >= 10 ? 'Reasonable. Most people underestimate Arabic — check whether you did.'
+          : 'Low, and that is fine. Almost nobody guesses these well before the course.';
+        showBest();
+        el.finish.setAttribute('tabindex', '-1');
+        el.finish.focus();
+      }
+
+      document.getElementById('again').addEventListener('click', function () {
+        i = 0; score = 0; pairEnglishCount = null;
+        el.score.textContent = '0';
+        el.finish.hidden = true;
+        el.play.hidden = false;
+        loadRound();
+      });
+
+      showBest();
+      loadRound();
+    })();
+  </script>
+</body>
+</html>

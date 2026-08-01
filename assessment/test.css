@@ -1,0 +1,140 @@
+/* ============================================================
+   test.css — shared chrome for the pre-test and post-test.
+   ============================================================ */
+
+.test-hero {
+  background: var(--ink);
+  color: var(--text-on-dark);
+  padding-block: var(--s5);
+}
+.test-hero h1 { margin-bottom: var(--s3); }
+.test-hero p { color: var(--text-muted-on-dark); max-width: 62ch; }
+
+.qlist { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--s4); }
+
+.q {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--s4);
+}
+.q > legend, .q__head {
+  display: block;
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: var(--s3);
+  padding: 0;
+}
+.q__num {
+  display: inline-block;
+  min-width: 2.2rem;
+  font-family: var(--font-display);
+  color: var(--teal);
+}
+.q__topic {
+  display: inline-block;
+  margin-left: var(--s2);
+  padding: 0.1rem 0.55rem;
+  border-radius: var(--radius-pill);
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  vertical-align: middle;
+}
+
+.opts { display: grid; gap: var(--s2); }
+.opt {
+  display: flex;
+  gap: var(--s3);
+  align-items: flex-start;
+  padding: var(--s3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  background: var(--paper);
+}
+.opt:hover { border-color: var(--teal); background: var(--card-2); }
+.opt input { margin-top: 0.25rem; accent-color: var(--teal); flex: none; }
+.opt:focus-within { outline: var(--focus-width) solid var(--focus); outline-offset: 2px; }
+
+/* Post-test review states. */
+.opt--correct { border-color: var(--teal); background: rgba(14, 130, 100, 0.09); }
+.opt--wrong   { border-color: var(--coral); background: rgba(228, 96, 42, 0.09); }
+.opt__mark { font-weight: 700; margin-left: auto; white-space: nowrap; }
+.opt--correct .opt__mark { color: var(--teal-dark); }
+.opt--wrong .opt__mark { color: var(--coral-ink); }
+
+.explain {
+  margin-top: var(--s3);
+  padding: var(--s3);
+  border-left: 4px solid var(--teal);
+  background: var(--card-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-small);
+}
+.explain strong { display: block; margin-bottom: var(--s1); }
+
+/* Sticky progress + submit bar. */
+.testbar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin-top: var(--s5);
+  padding: var(--s3) var(--s4);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+  flex-wrap: wrap;
+}
+.meter {
+  flex: 1 1 14rem;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: var(--card-2);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.meter span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--teal);
+  transition: width 180ms ease-out;
+}
+
+/* Result panel. */
+.result { text-align: center; padding: var(--s5); }
+.result__score {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 2rem + 6vw, 5rem);
+  line-height: 1;
+  color: var(--teal);
+  margin: 0 0 var(--s2);
+}
+.result__delta {
+  display: inline-block;
+  margin: var(--s3) 0 0;
+  padding: var(--s3) var(--s4);
+  border-radius: var(--radius);
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  font-size: 1.1rem;
+}
+.result__delta strong { color: var(--teal-dark); }
+.result .btn { margin-top: var(--s4); }
+.result__actions { display: flex; gap: var(--s3); justify-content: center; flex-wrap: wrap; }
+
+.copied { color: var(--teal-dark); font-weight: 700; }
+
+@media print {
+  .testbar, .site-header, .skip-link { display: none !important; }
+}

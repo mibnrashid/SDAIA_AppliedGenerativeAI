@@ -1,0 +1,9 @@
+Meeting Room Booking Rules
+Reference: SDAIA-ADM-MTG-009-01-V1
+
+Rooms are booked through the calendar system. Bookings not confirmed within
+ten minutes of the start time are released automatically.
+
+The board room requires approval from the office of the director. Rooms
+holding sessions with Restricted material must have the door closed and
+screens angled away from external windows.
