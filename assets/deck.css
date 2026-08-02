@@ -259,6 +259,63 @@
 .slide__caption h3 { font-size: 20px; color: var(--text); }
 .slide__caption ul { padding-left: 1.1em; }
 
+/* ---- Type and spacing scale inside slides ----------------
+   Slide body is 22px on the 1280x720 canvas. Anything smaller uses
+   one of these four steps rather than an ad-hoc pixel value, so text
+   across five decks stays on one scale. Same for the margins. */
+.slide .t-xs { font-size: 15px; }
+.slide .t-sm { font-size: 17px; }
+.slide .t-md { font-size: 19px; }
+.slide .t-lg { font-size: 21px; }
+
+.slide .mt-1 { margin-top: 8px; }
+.slide .mt-2 { margin-top: 12px; }
+.slide .mt-3 { margin-top: 16px; }
+.slide .mb-0 { margin-bottom: 4px; }
+.slide .mb-1 { margin-bottom: 8px; }
+.slide .mb-2 { margin-bottom: 12px; }
+
+/* ---- Week map: where today sits (every deck) -------------- */
+.weekmap { display: grid; gap: 10px; }
+.weekmap div {
+  display: grid; grid-template-columns: 118px 1fr; gap: 16px; align-items: baseline;
+  padding: 10px 14px; border-radius: var(--radius-sm); font-size: 19px;
+  border: 1px solid var(--border); background: var(--card);
+}
+.weekmap div span:first-child {
+  font-weight: 700; color: var(--text-muted); font-size: 16px;
+  letter-spacing: .06em; text-transform: uppercase;
+}
+.weekmap div.is-today { background: var(--ink); color: var(--text-on-dark); border-color: var(--ink); }
+.weekmap div.is-today span:first-child { color: var(--teal-bright); }
+.weekmap div.is-done { opacity: .55; }
+.weekmap div.is-done span:last-child { text-decoration: line-through; text-decoration-thickness: 1px; }
+
+/* ---- Day grid: how the hours run (every deck) ------------- */
+.daygrid { display: grid; gap: 6px; }
+.daygrid div {
+  display: grid; grid-template-columns: 9.5rem 1fr 4.5rem; gap: 12px; align-items: center;
+  padding: 8px 12px; border-radius: var(--radius-sm); font-size: 18px;
+  border: 1px solid var(--border); background: var(--card);
+}
+.daygrid div span:first-child { font-family: var(--font-mono); font-size: 16px; color: var(--text-muted); }
+.daygrid div span:last-child { text-align: right; font-size: 15px; color: var(--text-muted); }
+.daygrid div.is-break { background: var(--card-2); font-size: 16px; color: var(--text-muted); }
+.daygrid div.is-break span:first-child { font-size: 15px; }
+.daygrid div.is-lunch { border-left: 4px solid var(--amber); }
+.daygrid div.is-now { background: var(--ink); color: var(--text-on-dark); border-color: var(--ink); }
+.daygrid div.is-now span { color: var(--text-muted-on-dark); }
+.daygrid div.is-now span:first-child { color: var(--teal-bright); }
+.daygrid div.is-now span:nth-child(2) { color: var(--text-on-dark); font-weight: 700; }
+
+/* Day 5 runs 11 rows instead of 9 (post-test plus two presentation
+   blocks). A slide clips rather than scrolls, so tighten that one. */
+.daygrid--tight { gap: 4px; }
+.daygrid--tight div { padding: 5px 12px; font-size: 17px; }
+.daygrid--tight div span:first-child { font-size: 15px; }
+.daygrid--tight div span:last-child { font-size: 14px; }
+.daygrid--tight div.is-break { font-size: 15px; }
+
 /* ---- Bits used inside slides ----------------------------- */
 .slide table { width: 100%; border-collapse: collapse; font-size: 19px; }
 .slide th, .slide td {

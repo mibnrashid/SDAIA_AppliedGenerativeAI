@@ -28,18 +28,9 @@
       font-family: var(--font-display); font-size: 26px; font-weight: 700;
       color: var(--teal);
     }
-    .weekmap { display: grid; gap: 10px; }
-    .weekmap div {
-      display: grid; grid-template-columns: minmax(7.25rem, auto) 1fr; gap: 16px; align-items: start;
-      padding: 10px 14px; border-radius: var(--radius-sm); font-size: 20px;
-      border: 1px solid var(--border); background: var(--card);
-    }
-    .weekmap div span:first-child { font-weight: 700; color: var(--text-muted); font-size: 17px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
-    .weekmap div.is-today { background: var(--ink); color: var(--text-on-dark); border-color: var(--ink); }
-    .weekmap div.is-today span:first-child { color: var(--teal-bright); }
     .tokenbits span {
       display: inline-block; padding: 3px 7px; margin: 0 3px 6px 0;
-      border-radius: 5px; font-family: var(--font-mono); font-size: 18px;
+      border-radius: 5px; font-family: var(--font-mono); font-size: 17px;
       background: rgba(14,130,100,.12); border: 1px solid rgba(14,130,100,.3);
     }
     .tokenbits span:nth-child(even) { background: rgba(228,96,42,.12); border-color: rgba(228,96,42,.32); }
@@ -78,7 +69,7 @@
     .facts { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
     .facts li {
       padding: 10px 14px; border-radius: var(--radius-sm);
-      border: 1px solid var(--border); background: var(--card); font-size: 18px;
+      border: 1px solid var(--border); background: var(--card); font-size: 19px;
     }
     .facts li[lang="ar"] { font-family: var(--font-arabic); font-size: 1.05em; }
     .intro-prompt {
@@ -86,7 +77,7 @@
     }
     .intro-prompt div {
       padding: 16px 18px; border-radius: var(--radius-sm);
-      border: 1px solid var(--border); background: var(--card); font-size: 20px;
+      border: 1px solid var(--border); background: var(--card); font-size: 19px;
     }
     .intro-prompt div b {
       display: block; font-size: 14px; letter-spacing: .08em;
@@ -99,20 +90,6 @@
       background: var(--card-2); color: var(--text-muted); text-align: center;
     }
     .qr-box .big { font-family: var(--font-display); font-size: 2.4rem; line-height: 1; color: var(--teal); }
-    .daygrid { display: grid; gap: 6px; }
-    .daygrid div {
-      display: grid; grid-template-columns: 9.5rem 1fr 4.5rem; gap: 12px; align-items: center;
-      padding: 8px 12px; border-radius: var(--radius-sm); font-size: 18px;
-      border: 1px solid var(--border); background: var(--card);
-    }
-    .daygrid div span:first-child { font-family: var(--font-mono); font-size: 16px; color: var(--text-muted); }
-    .daygrid div span:last-child { text-align: right; font-size: 15px; color: var(--text-muted); }
-    .daygrid div.is-break { background: var(--card-2); font-size: 16px; color: var(--text-muted); }
-    .daygrid div.is-break span:first-child { font-family: var(--font-sans); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; font-size: 14px; }
-    .daygrid div.is-lunch { border-left: 4px solid var(--amber); }
-    .daygrid div.is-now { background: var(--ink); color: var(--text-on-dark); border-color: var(--ink); }
-    .daygrid div.is-now span { color: var(--text-muted-on-dark); }
-    .daygrid div.is-now span:first-child { color: var(--teal-bright); }
     .ice-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     .ice-steps div {
       padding: 12px 14px; border-radius: var(--radius-sm);
@@ -149,7 +126,7 @@
       <div>
         <p><strong>Musa Ibn Rashid</strong> — Software Engineering from KFUPM, QA Engineering Intern at Sawt,
            Qimam Fellow, and KAUST AI Summer Internship alumni.</p>
-        <p style="margin-top:12px">AI Instructor at SDAIA Academy, specialising in Applied Generative AI,
+        <p class="mt-2">AI Instructor at SDAIA Academy, specialising in Applied Generative AI,
            Computer Vision, and Prompt Engineering. I like helping people ship, empowering tech talent,
            and building AI that bridges complex ideas with practical execution.</p>
       </div>
@@ -194,7 +171,7 @@
              <img src="../assets/whatsapp-qr.png" alt="WhatsApp group QR code"> -->
         <span class="big">📱</span>
         <p><strong>Scan the QR code on screen</strong></p>
-        <p class="muted" style="font-size:16px;margin:0">I will open it now — announcements, links, and quick help between blocks.</p>
+        <p class="muted t-xs" style="margin:0">I will open it now — announcements, links, and quick help between blocks.</p>
       </div>
       <div class="slide-card">
         <h3>Why bother</h3>
@@ -203,7 +180,7 @@
           <li>Ask a question without stopping the whole room.</li>
           <li>Pair up for the project if you miss someone on day one.</li>
         </ul>
-        <p class="muted" style="margin-top:12px;font-size:17px">No confidential data in the group. Treat it like a classroom channel.</p>
+        <p class="muted mt-2 t-sm">No confidential data in the group. Treat it like a classroom channel.</p>
       </div>
     </div>
     <aside class="notes">
@@ -274,7 +251,38 @@
     </aside>
   </section>
 
-  <!-- ══════════ 8 · Objectives ══════════ -->
+  <!-- ══════════ 8 · Pre-test ══════════ -->
+  <section class="slide slide--split">
+    <p class="slide__eyebrow">Fifteen minutes · in your browser</p>
+    <h2>Pre-test</h2>
+    <div class="slide__cols">
+      <div>
+        <p>Twenty questions across the whole week — mechanics, retrieval, agents,
+           cost, security. Most of it we have not taught yet.</p>
+        <p class="slide-callout mt-3"><strong>This measures me, not you.</strong>
+           Zero is a fine score this morning. On Thursday you take the identical
+           test and we look at the difference.</p>
+      </div>
+      <div class="slide-card slide-card--accent">
+        <h3>How to take it</h3>
+        <ul>
+          <li>Open the course site → <strong>Start pre-test</strong>.</li>
+          <li>No timer. Answer what you can, guess the rest.</li>
+          <li>Nothing is shared — it saves to your own browser.</li>
+          <li>Hit <strong>Copy my result</strong> at the end and read it out.</li>
+        </ul>
+        <p class="mt-2"><a class="btn" href="../assessment/pretest.html">Open the pre-test →</a></p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Frame this before anyone opens it, or half the room will feel tested on material they have never seen.</p>
+      <p>Say it plainly: this measures the course, not them, and a low score right now is exactly what the week is for.</p>
+      <p>Fifteen minutes is generous. When most people are done, move on rather than waiting for the last person.</p>
+      <p>Collect the scores for the SDAIA sheet — the copy button puts it on their clipboard in one tap.</p>
+    </aside>
+  </section>
+
+  <!-- ══════════ 9 · Objectives ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Day 1</p>
     <h2>What you will be able to do by 2:30</h2>
@@ -292,7 +300,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 9 · Divider ══════════ -->
+  <!-- ══════════ 10 · Divider ══════════ -->
   <section class="slide slide--section">
     <p class="slide__eyebrow">Part one</p>
     <h2>How the thing actually works</h2>
@@ -303,21 +311,21 @@
     </aside>
   </section>
 
-  <!-- ══════════ 10 · Discriminative vs generative ══════════ -->
+  <!-- ══════════ 11 · Discriminative vs generative ══════════ -->
   <section class="slide slide--split">
     <h2>Two kinds of model</h2>
     <div class="slide__cols">
       <div class="slide-card">
         <h3>Discriminative</h3>
         <p class="muted">Draws a boundary. Given input, pick a label.</p>
-        <p style="margin-top:10px">"Is this transaction fraud?" → <strong>yes / no</strong></p>
-        <p class="muted" style="margin-top:10px">Fixed set of answers. You can measure accuracy directly.</p>
+        <p class="mt-2">"Is this transaction fraud?" → <strong>yes / no</strong></p>
+        <p class="muted mt-2">Fixed set of answers. You can measure accuracy directly.</p>
       </div>
       <div class="slide-card">
         <h3>Generative</h3>
         <p class="muted">Models the distribution. Given input, produce new content.</p>
-        <p style="margin-top:10px">"Write the fraud alert for this customer." → <strong>a paragraph that never existed</strong></p>
-        <p class="muted" style="margin-top:10px">Infinite possible answers. "Correct" is much harder to define.</p>
+        <p class="mt-2">"Write the fraud alert for this customer." → <strong>a paragraph that never existed</strong></p>
+        <p class="muted mt-2">Infinite possible answers. "Correct" is much harder to define.</p>
       </div>
     </div>
     <p class="slide-callout">That second column is why everything this week is about <strong>constraining</strong> the output.</p>
@@ -328,17 +336,17 @@
     </aside>
   </section>
 
-  <!-- ══════════ 11 · Tokens ══════════ -->
+  <!-- ══════════ 12 · Tokens ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Mechanics</p>
     <h2>A token is not a word</h2>
     <p>The model never sees letters or words. Text is cut into <strong>tokens</strong> — common chunks, learned from data — and each one becomes a number.</p>
     <div class="slide-card">
-      <p class="muted" style="font-size:18px;margin-bottom:8px">"Generative models are unbelievably useful."</p>
+      <p class="muted t-sm mb-1">"Generative models are unbelievably useful."</p>
       <div class="tokenbits">
         <span>Gener</span><span>ative</span><span> models</span><span> are</span><span> un</span><span>bel</span><span>iev</span><span>ably</span><span> useful</span><span>.</span>
       </div>
-      <p class="muted" style="font-size:18px">6 words · <strong>10 tokens</strong>. Common words are one token; rare ones get broken up.</p>
+      <p class="muted t-sm">6 words · <strong>10 tokens</strong>. Common words are one token; rare ones get broken up.</p>
     </div>
     <p class="slide-callout">You are billed per token, in and out. Tokens are the unit of everything: cost, limits, speed.</p>
     <aside class="notes">
@@ -348,20 +356,20 @@
     </aside>
   </section>
 
-  <!-- ══════════ 12 · Arabic vs English + widget ══════════ -->
+  <!-- ══════════ 13 · Arabic vs English + widget ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Mechanics · live</p>
     <h2>The same sentence costs more in Arabic</h2>
     <div class="slide__cols" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start">
       <div>
-        <div class="slide-card" style="margin-bottom:12px">
-          <p class="muted" style="font-size:17px;margin-bottom:4px">English</p>
-          <p style="font-size:19px">"The National Data Governance policy applies to every entity."</p>
+        <div class="slide-card mb-2">
+          <p class="muted t-sm mb-0">English</p>
+          <p class="t-md">"The National Data Governance policy applies to every entity."</p>
           <p class="bigstat">≈ 11 tokens</p>
         </div>
         <div class="slide-card">
-          <p class="muted" style="font-size:17px;margin-bottom:4px">Arabic — the same meaning</p>
-          <p style="font-size:19px" lang="ar" dir="rtl">تنطبق سياسة حوكمة البيانات الوطنية على كل جهة.</p>
+          <p class="muted t-sm mb-0">Arabic — the same meaning</p>
+          <p class="t-md" lang="ar" dir="rtl">تنطبق سياسة حوكمة البيانات الوطنية على كل جهة.</p>
           <p class="bigstat" style="color:var(--coral-ink)">≈ 26 tokens</p>
         </div>
       </div>
@@ -372,7 +380,7 @@
           <output id="tok-count" for="tok-input">0</output> tokens ·
           <span id="tok-chars" class="muted">0 characters</span>
         </p>
-        <p class="muted" style="font-size:15px">Approximate. A heuristic, not the real tokenizer: ~4 characters per token for Latin script, ~2 for Arabic.</p>
+        <p class="muted t-xs">Approximate. A heuristic, not the real tokenizer: ~4 characters per token for Latin script, ~2 for Arabic.</p>
       </div>
     </div>
     <aside class="notes">
@@ -382,14 +390,14 @@
     </aside>
   </section>
 
-  <!-- ══════════ 13 · Context window ══════════ -->
+  <!-- ══════════ 14 · Context window ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Mechanics</p>
     <h2>The context window</h2>
     <div class="slide__cols">
       <div>
         <p>Everything the model can see at once: your system instruction, the conversation so far, any documents you pasted in, <em>and</em> the answer it is writing.</p>
-        <p style="margin-top:14px">Measured in tokens. Go over it and the call fails, or the earliest content silently falls out.</p>
+        <p class="mt-3">Measured in tokens. Go over it and the call fails, or the earliest content silently falls out.</p>
       </div>
       <div class="slide-card slide-card--accent">
         <h3>The consequences</h3>
@@ -407,16 +415,16 @@
     </aside>
   </section>
 
-  <!-- ══════════ 14 · Next-token prediction ══════════ -->
+  <!-- ══════════ 15 · Next-token prediction ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Mechanics</p>
     <h2>It is predicting the next token. That is the whole trick.</h2>
     <div class="slide-card">
-      <p style="font-size:20px;margin-bottom:8px" class="muted">"The capital of Saudi Arabia is"</p>
+      <p class="muted t-md mb-1">"The capital of Saudi Arabia is"</p>
       <div class="tokenbits">
         <span>Riyadh — 94%</span><span>the — 2%</span><span>located — 1%</span><span>a — 0.4%</span>
       </div>
-      <p class="muted" style="font-size:18px">It picks one, appends it, and asks the same question again. Hundreds of times.</p>
+      <p class="muted t-sm">It picks one, appends it, and asks the same question again. Hundreds of times.</p>
     </div>
     <p>Nothing in that loop checks whether the sentence is <strong>true</strong>. It checks whether it is <strong>likely</strong>.</p>
     <p class="slide-callout">Fluent and wrong are not opposites here. Fluency is the objective; truth never was.</p>
@@ -427,7 +435,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 15 · Temperature ══════════ -->
+  <!-- ══════════ 16 · Temperature ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">The dial you actually turn</p>
     <h2>Temperature</h2>
@@ -436,17 +444,17 @@
       <div class="slide-card">
         <span class="temp-tag">temperature = 0.0</span>
         <p>"A data governance policy defines how data is managed."</p>
-        <p class="muted" style="margin-top:8px;font-size:17px">Run it three times, get this three times. Predictable.</p>
+        <p class="muted mt-1 t-sm">Run it three times, get this three times. Predictable.</p>
       </div>
       <div class="slide-card">
         <span class="temp-tag">temperature = 0.7</span>
         <p>"A data governance policy sets the rules for how an organisation handles its data."</p>
-        <p class="muted" style="margin-top:8px;font-size:17px">Varied wording, same substance.</p>
+        <p class="muted mt-1 t-sm">Varied wording, same substance.</p>
       </div>
       <div class="slide-card">
         <span class="temp-tag">temperature = 1.2</span>
         <p>"Think of governance as the traffic law of your data highways — signs, lanes, and fines."</p>
-        <p class="muted" style="margin-top:8px;font-size:17px">Creative. Also where it starts inventing.</p>
+        <p class="muted mt-1 t-sm">Creative. Also where it starts inventing.</p>
       </div>
     </div>
     <p class="slide-callout">Extraction, classification, anything you parse: <strong>0.0 to 0.2</strong>. Drafting and ideation: 0.7 up.</p>
@@ -457,14 +465,14 @@
     </aside>
   </section>
 
-  <!-- ══════════ 16 · Hallucination ══════════ -->
+  <!-- ══════════ 17 · Hallucination ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Mechanics</p>
     <h2>Hallucination is a property, not a bug</h2>
     <div class="slide__cols">
       <div>
         <p>The model produces likely text. When it has no grounding, likely text still arrives — confident, well formatted, and wrong.</p>
-        <p style="margin-top:14px">It will invent a policy number, a citation, an article, a date. Fluently.</p>
+        <p class="mt-3">It will invent a policy number, a citation, an article, a date. Fluently.</p>
       </div>
       <div class="slide-card slide-card--accent">
         <h3>You design around it</h3>
@@ -484,7 +492,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 17 · Four ways ══════════ -->
+  <!-- ══════════ 18 · Four ways ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">The spine of the week</p>
     <h2>Four ways to make a model useful</h2>
@@ -507,7 +515,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 18 · Divider ══════════ -->
+  <!-- ══════════ 19 · Divider ══════════ -->
   <section class="slide slide--section">
     <p class="slide__eyebrow">Part two</p>
     <h2>Make it reliable</h2>
@@ -518,7 +526,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 19 · System vs user ══════════ -->
+  <!-- ══════════ 20 · System vs user ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Roles</p>
     <h2>System instruction vs user message</h2>
@@ -526,12 +534,12 @@
       <div class="slide-card">
         <h3>System</h3>
         <p class="muted">Who the model is, what it may do, how it answers. Set by <strong>you</strong>, the developer. Sent on every call.</p>
-        <p style="margin-top:10px;font-size:19px">"You are an HR policy assistant. Answer only from the provided documents. If the answer is not there, say so."</p>
+        <p class="mt-2 t-md">"You are an HR policy assistant. Answer only from the provided documents. If the answer is not there, say so."</p>
       </div>
       <div class="slide-card">
         <h3>User</h3>
         <p class="muted">The question. Comes from <strong>outside</strong> — possibly from someone who does not wish you well.</p>
-        <p style="margin-top:10px;font-size:19px">"How many annual leave days do I get?"</p>
+        <p class="mt-2 t-md">"How many annual leave days do I get?"</p>
       </div>
     </div>
     <p class="slide-callout">That separation is a <strong>security boundary</strong> — and on Thursday you will spend the morning attacking it.</p>
@@ -542,7 +550,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 20 · Anatomy of a prompt ══════════ -->
+  <!-- ══════════ 21 · Anatomy of a prompt ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Prompting</p>
     <h2>Anatomy of a prompt that holds</h2>
@@ -560,22 +568,22 @@
     </aside>
   </section>
 
-  <!-- ══════════ 21 · Few-shot ══════════ -->
+  <!-- ══════════ 22 · Few-shot ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Prompting</p>
     <h2>Show it, don't tell it</h2>
     <div class="slide__cols">
       <div class="slide-card">
         <h3>Before — zero-shot</h3>
-        <p class="muted" style="font-size:18px">"Classify this support ticket."</p>
-        <p style="margin-top:10px;font-size:19px">→ "This appears to be a complaint about slow service, possibly urgent."</p>
-        <p class="muted" style="margin-top:8px;font-size:17px">A different shape every time. Unparseable.</p>
+        <p class="muted t-sm">"Classify this support ticket."</p>
+        <p class="mt-2 t-md">→ "This appears to be a complaint about slow service, possibly urgent."</p>
+        <p class="muted mt-1 t-sm">A different shape every time. Unparseable.</p>
       </div>
       <div class="slide-card slide-card--accent">
         <h3>After — two examples</h3>
-        <p class="muted" style="font-size:18px">"Ticket: 'Portal is down.' → outage | high<br>Ticket: 'How do I reset my password?' → account | low<br>Ticket: '…' →"</p>
-        <p style="margin-top:10px;font-size:19px">→ "billing | medium"</p>
-        <p class="muted" style="margin-top:8px;font-size:17px">Same shape every time. Now you can split on the pipe.</p>
+        <p class="muted t-sm">"Ticket: 'Portal is down.' → outage | high<br>Ticket: 'How do I reset my password?' → account | low<br>Ticket: '…' →"</p>
+        <p class="mt-2 t-md">→ "billing | medium"</p>
+        <p class="muted mt-1 t-sm">Same shape every time. Now you can split on the pipe.</p>
       </div>
     </div>
     <p class="slide-callout">Two examples usually beat two paragraphs of instruction. Cheaper, too.</p>
@@ -586,7 +594,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 22 · Divider ══════════ -->
+  <!-- ══════════ 23 · Divider ══════════ -->
   <section class="slide slide--section">
     <p class="slide__eyebrow">Part three · the ceiling</p>
     <h2>Make it typed</h2>
@@ -597,15 +605,15 @@
     </aside>
   </section>
 
-  <!-- ══════════ 23 · Why free text fails ══════════ -->
+  <!-- ══════════ 24 · Why free text fails ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">The ceiling</p>
     <h2>Free text is unusable inside software</h2>
     <p class="slide__kicker">You ask for the customer's name and how urgent the request is. You get:</p>
     <div class="cols3">
-      <div class="slide-card"><p style="font-size:19px">"The customer is Sara Al-Otaibi and this seems quite urgent."</p></div>
-      <div class="slide-card"><p style="font-size:19px">"Name: Sara Al-Otaibi<br>Urgency: High"</p></div>
-      <div class="slide-card"><p style="font-size:19px">"Sure! Here's what I found — the sender appears to be Sara…"</p></div>
+      <div class="slide-card"><p class="t-md">"The customer is Sara Al-Otaibi and this seems quite urgent."</p></div>
+      <div class="slide-card"><p class="t-md">"Name: Sara Al-Otaibi<br>Urgency: High"</p></div>
+      <div class="slide-card"><p class="t-md">"Sure! Here's what I found — the sender appears to be Sara…"</p></div>
     </div>
     <p>Three runs, three shapes. Now write the <code>if</code> statement that routes the urgent ones.</p>
     <p class="slide-callout">Regex over model output is a bug you have not hit yet. The fix is not a better parser — it is a <strong>contract</strong>.</p>
@@ -616,7 +624,7 @@
     </aside>
   </section>
 
-  <!-- ══════════ 24 · Code: JSON mode ══════════ -->
+  <!-- ══════════ 25 · Code: JSON mode ══════════ -->
   <section class="slide slide--code slide--code-compact">
     <p class="slide__eyebrow">The ceiling · code</p>
     <h2>Ask for JSON, and define the shape</h2>
@@ -668,7 +676,7 @@ resp = client.models.generate_content(
     </aside>
   </section>
 
-  <!-- ══════════ 25 · Code: parse and branch ══════════ -->
+  <!-- ══════════ 26 · Code: parse and branch ══════════ -->
   <section class="slide slide--code">
     <p class="slide__eyebrow">The ceiling · code</p>
     <h2>This is the moment</h2>
@@ -694,8 +702,8 @@ print(u.prompt_token_count, u.candidates_token_count)</code></pre>
         <div class="slide__caption">
           <h3>Why this matters</h3>
           <p>No regex. No string matching. No "if the answer contains the word urgent".</p>
-          <p style="margin-top:12px">The model is now a <strong>function that returns a typed value</strong>, and the rest of your system does not need to know an LLM was involved.</p>
-          <p style="margin-top:12px" class="muted">Everything on Tuesday — tools, agents — is this idea again, in a loop.</p>
+          <p class="mt-2">The model is now a <strong>function that returns a typed value</strong>, and the rest of your system does not need to know an LLM was involved.</p>
+          <p class="muted mt-2">Everything on Tuesday — tools, agents — is this idea again, in a loop.</p>
         </div>
     </div>
     <aside class="notes">
@@ -705,7 +713,7 @@ print(u.prompt_token_count, u.candidates_token_count)</code></pre>
     </aside>
   </section>
 
-  <!-- ══════════ 26 · Code: ask() ══════════ -->
+  <!-- ══════════ 27 · Code: ask() ══════════ -->
   <section class="slide slide--code slide--code-compact">
     <p class="slide__eyebrow">The ceiling · code</p>
     <h2>Wrap it once, use it all week</h2>
@@ -741,7 +749,7 @@ MODEL = <span class="s">"gemini-2.5-flash-lite"</span>
             <li>Retries with backoff — you <em>will</em> hit rate limits tomorrow.</li>
             <li>Schema optional: prose when you want prose, typed data when you don't.</li>
           </ul>
-          <p class="muted" style="margin-top:10px">Given complete in the notebook. Read it, don't retype it.</p>
+          <p class="muted mt-2">Given complete in the notebook. Read it, don't retype it.</p>
         </div>
     </div>
     <aside class="notes">
@@ -751,7 +759,7 @@ MODEL = <span class="s">"gemini-2.5-flash-lite"</span>
     </aside>
   </section>
 
-  <!-- ══════════ 27 · Six layers ══════════ -->
+  <!-- ══════════ 28 · Six layers ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Zoom out</p>
     <h2>The model is not the solution</h2>
@@ -771,7 +779,7 @@ MODEL = <span class="s">"gemini-2.5-flash-lite"</span>
     </aside>
   </section>
 
-  <!-- ══════════ 28 · Lifecycle ══════════ -->
+  <!-- ══════════ 29 · Lifecycle ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">How the work goes</p>
     <h2>The solution lifecycle</h2>
@@ -791,13 +799,13 @@ MODEL = <span class="s">"gemini-2.5-flash-lite"</span>
     </aside>
   </section>
 
-  <!-- ══════════ 29 · Lab ══════════ -->
+  <!-- ══════════ 30 · Lab ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Lab · Notebook 1</p>
     <h2>Now you build it</h2>
     <div class="slide__cols">
       <div>
-        <h3 style="font-size:21px">day1_first_calls.ipynb</h3>
+        <h3 class="t-lg">day1_first_calls.ipynb</h3>
         <ul>
           <li>Your first call, and the token counts.</li>
           <li>Arabic vs English on the same sentence.</li>
@@ -814,7 +822,7 @@ MODEL = <span class="s">"gemini-2.5-flash-lite"</span>
           <li>Put it in Colab <strong>Secrets</strong> (the 🔑 panel) as <code>GEMINI_API_KEY</code>.</li>
           <li>Free tier: no real SDAIA data, no personal data. It may train the model.</li>
         </ul>
-        <p style="margin-top:14px"><a class="btn" href="../notebooks/index.html">Open the notebooks →</a></p>
+        <p class="mt-3"><a class="btn" href="../notebooks/index.html">Open the notebooks →</a></p>
       </div>
     </div>
     <aside class="notes">
@@ -824,7 +832,7 @@ MODEL = <span class="s">"gemini-2.5-flash-lite"</span>
     </aside>
   </section>
 
-  <!-- ══════════ 30 · Summary ══════════ -->
+  <!-- ══════════ 31 · Summary ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Day 1</p>
     <h2>What today was</h2>
@@ -841,7 +849,7 @@ MODEL = <span class="s">"gemini-2.5-flash-lite"</span>
     </aside>
   </section>
 
-  <!-- ══════════ 31 · Homework ══════════ -->
+  <!-- ══════════ 32 · Homework ══════════ -->
   <section class="slide slide--full">
     <p class="slide__eyebrow">Before 9:15 tomorrow</p>
     <h2>Two things tonight</h2>
