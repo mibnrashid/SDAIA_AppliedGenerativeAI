@@ -1,0 +1,78 @@
+{
+  "_readme": [
+    "This file drives resources/index.html. Edit THIS, never the HTML.",
+    "",
+    "Add a group for each kind of thing you want to hand out. Groups render",
+    "in the order they appear here, and so do the items inside them.",
+    "",
+    "  group.title        heading shown above the group",
+    "  group.note         one muted line under the heading, optional",
+    "  group.items[]      the cards",
+    "",
+    "Each item takes:",
+    "  title        required",
+    "  kind         badge text: Notebook / Slides / Link / PDF / Dataset / Sheet",
+    "  description  one or two sentences, optional",
+    "  day          small label on the right, e.g. 'Day 3' or 'Optional'",
+    "  href         where the card links. RELATIVE for files in this repo",
+    "               ('./handouts/x.pdf', '../notebooks/y.ipynb'), absolute",
+    "               https:// only for genuinely external things.",
+    "  download     true to force a download instead of opening in the tab",
+    "  extra        { label, href } for a second link on the same card",
+    "",
+    "To add a file: drop it in resources/handouts/ and point href at",
+    "'./handouts/your-file.pdf'. No other change is needed.",
+    "",
+    "An empty items list is fine — the group renders with a placeholder line."
+  ],
+  "groups": [
+    {
+      "title": "Optional reference",
+      "note": "Not handed out and not required. There is no scaffold notebook this year — you build a repository. This is here only if you want to read how the pieces fit together in one file.",
+      "items": [
+        {
+          "title": "Project scaffold notebook",
+          "kind": "Notebook",
+          "day": "Optional",
+          "description": "Last year's single-notebook version of the project: config, ingest, chunk, index, retrieve, tools, agent loop, guardrails, golden set. Read it for the shape, then write the repository instead.",
+          "href": "../notebooks/project_scaffold.ipynb",
+          "download": true,
+          "extra": {
+            "label": "Open in Colab",
+            "href": "https://colab.research.google.com/drive/1YR3LDrZAnftOV1Q04c8B9m1-aiFJNkMV?usp=sharing"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Slides",
+      "note": "Printable copies of the decks, added as the week goes.",
+      "items": []
+    },
+    {
+      "title": "Links",
+      "note": "Documentation and tools worth having open.",
+      "items": [
+        {
+          "title": "Google AI Studio — get your API key",
+          "kind": "Link",
+          "day": "Day 1",
+          "description": "Free tier. Create a key here, then paste it into Colab Secrets as GEMINI_API_KEY.",
+          "href": "https://aistudio.google.com/"
+        },
+        {
+          "title": "SDAIA Academy on GitHub",
+          "kind": "Link",
+          "day": "Project",
+          "description": "Link to this from your project README — it is one of the six SDAIA repository requirements.",
+          "href": "https://github.com/SDAIAAcademy"
+        }
+      ]
+    },
+    {
+      "title": "Handouts",
+      "note": "Anything printed or shared in the room.",
+      "items": []
+    }
+  ]
+}

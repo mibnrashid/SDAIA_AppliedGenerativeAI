@@ -4,70 +4,192 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The project · Applied Generative AI</title>
+  <meta name="description" content="Build an assistant that answers from documents you choose, calls tools when retrieval isn't enough, and proves it works with numbers. SDAIA Academy, August 2026.">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../assets/theme.css">
   <link rel="stylesheet" href="../assets/site.css">
   <style>
-    .page-hero h1 { max-width: 14ch; }
-    .page-hero-inner { padding-block: 0 var(--s6); }
+    /* ---- Bands ---------------------------------------------
+       Full-width alternating surfaces. --paper is the body
+       background, so only the card band needs painting. */
+    .band { padding-block: var(--s6); }
+    .band--card { background: var(--card); border-block: 1px solid var(--border); }
+    .band > .container > .head { margin-bottom: var(--s5); }
+    .head h2 { margin-bottom: var(--s3); }
+    .head p { color: var(--text-muted); max-width: 68ch; margin: 0; }
 
-    /* The rubric is the most prominent thing on the page. */
-    .rubric-wrap {
-      border: 3px solid var(--teal);
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: var(--shadow-md);
-      background: var(--card);
-    }
-    .rubric-head {
-      background: var(--teal); color: #fff;
-      padding: var(--s4) var(--s5);
-      display: flex; align-items: baseline; justify-content: space-between;
+    /* ---- Hero ----------------------------------------------- */
+    .page-hero h1 { max-width: 18ch; }
+    .hero-row {
+      display: flex; align-items: flex-start; justify-content: space-between;
       gap: var(--s4); flex-wrap: wrap;
     }
-    .rubric-head h2 { color: #fff; margin: 0; font-size: 1.9rem; }
-    .rubric-head p { margin: 0; font-weight: 700; }
-    .tablewrap { overflow-x: auto; }
-    table.rubric { width: 100%; border-collapse: collapse; min-width: 42rem; }
-    table.rubric th, table.rubric td { text-align: left; padding: var(--s3) var(--s4); border-bottom: 1px solid var(--border); vertical-align: top; }
-    table.rubric thead th { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); background: var(--card-2); }
-    table.rubric td.pts { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--teal); text-align: right; white-space: nowrap; }
-    table.rubric td.crit { font-weight: 700; white-space: nowrap; }
-    table.rubric td.full { font-size: var(--fs-small); color: var(--text-muted); }
-    tr.total td { background: var(--ink); color: var(--text-on-dark); font-weight: 700; border-bottom: 0; }
-    tr.total td.pts { color: var(--teal-bright); }
+    .hero-chips { margin-top: var(--s5); }
 
-    .checklist { display: grid; gap: var(--s2); }
-    .checklist label {
-      display: grid; grid-template-columns: 1.4rem 1fr; gap: var(--s3);
-      align-items: start; padding: var(--s3);
-      border: 1px solid var(--border); border-radius: var(--radius-sm);
-      background: var(--card); cursor: pointer; font-size: var(--fs-small);
+    /* ---- Section 2 · the split ------------------------------ */
+    .split { display: grid; gap: var(--s4); grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+    .split div { padding: var(--s5) var(--s4); text-align: center; }
+    .split .n {
+      display: block; font-family: var(--font-display); font-weight: 700;
+      font-size: 3.4rem; line-height: 1; color: var(--teal); margin-bottom: var(--s2);
+      font-variant-numeric: tabular-nums;
     }
-    .checklist label:hover { border-color: var(--teal); }
-    .checklist input { margin-top: .2rem; accent-color: var(--teal); width: 1.05rem; height: 1.05rem; }
-    .checklist input:checked + span { color: var(--text-muted); text-decoration: line-through; }
+    .split h3 { font-size: 1.15rem; margin: 0 0 var(--s1); }
+    .split p { color: var(--text-muted); font-size: var(--fs-small); margin: 0; }
+    .split div:nth-child(1) { border-top: 4px solid var(--teal); }
+    .split div:nth-child(2) { border-top: 4px solid var(--coral); }
+    .split div:nth-child(3) { border-top: 4px solid var(--ink); }
+    .split div:nth-child(3) .n { color: var(--ink); }
+    .split div:nth-child(2) .n { color: var(--coral-ink); }
 
-    .timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s3); }
-    @media (max-width: 780px) { .timeline { grid-template-columns: 1fr 1fr; } }
-    .timeline div { padding: var(--s4); border-radius: var(--radius-sm); background: var(--card); border: 1px solid var(--border); }
-    .timeline b { display: block; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin-bottom: var(--s2); }
-    .timeline p { margin: 0; font-size: var(--fs-small); color: var(--text-muted); }
-    .timeline div:nth-child(1) { border-top: 4px solid var(--teal); }
-    .timeline div:nth-child(2) { border-top: 4px solid var(--teal-bright); }
-    .timeline div:nth-child(3) { border-top: 4px solid var(--coral); }
-    .timeline div:nth-child(4) { border-top: 4px solid var(--amber); }
+    /* ---- Section 3 · requirement cards ---------------------- */
+    .reqs { display: grid; gap: var(--s4); grid-template-columns: 1fr 1fr; }
+    @media (max-width: 760px) { .reqs { grid-template-columns: 1fr; } }
+    .req { display: flex; flex-direction: column; padding: var(--s4) var(--s5) var(--s4) var(--s4); }
+    .req__top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s3); }
+    .req__n {
+      font-family: var(--font-display); font-weight: 700; font-size: 2.4rem;
+      line-height: 1; color: var(--teal); flex: none;
+    }
+    .req__tick {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: var(--tracking-eyebrow); color: var(--text-muted);
+      cursor: pointer; padding: 0.25rem 0.5rem; border-radius: var(--radius-sm);
+    }
+    .req__tick:hover { background: var(--card-2); }
+    .req__tick input { accent-color: var(--teal); width: 1.05rem; height: 1.05rem; margin: 0; }
+    .req h3 { font-size: 1.2rem; margin: var(--s2) 0 var(--s2); }
+    .req p { color: var(--text-muted); font-size: var(--fs-small); margin: 0 0 var(--s3); }
+    .req .from {
+      margin-top: auto; padding-top: var(--s3); border-top: 1px solid var(--border);
+      font-size: 0.78rem; color: var(--text-muted); font-style: italic;
+    }
+    .req--done { border-color: var(--teal); }
+    .req--done .req__n { color: var(--teal-bright); }
 
-    pre.readme {
+    .reqbar {
+      position: sticky; bottom: 0; z-index: 5; margin-top: var(--s4);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: var(--s3); flex-wrap: wrap;
+      background: var(--ink); color: var(--text-on-dark);
+      padding: var(--s3) var(--s4); border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+    }
+    .reqbar strong { color: var(--teal-bright); font-variant-numeric: tabular-nums; }
+    .reqbar .small { color: var(--text-muted-on-dark); }
+    .reqbar button {
+      background: none; border: 0; padding: 0; font: inherit;
+      color: var(--teal-bright); font-weight: 700; cursor: pointer;
+      text-decoration: underline; text-underline-offset: 0.18em;
+    }
+
+    /* ---- Tables --------------------------------------------- */
+    .tablewrap { overflow-x: auto; }
+    table.t { width: 100%; border-collapse: collapse; min-width: 42rem; background: var(--card); }
+    table.t th, table.t td {
+      text-align: left; padding: var(--s3) var(--s4);
+      border-bottom: 1px solid var(--border); vertical-align: top;
+    }
+    table.t thead th {
+      font-size: 0.72rem; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--text-on-dark); background: var(--ink);
+    }
+    table.t tbody tr:last-child td { border-bottom: 0; }
+    table.t td.pts {
+      font-family: var(--font-display); font-size: 1.6rem; font-weight: 700;
+      color: var(--teal); text-align: right; white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    table.t td.crit { font-weight: 700; }
+    table.t td.dim { font-size: var(--fs-small); color: var(--text-muted); }
+    table.t code { white-space: nowrap; }
+    .tablecard { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
+    .tablecard + .tablecard { margin-top: var(--s5); }
+    .tablecard > h3 {
+      margin: 0; padding: var(--s3) var(--s4);
+      background: var(--teal); color: #fff; font-family: var(--font-sans);
+      font-size: 1rem; letter-spacing: .02em;
+    }
+    .tablecard > h3 span { float: right; font-weight: 400; opacity: .9; }
+
+    /* ---- Callouts ------------------------------------------- */
+    .callout {
+      border-left: 5px solid var(--teal); background: rgba(11,116,87,.08);
+      padding: var(--s4) var(--s5); border-radius: var(--radius-sm);
+    }
+    .callout--amber { border-left-color: var(--amber); background: rgba(240,160,60,.13); }
+    .callout--coral { border-left-color: var(--coral); background: rgba(228,96,42,.10); }
+    .callout h3 { font-size: 1.1rem; margin: 0 0 var(--s2); }
+    .callout p { margin: 0 0 var(--s3); }
+    .callout p:last-child { margin-bottom: 0; }
+    .callout ul { margin: 0 0 var(--s3); padding-left: 1.2rem; }
+    .callout li { margin-bottom: var(--s2); }
+
+    /* ---- Code blocks ---------------------------------------- */
+    pre.code {
       background: var(--ink); color: #e8ecf5;
       padding: var(--s4); border-radius: var(--radius-sm);
-      overflow-x: auto; font-size: .82rem; line-height: 1.6;
-      max-height: 30rem; overflow-y: auto;
+      overflow-x: auto; font-size: 0.82rem; line-height: 1.6; margin: 0;
     }
+    pre.readme { max-height: 32rem; overflow-y: auto; }
     .copyrow { display: flex; gap: var(--s3); align-items: center; flex-wrap: wrap; margin-bottom: var(--s3); }
     .copied { color: var(--teal-dark); font-weight: 700; font-size: var(--fs-small); }
-    .section-head h2 { margin-bottom: var(--s2); }
-    .section-head { margin-bottom: var(--s4); }
+
+    /* The mapping table is three columns and the widest thing on the page,
+       so the tree sits above it rather than beside it — side by side, the
+       table's middle column wrapped to four lines a row. */
+    .build > div + div { margin-top: var(--s5); }
+    .build h3 { margin-bottom: var(--s3); }
+    .tree { max-width: 46rem; }
+
+    /* ---- Section 5b · timeline ------------------------------ */
+    .timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s4); }
+    @media (max-width: 860px) { .timeline { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 520px) { .timeline { grid-template-columns: 1fr; } }
+    .timeline article { display: flex; flex-direction: column; overflow: hidden; }
+    .timeline .day { padding: var(--s3) var(--s4); color: #fff; }
+    .timeline .day b { display: block; font-family: var(--font-display); font-size: 1.35rem; }
+    .timeline .day span { font-size: var(--fs-small); font-style: italic; opacity: .92; }
+    .timeline article:nth-child(1) .day { background: var(--teal); }
+    .timeline article:nth-child(2) .day { background: var(--ink); }
+    .timeline article:nth-child(3) .day { background: var(--coral); }
+    .timeline article:nth-child(4) .day { background: var(--amber); color: var(--ink); }
+    .timeline .body { padding: var(--s4); flex: 1 1 auto; }
+    .timeline .when {
+      display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: var(--tracking-eyebrow); color: var(--text-muted); margin-bottom: var(--s2);
+    }
+    .timeline p { font-size: var(--fs-small); color: var(--text-muted); margin: 0; }
+
+    /* ---- Section 7 · SDAIA checklist ------------------------ */
+    .checklist { display: grid; gap: var(--s2); }
+    .checklist li {
+      display: grid; grid-template-columns: 1.2rem 1fr; gap: var(--s3);
+      align-items: start; padding: var(--s3);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--card); font-size: var(--fs-small);
+      list-style: none;
+    }
+    .checklist { padding: 0; margin: 0; }
+    .checklist li::before { content: "☐"; color: var(--teal); font-size: 1.05rem; line-height: 1.3; }
+
+    /* ---- Print ----------------------------------------------
+       Students want the rubric on paper and nothing else. Every
+       band is hidden, then the three marked .print-me bands come
+       back. Keep this list in sync if a section is added. */
+    @media print {
+      .page-hero, .site-footer, .band { display: none !important; }
+      .band.print-me { display: block !important; padding-block: 0 var(--s5); }
+      .band--card.print-me { background: #fff; border: 0; }
+      .reqbar, .copyrow, .no-print { display: none !important; }
+      table.t { min-width: 0; font-size: 0.8rem; }
+      table.t thead th { background: #fff; color: #000; border-bottom: 2px solid #000; }
+      .tablecard > h3 { background: #fff; color: #000; border-bottom: 1px solid #000; }
+      .print-title { display: block !important; }
+      .callout { border-left-width: 3px; }
+    }
+    .print-title { display: none; }
   </style>
 </head>
 <body>
@@ -75,6 +197,7 @@
 
   <main id="main">
 
+    <!-- ══════════ 1 · Hero ══════════ -->
     <section class="page-hero on-dark">
       <header class="site-header site-header--hero">
         <div class="container">
@@ -90,155 +213,523 @@
       </header>
 
       <div class="container page-hero-inner">
-        <a class="back" href="../index.html">← Course home</a>
-        <p class="eyebrow">SDAIA Academy</p>
-        <h1>The project</h1>
-        <p>Build a generative AI assistant over documents you care about.
-           Ship it to GitHub. Defend the architecture you chose.</p>
+        <div class="hero-row">
+          <a class="back" href="../index.html">← Course home</a>
+          <button type="button" class="btn btn--on-dark btn--sm" id="print-rubric">
+            Print the rubric
+          </button>
+        </div>
+        <p class="eyebrow">SDAIA Academy · The project</p>
+        <h1>Ship something that runs.</h1>
+        <p>Build an assistant that answers from documents you choose, calls tools
+           when retrieval isn't enough, and proves it works with numbers. Then ship
+           it as a repository a stranger can clone and run.</p>
+        <ul class="chips hero-chips">
+          <li class="chip">Teams of 2–3</li>
+          <li class="chip">70% of your grade</li>
+          <li class="chip">Due Thursday 2:30</li>
+          <li class="chip">Python</li>
+        </ul>
       </div>
     </section>
 
-    <!-- ---------- Rubric: the most prominent thing here ---------- -->
-    <section class="section--tight">
+    <!-- ══════════ 2 · How it is graded ══════════ -->
+    <section class="band band--card print-me" id="grading">
       <div class="container">
-        <div class="rubric-wrap">
-          <div class="rubric-head">
-            <h2>How it is scored</h2>
-            <p>100 points · pass at 60 · marked live on Thursday</p>
+        <h2 class="print-title">The project · Applied Generative AI · SDAIA Academy, August 2026</h2>
+        <div class="head">
+          <h2>How it is graded</h2>
+          <p>Published on day one. 100 points total — 70 from the project, 30 from
+             Thursday's theory exam. The team shares one build mark.</p>
+        </div>
+
+        <div class="split">
+          <div class="card">
+            <span class="n">60</span>
+            <h3>Build</h3>
+            <p>The repository and what it does</p>
           </div>
+          <div class="card">
+            <span class="n">10</span>
+            <h3>Presentation</h3>
+            <p>Four minutes on Thursday</p>
+          </div>
+          <div class="card">
+            <span class="n">30</span>
+            <h3>Theory exam</h3>
+            <p>Written, Thursday morning</p>
+          </div>
+        </div>
+
+        <p class="muted small" style="margin-top:var(--s4)">
+          Optional deployment is worth up to <strong>+5 bonus</strong>, capped at 100.
+          Pass mark is 60 overall.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══════════ 3 · What must be in it ══════════ -->
+    <section class="band" id="requirements">
+      <div class="container">
+        <div class="head">
+          <h2>What must be in it</h2>
+          <p>Six requirements. All six are graded. "Working" means it runs on a laptop
+             from a fresh clone — no deployment needed.</p>
+        </div>
+
+        <div class="reqs">
+
+          <article class="card req" data-req="1">
+            <div class="req__top">
+              <span class="req__n" aria-hidden="true">1</span>
+              <label class="req__tick">
+                <input type="checkbox" data-req-input="1">
+                <span>Done</span>
+              </label>
+            </div>
+            <h3>Your own documents</h3>
+            <p>Ten to thirty pages you actually care about — a policy, a manual, a
+               handbook, a set of regulations. Not a tutorial dataset. Nothing
+               confidential: we are on a free tier and Google may use free-tier inputs
+               to improve their models.</p>
+            <p class="from">Where it comes from — you.</p>
+          </article>
+
+          <article class="card req" data-req="2">
+            <div class="req__top">
+              <span class="req__n" aria-hidden="true">2</span>
+              <label class="req__tick">
+                <input type="checkbox" data-req-input="2">
+                <span>Done</span>
+              </label>
+            </div>
+            <h3>A retrieval pipeline</h3>
+            <p>Ingest, chunk, embed, store, and retrieve. Hybrid search — keyword and
+               vector combined — because pure vector search misses exact identifiers,
+               acronyms and names.</p>
+            <p class="from">Where it comes from — Lab 2, cells 3–19.</p>
+          </article>
+
+          <article class="card req" data-req="3">
+            <div class="req__top">
+              <span class="req__n" aria-hidden="true">3</span>
+              <label class="req__tick">
+                <input type="checkbox" data-req-input="3">
+                <span>Done</span>
+              </label>
+            </div>
+            <h3>Grounded answers with citations</h3>
+            <p>Every fact traceable to a source and a page. And when the documents do
+               not contain the answer, the assistant says so instead of inventing one.
+               An assistant that always answers is worse than one that sometimes
+               declines.</p>
+            <p class="from">Where it comes from — Lab 2, cell 11.</p>
+          </article>
+
+          <article class="card req" data-req="4">
+            <div class="req__top">
+              <span class="req__n" aria-hidden="true">4</span>
+              <label class="req__tick">
+                <input type="checkbox" data-req-input="4">
+                <span>Done</span>
+              </label>
+            </div>
+            <h3>At least one tool</h3>
+            <p>A plain Python function is fine — no MCP, no external service required.
+               The rule is that it must do something <strong>retrieval cannot</strong>:
+               compute something, look something up in structured data, filter, or check
+               a live value. A tool that just searches your documents again is not a tool.</p>
+            <p class="from">Where it comes from — Lab 3, cells 2–5.</p>
+          </article>
+
+          <article class="card req" data-req="5">
+            <div class="req__top">
+              <span class="req__n" aria-hidden="true">5</span>
+              <label class="req__tick">
+                <input type="checkbox" data-req-input="5">
+                <span>Done</span>
+              </label>
+            </div>
+            <h3>An agent loop</h3>
+            <p>The model decides when to retrieve and when to call a tool, rather than
+               you hard-coding the order. Keep the step cap. Print the trace so you can
+               show it on Thursday.</p>
+            <p class="from">Where it comes from — Lab 3, cell 8.</p>
+          </article>
+
+          <article class="card req" data-req="6">
+            <div class="req__top">
+              <span class="req__n" aria-hidden="true">6</span>
+              <label class="req__tick">
+                <input type="checkbox" data-req-input="6">
+                <span>Done</span>
+              </label>
+            </div>
+            <h3>Evidence that it works</h3>
+            <p>A golden set of at least five questions you know the answers to, and a
+               measured hit rate.</p>
+            <p class="from">Where it comes from — Lab 2, cells 21–24.</p>
+          </article>
+
+        </div>
+
+        <div class="reqbar">
+          <p style="margin:0">
+            <span id="req-count" role="status"><strong>0</strong> of 6 requirements ticked</span>
+            <span class="small"> · saved in this browser only, never submitted anywhere</span>
+          </p>
+          <button type="button" id="req-reset">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ 4 · Pick a project ══════════ -->
+    <section class="band band--card" id="pick">
+      <div class="container">
+        <div class="head">
+          <h2>Pick a project</h2>
+          <p>Bring your own, or take one of these. Whatever you choose has to pass two
+             tests: <strong>nobody has a clean dataset for it</strong>, and <strong>the
+             tool does something retrieval cannot</strong>.</p>
+        </div>
+
+        <div class="tablecard">
           <div class="tablewrap">
-            <table class="rubric">
+            <table class="t">
               <thead>
-                <tr><th>Criterion</th><th>Points</th><th>What full marks looks like</th></tr>
+                <tr><th>Domain</th><th>Your documents</th><th>A tool that earns its place</th></tr>
               </thead>
               <tbody>
                 <tr>
-                  <td class="crit">Architecture choice<br>&amp; justification</td>
-                  <td class="pts">25</td>
-                  <td class="full">You picked RAG, an agent, or a hybrid, and can say <strong>why</strong> in one sentence tied to your use case. <strong>Wrong-but-justified beats right-but-unexplained.</strong></td>
+                  <td class="crit">Employee handbook assistant</td>
+                  <td class="dim">HR policy, leave rules, conduct code</td>
+                  <td class="dim">Calculate remaining leave from a start date and days taken</td>
                 </tr>
                 <tr>
-                  <td class="crit">Working retrieval</td>
-                  <td class="pts">25</td>
-                  <td class="full">Your own documents, sensible chunking, relevant results, and answers that are visibly grounded — with citations to source and page.</td>
+                  <td class="crit">Government service guide</td>
+                  <td class="dim">Ministry service manuals, eligibility rules</td>
+                  <td class="dim">Check a fee table and compute the total for a given case</td>
                 </tr>
                 <tr>
-                  <td class="crit">Tool integration</td>
-                  <td class="pts">15</td>
-                  <td class="full">At least one function-calling tool that actually executes, and whose result reaches the final answer.</td>
+                  <td class="crit">University regulations advisor</td>
+                  <td class="dim">Academic regulations, credit rules</td>
+                  <td class="dim">Compute GPA impact, or credits remaining to graduate</td>
                 </tr>
                 <tr>
-                  <td class="crit">Safety &amp; reliability</td>
-                  <td class="pts">10</td>
-                  <td class="full">At least one guardrail demonstrated, and the system handles a failure without crashing.</td>
+                  <td class="crit">Technical documentation assistant</td>
+                  <td class="dim">A library's docs, changelogs, migration guides</td>
+                  <td class="dim">Check version compatibility between two package versions</td>
                 </tr>
                 <tr>
-                  <td class="crit">Repository quality</td>
-                  <td class="pts">15</td>
-                  <td class="full">All six SDAIA requirements met, and a README a stranger could follow without asking you anything.</td>
+                  <td class="crit">Maintenance manual assistant</td>
+                  <td class="dim">Equipment manuals, service schedules</td>
+                  <td class="dim">Look up a part number in a parts table and report stock</td>
                 </tr>
                 <tr>
-                  <td class="crit">Presentation</td>
-                  <td class="pts">10</td>
-                  <td class="full">Four minutes, kept to time. The demo works — <strong>or the failure is explained honestly</strong>, which scores better than a fake working one.</td>
-                </tr>
-                <tr class="total">
-                  <td>Total</td>
-                  <td class="pts">100</td>
-                  <td>Pass at 60. Published on day one, not on Thursday.</td>
+                  <td class="crit">Insurance policy explainer</td>
+                  <td class="dim">Policy wordings, exclusions, schedules</td>
+                  <td class="dim">Compute what is covered for a stated claim amount</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- ---------- Required components ---------- -->
-    <section class="section--tight">
-      <div class="container">
-        <div class="section-head">
-          <h2>The five required components</h2>
-          <p class="muted">Tick these off as you go. "Working" means it runs in Colab — no deployment, no frontend, no Docker.</p>
-        </div>
-        <div class="checklist">
-          <label><input type="checkbox"><span><strong>1 · Your own documents.</strong> 10–30 pages you actually care about — a policy, a manual, a handbook. Not a demo set, and nothing confidential (we are on a free tier).</span></label>
-          <label><input type="checkbox"><span><strong>2 · A working retrieval pipeline.</strong> Ingested, chunked, embedded, stored, and returning relevant chunks for a real question.</span></label>
-          <label><input type="checkbox"><span><strong>3 · Grounded answers with citations.</strong> Every fact traceable to a source and a page, and "I don't know" when the documents do not cover it.</span></label>
-          <label><input type="checkbox"><span><strong>4 · At least one tool.</strong> A function the model can request, that your code executes, whose result reaches the answer.</span></label>
-          <label><input type="checkbox"><span><strong>5 · At least one guardrail.</strong> A step cap, an output validator, a topic check — something demonstrable, plus a failure handled without a crash.</span></label>
+        <div class="callout callout--coral" style="margin-top:var(--s5)">
+          <p><strong>Bringing your own?</strong> Say it out loud on Monday and I will
+             tell you whether it passes the two tests before you spend a day on it.</p>
         </div>
       </div>
     </section>
 
-    <!-- ---------- Timeline ---------- -->
-    <section class="section--tight">
+    <!-- ══════════ 5 · How to build it ══════════ -->
+    <section class="band" id="build">
       <div class="container">
-        <div class="section-head"><h2>The week</h2></div>
+        <div class="head">
+          <h2>How to build it</h2>
+          <p>There is no scaffold notebook this year. You are building a repository,
+             because that is what goes in a portfolio — nobody hires anyone off a Colab
+             link. The logic is code you have already run in the labs. The work is
+             moving it out of notebooks and making it run on a laptop.</p>
+        </div>
+
+        <div class="build">
+          <div class="tree">
+            <h3>The repository blueprint</h3>
+            <div class="copyrow no-print">
+              <button type="button" class="btn btn--ghost btn--sm" id="copy-tree">Copy the file tree</button>
+              <span id="tree-status" class="small" aria-live="polite"></span>
+            </div>
+<pre class="code" id="tree-text">your-project/
+├── README.md            how to run it — a stranger must succeed
+├── requirements.txt     pin your versions
+├── .env.example         GEMINI_API_KEY=your_key_here
+├── .gitignore           must contain .env and data/ if private
+├── data/                your documents
+├── ingest.py            load → chunk → embed → save the index
+├── retrieve.py          hybrid search
+├── tools.py             your tool functions
+├── assistant.py         the agent loop
+├── evaluate.py          golden set → hit rate
+└── app.py               how a person actually talks to it</pre>
+          </div>
+
+          <div>
+            <h3>Where each file comes from</h3>
+            <div class="tablecard">
+              <div class="tablewrap">
+                <table class="t">
+                  <thead>
+                    <tr><th>File</th><th>What it does</th><th>Start from</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><code>ingest.py</code></td>
+                      <td class="dim">Loads your documents, chunks them, embeds, writes the index to disk</td>
+                      <td class="dim">Lab 2, cells 3–9</td>
+                    </tr>
+                    <tr>
+                      <td><code>retrieve.py</code></td>
+                      <td class="dim">Hybrid search over the stored index</td>
+                      <td class="dim">Lab 2, cells 15–19</td>
+                    </tr>
+                    <tr>
+                      <td><code>tools.py</code></td>
+                      <td class="dim">Your tool functions and their schemas</td>
+                      <td class="dim">Lab 3, cells 2–5</td>
+                    </tr>
+                    <tr>
+                      <td><code>assistant.py</code></td>
+                      <td class="dim">The agent loop with a step cap and the tool allow-list</td>
+                      <td class="dim">Lab 3, cell 8</td>
+                    </tr>
+                    <tr>
+                      <td><code>evaluate.py</code></td>
+                      <td class="dim">Runs the golden set, prints the hit rate</td>
+                      <td class="dim">Lab 2, cells 21–24</td>
+                    </tr>
+                    <tr>
+                      <td><code>app.py</code></td>
+                      <td class="dim">A command-line loop, or Streamlit if you want a UI</td>
+                      <td class="dim">New — about 20 lines</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout callout--amber" style="margin-top:var(--s5)">
+          <h3>The one new thing</h3>
+          <p>Outside Colab there is no Secrets panel. Your key goes in a
+             <code>.env</code> file that is <strong>never committed</strong>, and
+             <code>python-dotenv</code> loads it:</p>
+<pre class="code">from dotenv import load_dotenv
+import os
+load_dotenv()
+API_KEY = os.getenv("GEMINI_API_KEY")</pre>
+          <p style="margin-top:var(--s3)">Commit <code>.env.example</code> with the
+             variable name and no value. Put <code>.env</code> in
+             <code>.gitignore</code> on your first commit, not your last. A leaked key
+             in git history is the most common way a portfolio repository embarrasses
+             its author.</p>
+        </div>
+
+        <h3 style="margin-top:var(--s6)">The timeline</h3>
         <div class="timeline">
-          <div><b>Monday</b><p><strong>Pitch.</strong> Teams form, ideas go on the board, you choose your document set.</p></div>
-          <div><b>Tuesday</b><p><strong>Build.</strong> Gate by 2:30 — documents loaded, chunked, embedded, one query returning something. Running, not polished.</p></div>
-          <div><b>Wednesday</b><p><strong>Harden + README.</strong> Retries, caching, your numbers table. README clinic 2:00–2:20, written in the room.</p></div>
-          <div><b>Thursday</b><p><strong>Present.</strong> Red team in the morning, four minutes each in the afternoon, scored live.</p></div>
+
+          <article class="card">
+            <div class="day"><b>Monday</b><span>Pitch</span></div>
+            <div class="body">
+              <span class="when">In class</span>
+              <p>Form your team of 2–3. Choose your documents and check them against
+                 the two tests. State your idea in one sentence to the room.</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="day"><b>Tuesday</b><span>Get it retrieving</span></div>
+            <div class="body">
+              <span class="when">1 hour in class, then at home</span>
+              <p>Repository created, <code>.gitignore</code> and <code>.env</code> in
+                 place from the first commit. <code>ingest.py</code> and
+                 <code>retrieve.py</code> working. <strong>Gate by Tuesday night:</strong>
+                 a real question returns relevant chunks from your own documents.</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="day"><b>Wednesday</b><span>Tools, agent, evidence</span></div>
+            <div class="body">
+              <span class="when">2 hours in class, then at home</span>
+              <p><code>tools.py</code> and <code>assistant.py</code> working. Write the
+                 golden set and run <code>evaluate.py</code>. Make one change and record
+                 the numbers before and after. README clinic runs 2:00–2:20 in class —
+                 you write it in the room, with me checking.</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="day"><b>Thursday</b><span>Present</span></div>
+            <div class="body">
+              <span class="when">Afternoon</span>
+              <p>Four minutes plus questions, scored live. Repository pushed and public
+                 by 2:30.</p>
+            </div>
+          </article>
+
         </div>
       </div>
     </section>
 
-    <!-- ---------- SDAIA GitHub requirements ---------- -->
-    <section class="section--tight">
+    <!-- ══════════ 6 · The rubric in full ══════════ -->
+    <section class="band band--card print-me" id="rubric">
       <div class="container">
-        <div class="section-head">
+        <div class="head">
+          <h2>The rubric in full</h2>
+          <p>One shared mark for the team on the sixty build points. Marked from your
+             repository and your Thursday demo.</p>
+        </div>
+
+        <div class="tablecard">
+          <h3>Table 1 — Build <span>60 points</span></h3>
+          <div class="tablewrap">
+            <table class="t">
+              <thead>
+                <tr><th>Criterion</th><th>Points</th><th>What full marks looks like</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="crit">Prompt engineering</td>
+                  <td class="pts">10</td>
+                  <td class="dim">Good prompts, and good use of what Day 1 taught.</td>
+                </tr>
+                <tr>
+                  <td class="crit">Retrieval and grounding</td>
+                  <td class="pts">25</td>
+                  <td class="dim">Your own documents, hybrid retrieval, answers with source and page, and an honest "I don't know" when the documents do not cover it.</td>
+                </tr>
+                <tr>
+                  <td class="crit">Agent and tools</td>
+                  <td class="pts">25</td>
+                  <td class="dim">At least one tool that does what retrieval cannot, wired into a loop with a step cap, where the model chooses the path and the trace shows it.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tablecard">
+          <h3>Table 2 — Presentation <span>10 points · four minutes plus questions</span></h3>
+          <div class="tablewrap">
+            <table class="t">
+              <thead>
+                <tr><th>Criterion</th><th>Points</th><th>Notes</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="crit">The problem and why it needed this</td>
+                  <td class="pts">3</td>
+                  <td class="dim"></td>
+                </tr>
+                <tr>
+                  <td class="crit">Architecture, and <strong>why</strong> — in one sentence tied to your use case</td>
+                  <td class="pts">4</td>
+                  <td class="dim">Wrong-but-justified beats right-but-unexplained.</td>
+                </tr>
+                <tr>
+                  <td class="crit">A live demo</td>
+                  <td class="pts">3</td>
+                  <td class="dim">A demo that breaks and is explained honestly scores higher than a recording.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tablecard">
+          <h3>Table 3 — Theory exam <span>30 points</span></h3>
+          <div class="tablewrap">
+            <table class="t">
+              <tbody>
+                <tr>
+                  <td class="crit">Written, Thursday morning</td>
+                  <td class="pts">30</td>
+                  <td class="dim">Covering all five days.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top:var(--s5)">
+          <h3>Optional: deploy it. +5 bonus, capped at 100.</h3>
+          <p>Not required, and it earns nothing if the basics are missing — do it only
+             once the six requirements are met.</p>
+          <ul>
+            <li><strong>Streamlit Community Cloud</strong> — wrap <code>app.py</code> in
+                Streamlit calls, push, connect the repository. About thirty minutes.
+                Free, and it persists.</li>
+            <li><strong>HuggingFace Spaces</strong> — Gradio or Streamlit, same shape,
+                and the link looks good in a portfolio.</li>
+          </ul>
+          <p>A note on Vercel: it runs Python as serverless functions, which means no
+             persistent filesystem, so your Chroma index will not survive between
+             requests. Making it work means moving to an external vector store such as
+             Supabase pgvector. That is a genuine project in itself, not a deploy step —
+             worth doing after the course, not during it.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ 7 · SDAIA repository requirements ══════════ -->
+    <section class="band print-me" id="sdaia">
+      <div class="container">
+        <div class="head">
           <h2>SDAIA repository requirements</h2>
-          <p class="muted">All six are required. Together they are the 15 repository-quality points — the cheapest marks on the rubric.</p>
+          <p>These six are SDAIA's requirements for every project repository. They
+             overlap with the engineering quality marks above — meeting them is the
+             cheapest eight points on the rubric.</p>
         </div>
-        <div class="checklist">
-          <label><input type="checkbox"><span>A clear, comprehensive project description</span></label>
-          <label><input type="checkbox"><span>A professional <code>README.md</code>: the idea, how to run it, how to use it</span></label>
-          <label><input type="checkbox"><span>Appropriate technical documentation</span></label>
-          <label><input type="checkbox"><span>Git version-control best practice — real, meaningful commits, not one dump at the end</span></label>
-          <label><input type="checkbox"><span>The training programme named: <strong>Applied Generative AI, SDAIA Academy, August 2026</strong></span></label>
-          <label><input type="checkbox"><span>A link to <a href="https://github.com/SDAIAAcademy" target="_blank" rel="noopener">https://github.com/SDAIAAcademy</a></span></label>
-        </div>
-        <p style="margin-top:var(--s4)">
+
+        <ul class="checklist">
+          <li><span>A clear, comprehensive project description</span></li>
+          <li><span>A professional <code>README.md</code>: the idea, how to run it, how to use it</span></li>
+          <li><span>Appropriate technical documentation</span></li>
+          <li><span>Git version-control best practice — real, meaningful commits, not one dump at the end</span></li>
+          <li><span>The training programme named: <strong>Applied Generative AI, SDAIA Academy, August 2026</strong></span></li>
+          <li><span>A link to <a href="https://github.com/SDAIAAcademy" target="_blank" rel="noopener">https://github.com/SDAIAAcademy</a></span></li>
+        </ul>
+
+        <div class="copyrow no-print" style="margin-top:var(--s4)">
           <button type="button" class="btn btn--ghost" id="copy-reqs">Copy this checklist</button>
           <span id="reqs-status" class="small" aria-live="polite"></span>
-        </p>
-      </div>
-    </section>
-
-    <!-- ---------- Starting point ---------- -->
-    <section class="section--tight">
-      <div class="container">
-        <div class="card" style="padding:var(--s5)">
-          <h2 style="font-family:var(--font-display);font-size:1.6rem;margin-bottom:var(--s3)">Start from the scaffold</h2>
-          <p class="muted" style="max-width:60ch">
-            <code>project_scaffold.ipynb</code> is handed out on Monday afternoon and is the file you
-            build on. Twelve sections — config, ingest, chunk, index, retrieve, tools, agent loop,
-            guardrails, instrumentation, <code>demo()</code>, golden set, and this README template.
-            The structure is written; the <code>TODO</code> markers are yours. Nobody starts from an
-            empty cell.
-          </p>
-          <p style="margin-top:var(--s4)">
-            <a class="btn" href="../notebooks/index.html">Open the notebooks →</a>
-          </p>
         </div>
       </div>
     </section>
 
-    <!-- ---------- README template ---------- -->
-    <section class="section--tight">
+    <!-- ══════════ 8 · README template ══════════ -->
+    <section class="band band--card" id="readme">
       <div class="container">
-        <div class="section-head">
+        <div class="head">
           <h2>README template</h2>
-          <p class="muted">Copy this into <code>README.md</code> in your repository and replace every <code>TODO</code>.</p>
+          <p>Copy this into <code>README.md</code> in your repository and replace every
+             <code>TODO</code>. The README is what a stranger reads first — and what
+             gets marked when your demo is over.</p>
         </div>
-        <div class="copyrow">
+
+        <div class="copyrow no-print">
           <button type="button" class="btn" id="copy-readme">Copy README template</button>
           <span id="readme-status" class="small" aria-live="polite"></span>
         </div>
-<pre class="readme" id="readme-text"># TODO: Project name
+<pre class="code readme" id="readme-text"># TODO: Project name
 
-TODO: One sentence on what this does and who it is for.
+TODO: One sentence — what this does and who it is for.
+
+## Team Members
+
+Full names.
 
 ## The problem
 
@@ -246,51 +737,71 @@ TODO: Two or three sentences. What was hard before this existed?
 
 ## Architecture
 
-TODO: RAG, agent, or hybrid — and **why**, in one sentence tied to your use
-case. Wrong-but-justified beats right-but-unexplained.
+TODO: One sentence on why this shape, tied to your use case.
 
 ```
-documents -> chunking -> embeddings -> vector store -> hybrid retrieval -> model -> answer with citations
+documents → chunk → embed → index
+                              ↓
+question → agent ─→ retrieve ─┘
+              └──→ tool
+                    ↓
+          answer with citations
 ```
 
-TODO: Adjust that diagram to what you actually built.
+TODO: Adjust the diagram to what you actually built.
 
-## How to run it
+## Running it
 
-1. Open `project_scaffold.ipynb` in Google Colab.
-2. Add your `GEMINI_API_KEY` to Colab Secrets (the key icon, left sidebar).
-3. Upload your documents to the `my_docs` folder.
-4. Run all cells, then call `demo()`.
+```bash
+git clone TODO
+cd TODO
+pip install -r requirements.txt
+cp .env.example .env        # then add your key from aistudio.google.com
+python ingest.py            # builds the index — run once
+python app.py
+```
 
-## How to use it
+## Using it
 
-TODO: Two or three example questions and the answers you get back.
+TODO: Three example questions and the answers you get back.
+TODO: One question it correctly refuses to answer.
 
-## What works, and what does not
+## The tool
 
-TODO: Be honest. Retrieval hit rate on our golden set: __/5.
-TODO: One known limitation.
+TODO: What it does, and why retrieval could not do it.
+
+## Does it work?
+
+Golden set: TODO/5 questions retrieved correctly.
+
+TODO: One change you made, with the numbers.
+Example: "Chunk size 800 → 500 tokens took the hit rate from 3/5 to 5/5."
+
+## What does not work
+
+TODO: Be specific. What breaks, what you tried, what is still broken.
 
 ## Technical notes
 
 - Model: `gemini-2.5-flash-lite`
 - Embeddings: `gemini-embedding-001`
 - Vector store: Chroma
-- Retrieval: hybrid (BM25 + vector), alpha = TODO
+- Retrieval: hybrid BM25 + vector, alpha = TODO
 - Chunking: TODO tokens, TODO overlap
 - Guardrails: TODO
 
 ## Training programme
 
 Built during **Applied Generative AI**, SDAIA Academy, Riyadh,
-2-6 August 2026.
+2–6 August 2026.
 
 More SDAIA Academy projects: https://github.com/SDAIAAcademy
-
-## Authors
-
-TODO: names
 </pre>
+
+        <p class="muted small" style="margin-top:var(--s4)">
+          The labs are in <a href="../notebooks/index.html">notebooks</a>, and anything
+          else handed out is on <a href="../resources/index.html">additional resources</a>.
+        </p>
       </div>
     </section>
 
@@ -310,16 +821,18 @@ TODO: names
     </div>
   </footer>
 
+  <script src="../assets/store.js"></script>
   <script>
     (function () {
       'use strict';
 
+      /* ---- Copy buttons ------------------------------------ */
       var REQS = [
         "SDAIA repository requirements",
-        "[ ] Clear, comprehensive project description",
-        "[ ] Professional README.md: the idea, how to run it, how to use it",
+        "[ ] A clear, comprehensive project description",
+        "[ ] A professional README.md: the idea, how to run it, how to use it",
         "[ ] Appropriate technical documentation",
-        "[ ] Git version-control best practice - real commits, not one dump",
+        "[ ] Git version-control best practice - real commits, not one dump at the end",
         "[ ] Training programme named: Applied Generative AI, SDAIA Academy, August 2026",
         "[ ] Link to https://github.com/SDAIAAcademy"
       ].join("\n");
@@ -327,6 +840,10 @@ TODO: names
       function copy(text, statusEl, label) {
         function ok() { statusEl.innerHTML = '<span class="copied">' + label + '</span>'; }
         function fail() { statusEl.textContent = 'Could not copy — select the text and copy it manually.'; }
+
+        function clear() {
+          window.setTimeout(function () { statusEl.textContent = ''; }, 2000);
+        }
 
         function fallback() {
           try {
@@ -338,25 +855,86 @@ TODO: names
             ta.select();
             var done = document.execCommand('copy');
             document.body.removeChild(ta);
-            done ? ok() : fail();
+            if (done) { ok(); clear(); } else { fail(); }
           } catch (e) { fail(); }
         }
 
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(ok, fallback);
+          navigator.clipboard.writeText(text).then(function () { ok(); clear(); }, fallback);
         } else {
           fallback();
         }
       }
 
-      document.getElementById('copy-readme').addEventListener('click', function () {
-        copy(document.getElementById('readme-text').textContent,
-             document.getElementById('readme-status'),
-             'Copied — now paste it into README.md');
+      function wireCopy(btnId, statusId, getText, label) {
+        var btn = document.getElementById(btnId);
+        if (!btn) return;
+        btn.addEventListener('click', function () {
+          copy(getText(), document.getElementById(statusId), label);
+        });
+      }
+
+      wireCopy('copy-tree', 'tree-status',
+        function () { return document.getElementById('tree-text').textContent; },
+        'Copied');
+      wireCopy('copy-reqs', 'reqs-status',
+        function () { return REQS; },
+        'Copied');
+      wireCopy('copy-readme', 'readme-status',
+        function () { return document.getElementById('readme-text').textContent; },
+        'Copied — now paste it into README.md');
+
+      /* ---- Requirement tracker -----------------------------
+         Six checkboxes, stored as an array of the numbers ticked
+         under agai:project:reqs. Local to this browser, and the
+         bar says so — nothing here is submitted or marked. */
+      var KEY = 'project:reqs';
+      var boxes = [].slice.call(document.querySelectorAll('[data-req-input]'));
+      var countEl = document.getElementById('req-count');
+
+      function load() {
+        var saved = Store.get(KEY, []);
+        return Object.prototype.toString.call(saved) === '[object Array]' ? saved : [];
+      }
+
+      function render() {
+        var done = 0;
+        boxes.forEach(function (box) {
+          var card = box.closest ? box.closest('.req')
+                   : document.querySelector('.req[data-req="' + box.getAttribute('data-req-input') + '"]');
+          if (box.checked) { done++; }
+          if (card) { card.className = 'card req' + (box.checked ? ' req--done' : ''); }
+        });
+        countEl.innerHTML = '<strong>' + done + '</strong> of ' + boxes.length +
+                            ' requirement' + (boxes.length === 1 ? '' : 's') + ' ticked';
+      }
+
+      function save() {
+        var ticked = boxes
+          .filter(function (b) { return b.checked; })
+          .map(function (b) { return b.getAttribute('data-req-input'); });
+        Store.set(KEY, ticked);
+      }
+
+      var saved = load();
+      boxes.forEach(function (box) {
+        box.checked = saved.indexOf(box.getAttribute('data-req-input')) !== -1;
+        box.addEventListener('change', function () { save(); render(); });
+      });
+      render();
+
+      document.getElementById('req-reset').addEventListener('click', function () {
+        boxes.forEach(function (b) { b.checked = false; });
+        Store.remove(KEY);
+        render();
+        boxes[0].focus();
       });
 
-      document.getElementById('copy-reqs').addEventListener('click', function () {
-        copy(REQS, document.getElementById('reqs-status'), 'Checklist copied');
+      /* ---- Print the rubric --------------------------------
+         The @media print block hides every band except the three
+         marked .print-me, so this is just window.print(). */
+      document.getElementById('print-rubric').addEventListener('click', function () {
+        window.print();
       });
     })();
   </script>

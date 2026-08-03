@@ -8,14 +8,6 @@
   ],
   "notebooks": [
     {
-      "number": "0",
-      "file": "project_scaffold.ipynb",
-      "name": "Project scaffold",
-      "day": "Handed out Monday afternoon",
-      "description": "The file you build your project on. Twelve sections, structure written, TODOs throughout.",
-      "colab_url": "https://colab.research.google.com/drive/1YR3LDrZAnftOV1Q04c8B9m1-aiFJNkMV?usp=sharing"
-    },
-    {
       "number": "1",
       "file": "day1_first_calls.ipynb",
       "name": "First calls",

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Additional resources · Applied Generative AI</title>
+  <meta name="description" content="Slides, links, handouts and optional reference material for Applied Generative AI, SDAIA Academy, August 2026.">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/theme.css">
+  <link rel="stylesheet" href="../assets/site.css">
+  <style>
+    .page-hero h1 { max-width: 18ch; }
+
+    .res-group { margin-bottom: var(--s6); }
+    .res-group:last-child { margin-bottom: 0; }
+    .res-group > h2 { margin-bottom: var(--s2); }
+    .res-group > .note { color: var(--text-muted); max-width: 68ch; margin-bottom: var(--s4); }
+
+    .res-grid { display: grid; gap: var(--s4); grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); }
+
+    .res { display: flex; flex-direction: column; padding: var(--s4); }
+    .res__top {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: var(--s3); margin-bottom: var(--s3);
+    }
+    /* Kind badge. Colour is per kind so the eye can sort a long list
+       without reading it. Every pair is checked against --card-2. */
+    .res__kind {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: var(--tracking-eyebrow);
+      padding: 0.25rem 0.7rem; border-radius: var(--radius-pill);
+      background: var(--card-2); color: var(--text-muted); white-space: nowrap;
+    }
+    .res__kind--notebook { background: rgba(11,116,87,.12);  color: var(--teal-dark); }
+    .res__kind--slides   { background: rgba(228,96,42,.14);  color: var(--coral-ink); }
+    .res__kind--link     { background: rgba(102,204,255,.20); color: #0f5f86; }
+    .res__kind--pdf      { background: rgba(240,160,60,.20); color: var(--amber-ink); }
+    .res__kind--dataset,
+    .res__kind--sheet    { background: rgba(90,80,160,.14);  color: #443b80; }
+
+    .res__day { font-size: var(--fs-small); color: var(--text-muted); white-space: nowrap; }
+    .res h3 { font-size: 1.1rem; margin: 0 0 var(--s2); }
+    .res h3 a { text-decoration: none; }
+    .res h3 a:hover { text-decoration: underline; }
+    .res p { color: var(--text-muted); font-size: var(--fs-small); margin: 0; }
+    .res__links {
+      display: flex; flex-wrap: wrap; gap: var(--s3);
+      margin-top: var(--s4); padding-top: var(--s3);
+      border-top: 1px solid var(--border);
+      font-size: var(--fs-small); font-weight: 700;
+    }
+    .res__links a { text-decoration: none; }
+    .res__links a:hover { text-decoration: underline; }
+
+    .res-empty {
+      padding: var(--s4); border: 1px dashed var(--border);
+      border-radius: var(--radius); color: var(--text-muted);
+      font-size: var(--fs-small); background: var(--card-2);
+    }
+
+    .note-box {
+      border-left: 5px solid var(--amber);
+      background: rgba(240,160,60,.12);
+      padding: var(--s4); border-radius: var(--radius-sm);
+    }
+    .note-box code { background: var(--card); padding: 1px 5px; border-radius: 4px; border: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <main id="main">
+
+    <section class="page-hero on-dark">
+      <header class="site-header site-header--hero">
+        <div class="container">
+          <a class="logo" href="../index.html" aria-label="Applied Generative AI — course home">
+            <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
+            <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
+          </a>
+          <span class="logo">
+            <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+            <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+          </span>
+        </div>
+      </header>
+
+      <div class="container page-hero-inner">
+        <a class="back" href="../index.html">← Course home</a>
+        <p class="eyebrow">SDAIA Academy · Applied Generative AI</p>
+        <h1>Additional resources</h1>
+        <p>Everything handed out that is not a lab or an activity — slides, links,
+           printed handouts, and optional reference material. This page grows during
+           the week, so check it again on Wednesday.</p>
+      </div>
+    </section>
+
+    <section class="section--tight">
+      <div class="container">
+        <div id="groups">
+          <p class="muted">Loading resources…</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section--tight">
+      <div class="container">
+        <div class="note-box">
+          <p><strong>Adding something to this page?</strong> Edit
+             <code>resources/resources.json</code> — the HTML never needs touching.
+             Drop files into <code>resources/handouts/</code> and point
+             <code>href</code> at <code>./handouts/your-file.pdf</code>.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/academy_color.png" alt="SDAIA Academy">
+        <img class="logo--light" src="../assets/academy_white.png" alt="SDAIA Academy">
+      </span>
+      <p class="footer-text">Built for the SDAIA Academy course · Instructor: Musa Ibn Rashid</p>
+      <span class="logo">
+        <img class="logo--dark"  src="../assets/sdaia_color.png" alt="Saudi Data and AI Authority (SDAIA)">
+        <img class="logo--light" src="../assets/sdaia_white.png" alt="Saudi Data and AI Authority (SDAIA)">
+      </span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var host = document.getElementById('groups');
+
+      function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+          return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c];
+        });
+      }
+
+      /* External links open in a new tab; everything inside the repo stays
+         in this one, so a student never loses the page they came from. */
+      function isExternal(href) {
+        return /^https?:\/\//i.test(String(href || ''));
+      }
+
+      function anchor(href, text, download) {
+        var attrs = 'href="' + esc(href) + '"';
+        if (isExternal(href)) attrs += ' target="_blank" rel="noopener"';
+        else if (download) attrs += ' download';
+        return '<a ' + attrs + '>' + esc(text) + '</a>';
+      }
+
+      function card(item) {
+        var kind = String(item.kind || 'Link');
+        var slug = kind.toLowerCase().replace(/[^a-z]/g, '');
+        var open = isExternal(item.href) ? 'Open ↗'
+                 : (item.download ? 'Download' : 'Open →');
+
+        var el = document.createElement('article');
+        el.className = 'card res';
+        el.innerHTML =
+          '<div class="res__top">' +
+            '<span class="res__kind res__kind--' + esc(slug) + '">' + esc(kind) + '</span>' +
+            (item.day ? '<span class="res__day">' + esc(item.day) + '</span>' : '') +
+          '</div>' +
+          '<h3>' + (item.href ? anchor(item.href, item.title, item.download) : esc(item.title)) + '</h3>' +
+          (item.description ? '<p>' + esc(item.description) + '</p>' : '') +
+          '<div class="res__links">' +
+            (item.href ? anchor(item.href, open, item.download) : '') +
+            (item.extra && item.extra.href
+              ? anchor(item.extra.href, item.extra.label || 'More', false) : '') +
+          '</div>';
+        return el;
+      }
+
+      function render(groups) {
+        host.innerHTML = '';
+        groups.forEach(function (g) {
+          var sec = document.createElement('section');
+          sec.className = 'res-group';
+
+          var h = document.createElement('h2');
+          h.textContent = g.title;
+          sec.appendChild(h);
+
+          if (g.note) {
+            var n = document.createElement('p');
+            n.className = 'note';
+            n.textContent = g.note;
+            sec.appendChild(n);
+          }
+
+          var items = g.items || [];
+          if (!items.length) {
+            var empty = document.createElement('p');
+            empty.className = 'res-empty';
+            empty.textContent = 'Nothing here yet — this fills in during the week.';
+            sec.appendChild(empty);
+          } else {
+            var grid = document.createElement('div');
+            grid.className = 'res-grid';
+            items.forEach(function (item) { grid.appendChild(card(item)); });
+            sec.appendChild(grid);
+          }
+
+          host.appendChild(sec);
+        });
+      }
+
+      /* Same pattern as the notebooks page: fetch() is blocked on file://
+         by every browser, so fail with the instruction rather than a blank
+         page. Served over http this always works. */
+      fetch('./resources.json')
+        .then(function (r) { return r.json(); })
+        .then(function (data) { render(data.groups || []); })
+        .catch(function () {
+          host.innerHTML =
+            '<p class="res-empty">Could not read <code>resources.json</code>. ' +
+            'If you opened this page directly from disk, serve the folder instead: ' +
+            '<code>python -m http.server 8000</code></p>';
+        });
+    })();
+  </script>
+</body>
+</html>
