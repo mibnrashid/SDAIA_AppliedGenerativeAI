@@ -18,8 +18,8 @@
     }
     .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     .cols4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-    .cols3 .slide-card, .cols4 .slide-card { padding: 15px 17px; font-size: 18px; }
-    .cols3 h3, .cols4 h3 { font-size: 18px; margin-bottom: 6px; }
+    .cols3 .slide-card, .cols4 .slide-card { padding: 15px 17px; font-size: 17px; }
+    .cols3 h3, .cols4 h3 { font-size: 19px; margin-bottom: 6px; }
 
     /* Live cost calculator */
     .calc { display: grid; grid-template-columns: 1.05fr 1fr; gap: 26px; align-items: start; }
@@ -45,7 +45,7 @@
 
     .arch { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 17px; }
     .arch div { padding: 12px 14px; border-radius: var(--radius-sm); background: var(--card); border: 1px solid var(--border); }
-    .arch b { display: block; font-size: 14px; letter-spacing: .07em; text-transform: uppercase; color: var(--teal); margin-bottom: 4px; }
+    .arch b { display: block; font-size: 15px; letter-spacing: .07em; text-transform: uppercase; color: var(--teal); margin-bottom: 4px; }
     .arch .wide { grid-column: 1 / -1; background: var(--ink); color: var(--text-on-dark); border-color: var(--ink); }
     .arch .wide b { color: var(--teal-bright); }
     .bigstat { font-family: var(--font-display); font-size: 38px; font-weight: 700; line-height: 1; color: var(--teal); margin: 6px 0 0; }
@@ -55,7 +55,7 @@
 
 <div class="deck" data-title="Day 4 — Production and the numbers">
 
-  <!-- 1 -->
+  <!-- ══════════ 1 · Production and the numbers ══════════ -->
   <section class="slide slide--title">
     <p class="slide__eyebrow">SDAIA Academy · Applied Generative AI</p>
     <h2>Production and the numbers</h2>
@@ -68,7 +68,7 @@
     </aside>
   </section>
 
-  <!-- Where we stand in the week -->
+  <!-- ══════════ 2 · Where we stand ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">The week</p>
     <h2>Where we stand</h2>
@@ -88,7 +88,7 @@
     </aside>
   </section>
 
-  <!-- How the day runs -->
+  <!-- ══════════ 3 · How the day runs ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Today</p>
     <h2>How the day runs</h2>
@@ -110,7 +110,7 @@
     </aside>
   </section>
 
-  <!-- 2 -->
+  <!-- ══════════ 4 · What you will be able to do by 12:00 ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Day 4</p>
     <h2>What you will be able to do by 12:00</h2>
@@ -127,7 +127,7 @@
     </aside>
   </section>
 
-  <!-- 3 -->
+  <!-- ══════════ 5 · Three questions before we start ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Yesterday · questions to the room</p>
     <h2>Three questions before we start</h2>
@@ -143,7 +143,7 @@
     </aside>
   </section>
 
-  <!-- 4 -->
+  <!-- ══════════ 6 · The gap ══════════ -->
   <section class="slide slide--section">
     <p class="slide__eyebrow">Part one</p>
     <h2>The gap</h2>
@@ -154,7 +154,7 @@
     </aside>
   </section>
 
-  <!-- 5 -->
+  <!-- ══════════ 7 · Prototype vs production ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">The gap</p>
     <h2>Prototype vs production</h2>
@@ -177,7 +177,7 @@
     </aside>
   </section>
 
-  <!-- 6 -->
+  <!-- ══════════ 8 · Four things that decide whether it holds up ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Scale</p>
     <h2>Four things that decide whether it holds up</h2>
@@ -206,14 +206,14 @@
     </aside>
   </section>
 
-  <!-- 7 -->
+  <!-- ══════════ 9 · Those 429s were the lesson ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Callback · Monday</p>
     <h2>Those 429s were the lesson</h2>
     <div class="slide__cols">
       <div>
         <p>On Monday, when everyone embedded their chunks at once, the room filled with <code>429 RESOURCE_EXHAUSTED</code>.</p>
-        <p style="margin-top:14px">That was a rate limit, and you already know how it feels. Your users will feel the same thing unless you design for it.</p>
+        <p class="mt-2">That was a rate limit, and you already know how it feels. Your users will feel the same thing unless you design for it.</p>
       </div>
       <div class="slide-card slide-card--accent">
         <h3>What to do about it</h3>
@@ -232,7 +232,7 @@
     </aside>
   </section>
 
-  <!-- 8 -->
+  <!-- ══════════ 10 · The arithmetic ══════════ -->
   <section class="slide slide--section">
     <p class="slide__eyebrow">Part two</p>
     <h2>The arithmetic</h2>
@@ -243,18 +243,18 @@
     </aside>
   </section>
 
-  <!-- 9 -->
+  <!-- ══════════ 11 · What you are actually paying for ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Cost</p>
     <h2>What you are actually paying for</h2>
     <div class="slide__cols">
       <div>
         <p>Every request has two meters:</p>
-        <ul style="margin-top:10px">
+        <ul class="mt-1">
           <li><strong>Input tokens</strong> — your system prompt, the retrieved chunks, the conversation so far, the question.</li>
           <li><strong>Output tokens</strong> — what it writes back. Usually priced higher.</li>
         </ul>
-        <p style="margin-top:14px">In a RAG system the <em>retrieved chunks dominate the input</em>. Four chunks of 500 tokens is 2,000 tokens on every single call, before anyone types a word.</p>
+        <p class="mt-2">In a RAG system the <em>retrieved chunks dominate the input</em>. Four chunks of 500 tokens is 2,000 tokens on every single call, before anyone types a word.</p>
       </div>
       <div class="slide-card slide-card--accent">
         <h3>Where the money actually goes</h3>
@@ -272,7 +272,7 @@
     </aside>
   </section>
 
-  <!-- 10 -->
+  <!-- ══════════ 12 · Work it out on the screen ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Cost · live</p>
     <h2>Work it out on the screen</h2>
@@ -288,7 +288,7 @@
           <div class="f"><label for="c-days">Working days / month</label><input type="number" id="c-days" value="22" min="1"></div>
           <div class="f"><label for="c-cache">Cache hit rate %</label><input type="number" id="c-cache" value="0" min="0" max="99"></div>
         </div>
-        <p class="muted" style="font-size:15px;margin-top:10px">Prices are per million tokens. Put today's real figures in — these are placeholders.</p>
+        <p class="muted t-xs mt-1">Prices are per million tokens. Put today's real figures in — these are placeholders.</p>
       </div>
       <div class="calc-out">
         <div><span>Per query</span><output id="o-query">$0.00</output></div>
@@ -304,15 +304,15 @@
     </aside>
   </section>
 
-  <!-- 11 -->
+  <!-- ══════════ 13 · The same product costs more in Arabic ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Callback · Sunday</p>
     <h2>The same product costs more in Arabic</h2>
     <div class="slide__cols">
       <div>
         <p>On Sunday we measured it: the same sentence is two to three times the tokens in Arabic.</p>
-        <p style="margin-top:14px">Both meters are affected. Arabic documents make bigger chunks, so the input grows. Arabic answers are more tokens, so the output grows.</p>
-        <p style="margin-top:14px"><strong>Put a bilingual assistant into the calculator and the monthly figure moves materially.</strong></p>
+        <p class="mt-2">Both meters are affected. Arabic documents make bigger chunks, so the input grows. Arabic answers are more tokens, so the output grows.</p>
+        <p class="mt-2"><strong>Put a bilingual assistant into the calculator and the monthly figure moves materially.</strong></p>
       </div>
       <div class="slide-card slide-card--accent">
         <h3>What to do about it</h3>
@@ -331,7 +331,7 @@
     </aside>
   </section>
 
-  <!-- 12 -->
+  <!-- ══════════ 14 · Four ways to make it faster, and one to mak… ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Latency</p>
     <h2>Four ways to make it faster, and one to make it feel faster</h2>
@@ -361,8 +361,8 @@
     </aside>
   </section>
 
-  <!-- 13 -->
-  <section class="slide slide--code">
+  <!-- ══════════ 15 · Streaming, and a cache that pays for itself ══════════ -->
+  <section class="slideslide--code slide--code-compact">
     <p class="slide__eyebrow">Code</p>
     <h2>Streaming, and a cache that pays for itself</h2>
     <div class="slide__cols">
@@ -397,7 +397,7 @@ CACHE = {}
           <li>Count hits and misses from the start. An unmeasured cache is a guess.</li>
           <li>In production this is Redis with a time-to-live, not a dict — but the shape is identical.</li>
         </ul>
-        <p class="muted" style="margin-top:10px">A cache with no expiry serves yesterday's policy after it changed. Set a TTL.</p>
+        <p class="muted mt-1">A cache with no expiry serves yesterday's policy after it changed. Set a TTL.</p>
       </div>
     </div>
     <aside class="notes">
@@ -407,7 +407,7 @@ CACHE = {}
     </aside>
   </section>
 
-  <!-- 14 -->
+  <!-- ══════════ 16 · Assume every call can fail ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Reliability</p>
     <h2>Assume every call can fail</h2>
@@ -424,7 +424,7 @@ CACHE = {}
       <div>
         <h3>Retry only what is worth retrying</h3>
         <p class="muted">A 429 or a 503 will probably succeed in two seconds. A 400 will fail identically forever, and retrying it wastes your budget and your user's time.</p>
-        <p style="margin-top:14px"><strong>The canned response matters.</strong> "I can't reach the assistant right now — here is the policy page" is a better product than a spinner.</p>
+        <p class="mt-2"><strong>The canned response matters.</strong> "I can't reach the assistant right now — here is the policy page" is a better product than a spinner.</p>
       </div>
     </div>
     <p class="slide-callout">Your users will forgive a degraded answer. They will not forgive a page that hangs.</p>
@@ -435,8 +435,8 @@ CACHE = {}
     </aside>
   </section>
 
-  <!-- 15 -->
-  <section class="slide slide--code">
+  <!-- ══════════ 17 · Retry, then fall back ══════════ -->
+  <section class="slideslide--code slide--code-compact">
     <p class="slide__eyebrow">Code</p>
     <h2>Retry, then fall back</h2>
     <div class="slide__cols">
@@ -474,7 +474,7 @@ RETRYABLE = (<span class="n">429</span>, <span class="n">500</span>, <span class
           <li><strong>Which errors to retry.</strong> A 400 will fail identically forever — retrying it wastes budget and time.</li>
           <li><strong>What the last resort is.</strong> A canned response with a link beats an error page.</li>
         </ul>
-        <p class="muted" style="margin-top:10px">In the notebook you break the primary on purpose and watch the fallback engage.</p>
+        <p class="muted mt-1">In the notebook you break the primary on purpose and watch the fallback engage.</p>
       </div>
     </div>
     <aside class="notes">
@@ -484,7 +484,7 @@ RETRYABLE = (<span class="n">429</span>, <span class="n">500</span>, <span class
     </aside>
   </section>
 
-  <!-- 16 -->
+  <!-- ══════════ 18 · The table you will produce today ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">What "measured" looks like</p>
     <h2>The table you will produce today</h2>
@@ -507,7 +507,7 @@ RETRYABLE = (<span class="n">429</span>, <span class="n">500</span>, <span class
     </aside>
   </section>
 
-  <!-- 17 -->
+  <!-- ══════════ 19 · If you cannot see it, you cannot run it ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Observability</p>
     <h2>If you cannot see it, you cannot run it</h2>
@@ -537,7 +537,7 @@ RETRYABLE = (<span class="n">429</span>, <span class="n">500</span>, <span class
     </aside>
   </section>
 
-  <!-- 16 -->
+  <!-- ══════════ 20 · What the whole thing looks like deployed ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Architecture</p>
     <h2>What the whole thing looks like deployed</h2>
@@ -560,7 +560,7 @@ RETRYABLE = (<span class="n">429</span>, <span class="n">500</span>, <span class
     </aside>
   </section>
 
-  <!-- 17 -->
+  <!-- ══════════ 21 · UX for something that is sometimes wrong ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">The product</p>
     <h2>UX for something that is sometimes wrong</h2>
@@ -591,13 +591,13 @@ RETRYABLE = (<span class="n">429</span>, <span class="n">500</span>, <span class
     </aside>
   </section>
 
-  <!-- 18 -->
+  <!-- ══════════ 22 · Instrument your own project ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Lab · Notebook 4</p>
     <h2>Instrument your own project</h2>
     <div class="slide__cols">
       <div>
-        <h3 style="font-size:21px">day4_production.ipynb</h3>
+        <h3 class="t-lg">day4_production.ipynb</h3>
         <ul>
           <li>A retry decorator with backoff, and a forced failure to prove it fires.</li>
           <li>Streaming against non-streaming, timed.</li>
@@ -609,8 +609,8 @@ RETRYABLE = (<span class="n">429</span>, <span class="n">500</span>, <span class
       <div class="slide-card slide-card--accent">
         <h3>This one runs against <em>your</em> project</h3>
         <p>Not a toy. Import your own retrieval and agent functions from the last two days.</p>
-        <p style="margin-top:10px"><strong>You finish with a table of your own numbers.</strong> That table goes in tomorrow's presentation.</p>
-        <p style="margin-top:12px"><a class="btn" href="../notebooks/index.html">Open the notebooks →</a></p>
+        <p class="mt-1"><strong>You finish with a table of your own numbers.</strong> That table goes in tomorrow's presentation.</p>
+        <p class="mt-2"><a class="btn" href="../notebooks/index.html">Open the notebooks →</a></p>
       </div>
     </div>
     <aside class="notes">
@@ -619,7 +619,7 @@ RETRYABLE = (<span class="n">429</span>, <span class="n">500</span>, <span class
     </aside>
   </section>
 
-  <!-- 19 -->
+  <!-- ══════════ 23 · Build, then the README clinic ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">This afternoon</p>
     <h2>Build, then the README clinic</h2>
@@ -631,7 +631,7 @@ RETRYABLE = (<span class="n">429</span>, <span class="n">500</span>, <span class
       <div class="slide-card slide-card--accent">
         <h3>2:00 – 2:20 · README clinic</h3>
         <p>Every pair writes their README <strong>now</strong>, with me checking. All six SDAIA requirements on screen.</p>
-        <p class="muted" style="margin-top:8px">READMEs written the night before are always bad. This is not negotiable.</p>
+        <p class="muted mt-1">READMEs written the night before are always bad. This is not negotiable.</p>
       </div>
     </div>
     <p class="slide-callout">2:20 · Tomorrow's format: four minutes, two for questions. An honestly-explained broken demo scores better than a fake working one.</p>
@@ -641,7 +641,7 @@ RETRYABLE = (<span class="n">429</span>, <span class="n">500</span>, <span class
     </aside>
   </section>
 
-  <!-- 20 -->
+  <!-- ══════════ 24 · What today was ══════════ -->
   <section class="slide slide--full">
     <p class="slide__eyebrow">Day 4</p>
     <h2>What today was</h2>

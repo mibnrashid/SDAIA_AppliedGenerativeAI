@@ -48,18 +48,8 @@
     .tok-out { font-size: 19px; margin-top: 10px; }
     .tok-out output { font-family: var(--font-mono); font-weight: 700; color: var(--teal-dark); font-size: 22px; }
 
-    /* Slides 19 and 21: long code blocks need a tighter fit on the 720px canvas. */
-    .slide--code-compact { gap: 14px; }
-    .slide--code-compact h2 { font-size: 38px; }
-    .slide--code-compact pre {
-      font-size: 12px;
-      line-height: 1.35;
-      padding: 10px 12px;
-    }
-    .slide--code-compact .slide__caption { font-size: 15px; }
-    .slide--code-compact .slide__caption h3 { font-size: 16px; margin-bottom: 6px; }
-    .slide--code-compact .slide__caption li { margin-bottom: 6px; }
-    .slide--code-compact .slide__cols { gap: 24px; }
+    /* .slide--code-mid and .slide--code-compact now live in deck.css —
+       four of the five decks need them, not just this one. */
 
     /* Opening block: about me, logistics, icebreaker. */
     .about-cols {
@@ -677,7 +667,7 @@ resp = client.models.generate_content(
   </section>
 
   <!-- ══════════ 26 · Code: parse and branch ══════════ -->
-  <section class="slide slide--code">
+  <section class="slideslide--code slide--code-mid">
     <p class="slide__eyebrow">The ceiling · code</p>
     <h2>This is the moment</h2>
     <div class="slide__cols">

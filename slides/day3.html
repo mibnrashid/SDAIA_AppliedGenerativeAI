@@ -17,14 +17,14 @@
       font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--teal);
     }
     .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-    .cols3 .slide-card { padding: 15px 17px; font-size: 18px; }
-    .cols3 h3 { font-size: 18px; margin-bottom: 6px; }
+    .cols3 .slide-card { padding: 15px 17px; font-size: 17px; }
+    .cols3 h3 { font-size: 19px; margin-bottom: 6px; }
     .loop { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
     .loop div {
       padding: 14px 14px; border-radius: var(--radius-sm); background: var(--card);
       border: 1px solid var(--border); font-size: 17px;
     }
-    .loop b { display: block; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin-bottom: 5px; }
+    .loop b { display: block; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin-bottom: 5px; }
     .patterns { display: grid; gap: 7px; }
     .patterns div {
       display: grid; grid-template-columns: 210px 1fr 1fr; gap: 14px; align-items: baseline;
@@ -47,7 +47,7 @@
 
 <div class="deck" data-title="Day 3 — Tools and agents">
 
-  <!-- 1 -->
+  <!-- ══════════ 1 · Tools and agents ══════════ -->
   <section class="slide slide--title">
     <p class="slide__eyebrow">SDAIA Academy · Applied Generative AI</p>
     <h2>Tools and agents</h2>
@@ -60,7 +60,7 @@
     </aside>
   </section>
 
-  <!-- Where we stand in the week -->
+  <!-- ══════════ 2 · Where we stand ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">The week</p>
     <h2>Where we stand</h2>
@@ -80,7 +80,7 @@
     </aside>
   </section>
 
-  <!-- How the day runs -->
+  <!-- ══════════ 3 · How the day runs ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Today</p>
     <h2>How the day runs</h2>
@@ -102,7 +102,7 @@
     </aside>
   </section>
 
-  <!-- 2 -->
+  <!-- ══════════ 4 · What you will be able to do by 12:00 ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Day 3</p>
     <h2>What you will be able to do by 12:00</h2>
@@ -120,7 +120,7 @@
     </aside>
   </section>
 
-  <!-- 3 -->
+  <!-- ══════════ 5 · Three questions before we start ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Yesterday · questions to the room</p>
     <h2>Three questions before we start</h2>
@@ -136,7 +136,7 @@
     </aside>
   </section>
 
-  <!-- 4 -->
+  <!-- ══════════ 6 · Giving the model hands ══════════ -->
   <section class="slide slide--section">
     <p class="slide__eyebrow">Part one</p>
     <h2>Giving the model hands</h2>
@@ -147,7 +147,7 @@
     </aside>
   </section>
 
-  <!-- 5 -->
+  <!-- ══════════ 7 · Three things a model cannot do alone ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Why bother</p>
     <h2>Three things a model cannot do alone</h2>
@@ -155,17 +155,17 @@
       <div class="slide-card">
         <h3>No live data</h3>
         <p>It cannot see today's exchange rate, your ticket queue, or whether that employee is still on leave.</p>
-        <p class="muted" style="margin-top:8px">Its knowledge stopped at a training cut-off.</p>
+        <p class="muted mt-1">Its knowledge stopped at a training cut-off.</p>
       </div>
       <div class="slide-card">
         <h3>No actions</h3>
         <p>It can write a beautiful email. It cannot send one, book anything, or update a record.</p>
-        <p class="muted" style="margin-top:8px">Text in, text out. That is the whole interface.</p>
+        <p class="muted mt-1">Text in, text out. That is the whole interface.</p>
       </div>
       <div class="slide-card">
         <h3>Unreliable arithmetic</h3>
         <p>It predicts the next token, so "1,247 × 0.83" produces a plausible-looking number.</p>
-        <p class="muted" style="margin-top:8px">A calculator is right. Use the calculator.</p>
+        <p class="muted mt-1">A calculator is right. Use the calculator.</p>
       </div>
     </div>
     <p class="slide-callout">Tools fix all three the same way: the model asks, your code does the work.</p>
@@ -175,7 +175,7 @@
     </aside>
   </section>
 
-  <!-- 6 -->
+  <!-- ══════════ 8 · The model does not run your code. ══════════ -->
   <section class="slide slide--full slide--dark">
     <h2>The model does not run your code.</h2>
     <p>It returns a request. Your application decides whether to honour it.</p>
@@ -186,7 +186,7 @@
     </aside>
   </section>
 
-  <!-- 7 -->
+  <!-- ══════════ 9 · The loop, in five steps ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">The mechanism</p>
     <h2>The loop, in five steps</h2>
@@ -205,8 +205,8 @@
     </aside>
   </section>
 
-  <!-- 8 -->
-  <section class="slide slide--code">
+  <!-- ══════════ 10 · A tool declaration, argument by argument ══════════ -->
+  <section class="slideslide--code slide--code-compact">
     <p class="slide__eyebrow">Code</p>
     <h2>A tool declaration, argument by argument</h2>
     <div class="slide__cols">
@@ -243,7 +243,7 @@ leave_tool = types.FunctionDeclaration(
           <li><code>properties</code> — each argument typed, each with its own description.</li>
           <li><code>required</code> — what the model must supply. Everything else is optional.</li>
         </ul>
-        <p class="muted" style="margin-top:10px">Same JSON Schema you wrote on Day 1. The idea keeps coming back.</p>
+        <p class="muted mt-1">Same JSON Schema you wrote on Day 1. The idea keeps coming back.</p>
       </div>
     </div>
     <aside class="notes">
@@ -253,20 +253,20 @@ leave_tool = types.FunctionDeclaration(
     </aside>
   </section>
 
-  <!-- 9 -->
+  <!-- ══════════ 11 · A vague description is a broken tool ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">The field that matters</p>
     <h2>A vague description is a broken tool</h2>
     <div class="slide__cols">
       <div class="slide-card">
         <h3>Bad</h3>
-        <p style="font-family:var(--font-mono);font-size:18px">"Gets leave data."</p>
-        <p class="muted" style="margin-top:10px">When should it be called? What does it return? What is "leave data"? The model guesses, and calls it for sick leave, for policy questions, for anything with the word leave in it.</p>
+        <p class="mono t-sm">"Gets leave data."</p>
+        <p class="muted mt-1">When should it be called? What does it return? What is "leave data"? The model guesses, and calls it for sick leave, for policy questions, for anything with the word leave in it.</p>
       </div>
       <div class="slide-card slide-card--accent">
         <h3>Good</h3>
-        <p style="font-family:var(--font-mono);font-size:18px">"Look up an employee's remaining <em>annual</em> leave in working days for a given year. Use when asked how much leave someone has left. Does not cover sick leave."</p>
-        <p class="muted" style="margin-top:10px">Scope, units, and an explicit exclusion.</p>
+        <p class="mono t-sm">"Look up an employee's remaining <em>annual</em> leave in working days for a given year. Use when asked how much leave someone has left. Does not cover sick leave."</p>
+        <p class="muted mt-1">Scope, units, and an explicit exclusion.</p>
       </div>
     </div>
     <p class="slide-callout">Write descriptions for a competent new colleague who cannot ask you a follow-up question.</p>
@@ -277,8 +277,8 @@ leave_tool = types.FunctionDeclaration(
     </aside>
   </section>
 
-  <!-- 10 -->
-  <section class="slide slide--code">
+  <!-- ══════════ 12 · Doing it by hand, once ══════════ -->
+  <section class="slideslide--code slide--code-compact">
     <p class="slide__eyebrow">Code · the round trip</p>
     <h2>Doing it by hand, once</h2>
     <div class="slide__cols">
@@ -310,8 +310,8 @@ final = client.models.generate_content(
       <div class="slide__caption">
         <h3>Watch step 3</h3>
         <p>Nothing ran until <em>you</em> called the function. If you delete that line, nothing happens at all.</p>
-        <p style="margin-top:12px">This is also where you check whether this user is allowed to look up that employee.</p>
-        <p style="margin-top:12px" class="muted">In the notebook these four steps are four separate cells, so the round trip is impossible to miss.</p>
+        <p class="mt-2">This is also where you check whether this user is allowed to look up that employee.</p>
+        <p class="muted mt-2">In the notebook these four steps are four separate cells, so the round trip is impossible to miss.</p>
       </div>
     </div>
     <aside class="notes">
@@ -321,8 +321,8 @@ final = client.models.generate_content(
     </aside>
   </section>
 
-  <!-- 11 -->
-  <section class="slide slide--code">
+  <!-- ══════════ 13 · The agent loop ══════════ -->
+  <section class="slideslide--code slide--code-compact">
     <p class="slide__eyebrow">Code · automating it</p>
     <h2>The agent loop</h2>
     <div class="slide__cols">
@@ -360,7 +360,7 @@ final = client.models.generate_content(
           <li>Unknown tool returns an <em>error the model can read</em>.</li>
           <li><code>verbose</code> — you can see every decision it made.</li>
         </ul>
-        <p class="muted" style="margin-top:10px">Given complete in the notebook. Read it, don't retype it.</p>
+        <p class="muted mt-1">Given complete in the notebook. Read it, don't retype it.</p>
       </div>
     </div>
     <aside class="notes">
@@ -370,7 +370,7 @@ final = client.models.generate_content(
     </aside>
   </section>
 
-  <!-- 12 -->
+  <!-- ══════════ 14 · Take the cap off and watch ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">What goes wrong</p>
     <h2>Take the cap off and watch</h2>
@@ -384,7 +384,7 @@ final = client.models.generate_content(
 <span class="t-think">step 4</span>: search_flights(dest=<span class="t-obs">"JED "</span>)
 <span class="t-think">step 5</span>: ...
         </div>
-        <p class="muted" style="margin-top:12px;font-size:19px">A goal it cannot satisfy, a tool that keeps returning nothing, and no reason to stop.</p>
+        <p class="muted mt-2 t-md">A goal it cannot satisfy, a tool that keeps returning nothing, and no reason to stop.</p>
       </div>
       <div class="slide-card slide-card--accent">
         <h3>What that costs</h3>
@@ -393,7 +393,7 @@ final = client.models.generate_content(
           <li>Left overnight, this is the invoice that ends up in a post-mortem.</li>
           <li>On a free tier you hit a rate limit and stop. That is luck, not design.</li>
         </ul>
-        <p style="margin-top:10px"><strong>Every agent gets a cap. No exceptions.</strong></p>
+        <p class="mt-1"><strong>Every agent gets a cap. No exceptions.</strong></p>
       </div>
     </div>
     <aside class="notes">
@@ -403,7 +403,7 @@ final = client.models.generate_content(
     </aside>
   </section>
 
-  <!-- 13 -->
+  <!-- ══════════ 15 · Six shapes, and when to use them ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">Patterns</p>
     <h2>Six shapes, and when to use them</h2>
@@ -423,7 +423,7 @@ final = client.models.generate_content(
     </aside>
   </section>
 
-  <!-- 14 -->
+  <!-- ══════════ 16 · Guardrails, concretely ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Control</p>
     <h2>Guardrails, concretely</h2>
@@ -455,20 +455,20 @@ final = client.models.generate_content(
     </aside>
   </section>
 
-  <!-- 15 -->
+  <!-- ══════════ 17 · What a tool returns when it fails ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Control</p>
     <h2>What a tool returns when it fails</h2>
     <div class="slide__cols">
       <div class="slide-card">
         <h3>Bad</h3>
-        <p style="font-family:var(--font-mono);font-size:17px">raise ValueError("not found")</p>
-        <p class="muted" style="margin-top:10px">The exception kills your loop, or worse, you swallow it and the model sees nothing and invents an answer.</p>
+        <p class="mono t-sm">raise ValueError("not found")</p>
+        <p class="muted mt-1">The exception kills your loop, or worse, you swallow it and the model sees nothing and invents an answer.</p>
       </div>
       <div class="slide-card slide-card--accent">
         <h3>Good</h3>
-        <p style="font-family:var(--font-mono);font-size:17px">{"error": "No employee with id E-99999. Ids look like E-10482. Ask the user to confirm."}</p>
-        <p class="muted" style="margin-top:10px">The model can read this, correct itself, and recover — which is the whole reason the loop exists.</p>
+        <p class="mono t-sm">{"error": "No employee with id E-99999. Ids look like E-10482. Ask the user to confirm."}</p>
+        <p class="muted mt-1">The model can read this, correct itself, and recover — which is the whole reason the loop exists.</p>
       </div>
     </div>
     <p class="slide-callout">Error messages are prompts. Write them for the model, not for your log file.</p>
@@ -479,7 +479,7 @@ final = client.models.generate_content(
     </aside>
   </section>
 
-  <!-- 16 -->
+  <!-- ══════════ 18 · Agentic RAG ══════════ -->
   <section class="slide slide--section">
     <p class="slide__eyebrow">Part two · the ceiling</p>
     <h2>Agentic RAG</h2>
@@ -490,7 +490,7 @@ final = client.models.generate_content(
     </aside>
   </section>
 
-  <!-- 17 -->
+  <!-- ══════════ 19 · Retrieval as one tool among several ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">The ceiling</p>
     <h2>Retrieval as one tool among several</h2>
@@ -498,7 +498,7 @@ final = client.models.generate_content(
       <div>
         <h3>Plain RAG</h3>
         <p class="muted">Always retrieves. Always once. Even when the question needs no documents at all, or needs three different searches.</p>
-        <h3 style="margin-top:16px">Agentic RAG</h3>
+        <h3 class="mt-3">Agentic RAG</h3>
         <p class="muted">The model decides <em>whether</em> to search, <em>what</em> to search for, and whether the first result was good enough to answer from.</p>
       </div>
       <div class="slide-card slide-card--accent">
@@ -508,7 +508,7 @@ final = client.models.generate_content(
           <li>A bad first search can be retried with better terms.</li>
           <li>Questions that need nothing from the corpus skip retrieval entirely.</li>
         </ul>
-        <p class="muted" style="margin-top:10px">Cost: unpredictable calls per question. It is a trade, not an upgrade.</p>
+        <p class="muted mt-1">Cost: unpredictable calls per question. It is a trade, not an upgrade.</p>
       </div>
     </div>
     <aside class="notes">
@@ -517,8 +517,8 @@ final = client.models.generate_content(
     </aside>
   </section>
 
-  <!-- 18 -->
-  <section class="slide slide--code">
+  <!-- ══════════ 20 · Your retriever, as a tool ══════════ -->
+  <section class="slideslide--code slide--code-compact">
     <p class="slide__eyebrow">The ceiling · code</p>
     <h2>Your retriever, as a tool</h2>
     <div class="slide__cols">
@@ -564,7 +564,7 @@ TOOLS = {<span class="s">"search_documents"</span>: search_documents,
     </aside>
   </section>
 
-  <!-- 19 -->
+  <!-- ══════════ 21 · Reading the trace ══════════ -->
   <section class="slide">
     <p class="slide__eyebrow">The ceiling</p>
     <h2>Reading the trace</h2>
@@ -588,7 +588,7 @@ TOOLS = {<span class="s">"search_documents"</span>: search_documents,
     </aside>
   </section>
 
-  <!-- 20 -->
+  <!-- ══════════ 22 · When not to build an agent ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Judgement</p>
     <h2>When not to build an agent</h2>
@@ -619,13 +619,13 @@ TOOLS = {<span class="s">"search_documents"</span>: search_documents,
     </aside>
   </section>
 
-  <!-- 21 -->
+  <!-- ══════════ 23 · Build the loop yourself ══════════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Lab · Notebook 3</p>
     <h2>Build the loop yourself</h2>
     <div class="slide__cols">
       <div>
-        <h3 style="font-size:21px">day3_agents.ipynb</h3>
+        <h3 class="t-lg">day3_agents.ipynb</h3>
         <ul>
           <li>Two real tools, then the schemas.</li>
           <li>The round trip by hand, in four separate cells.</li>
@@ -637,8 +637,8 @@ TOOLS = {<span class="s">"search_documents"</span>: search_documents,
       <div class="slide-card slide-card--accent">
         <h3>Then: project time, 1:00–2:30</h3>
         <p><strong>The gate by 2:30:</strong> documents loaded, chunked, embedded, and one query returning something. Not polished — running.</p>
-        <p style="margin-top:10px" class="muted">Anyone still stuck at 2:00 gets me sitting next to them.</p>
-        <p style="margin-top:12px"><a class="btn" href="../notebooks/index.html">Open the notebooks →</a></p>
+        <p class="muted mt-1">Anyone still stuck at 2:00 gets me sitting next to them.</p>
+        <p class="mt-2"><a class="btn" href="../notebooks/index.html">Open the notebooks →</a></p>
       </div>
     </div>
     <aside class="notes">
@@ -648,7 +648,7 @@ TOOLS = {<span class="s">"search_documents"</span>: search_documents,
     </aside>
   </section>
 
-  <!-- 22 -->
+  <!-- ══════════ 24 · What today was ══════════ -->
   <section class="slide slide--full">
     <p class="slide__eyebrow">Day 3</p>
     <h2>What today was</h2>

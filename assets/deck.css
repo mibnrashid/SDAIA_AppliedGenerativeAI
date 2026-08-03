@@ -243,6 +243,33 @@
   overflow: hidden;          /* a slide never scrolls: trim, don't scroll */
   tab-size: 2;
 }
+/* Two smaller steps for long listings.
+   A slide clips rather than scrolls, and `overflow: hidden` above means a
+   code block that is too tall is not ugly, it is INVISIBLE from the cut
+   line down. The height budget on the 1280x720 canvas:
+
+     720 - 96 top pad - 60 bottom pad                    = 564
+     minus eyebrow 23, h2 51, two 20px gaps              = 450 for the columns
+     minus the pre's own 40px of vertical padding        = 410 for code
+
+   At the default 17px/1.55 a line box is 26.4px, so 15 lines fit. Pick the
+   step by line count: up to 14 default, 15-20 --mid, 21 and over --compact.
+   Both steps also shrink the heading and gaps, which buys back more room. */
+.slide--code-mid { gap: 16px; }
+.slide--code-mid h2 { font-size: 40px; }
+.slide--code-mid pre { font-size: 14px; line-height: 1.45; padding: 14px 16px; }
+.slide--code-mid .slide__caption { font-size: 17px; }
+.slide--code-mid .slide__caption h3 { font-size: 19px; margin-bottom: 6px; }
+.slide--code-mid .slide__cols { gap: 28px; }
+
+.slide--code-compact { gap: 14px; }
+.slide--code-compact h2 { font-size: 38px; }
+.slide--code-compact pre { font-size: 12px; line-height: 1.35; padding: 10px 12px; }
+.slide--code-compact .slide__caption { font-size: 15px; }
+.slide--code-compact .slide__caption h3 { font-size: 16px; margin-bottom: 6px; }
+.slide--code-compact .slide__caption li { margin-bottom: 6px; }
+.slide--code-compact .slide__cols { gap: 24px; }
+
 .slide pre .c  { color: #93a4c4; font-style: italic; }  /* comment */
 .slide pre .k  { color: #79d2ff; }                      /* keyword */
 .slide pre .s  { color: #7ee2b8; }                      /* string  */
