@@ -268,6 +268,11 @@
 .slide .t-md { font-size: 19px; }
 .slide .t-lg { font-size: 21px; }
 
+/* Monospace run-in, for identifiers and literal strings shown as prose.
+   Pair it with a t-* step; it sets family only. */
+.slide .mono { font-family: var(--font-mono); }
+
+.slide .mt-0 { margin-top: 4px; }
 .slide .mt-1 { margin-top: 8px; }
 .slide .mt-2 { margin-top: 12px; }
 .slide .mt-3 { margin-top: 16px; }

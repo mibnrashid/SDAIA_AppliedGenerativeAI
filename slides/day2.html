@@ -11,7 +11,7 @@
   <style>
     /* Day 2 only. */
     .numbered { list-style: none; padding: 0; counter-reset: n; }
-    .numbered li { counter-increment: n; position: relative; padding-left: 52px; margin-bottom: 13px; }
+    .numbered li { counter-increment: n; position: relative; padding-left: 52px; margin-bottom: 12px; }
     .numbered li::before {
       content: counter(n, decimal-leading-zero);
       position: absolute; left: 0; top: -2px;
@@ -19,8 +19,8 @@
     }
     .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     .cols4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-    .cols3 .slide-card, .cols4 .slide-card { padding: 15px 17px; font-size: 18px; }
-    .cols3 h3, .cols4 h3 { font-size: 18px; margin-bottom: 6px; }
+    .cols3 .slide-card, .cols4 .slide-card { padding: 15px 17px; font-size: 17px; }
+    .cols3 h3, .cols4 h3 { font-size: 19px; margin-bottom: 6px; }
     .stages { display: grid; gap: 8px; }
     .stages div {
       display: grid; grid-template-columns: 210px 1fr; gap: 16px;
@@ -82,7 +82,7 @@
     </aside>
   </section>
 
-  <!-- Where we stand in the week -->
+  <!-- ══════ 2 · Where we stand ══════ -->
   <section class="slide">
     <p class="slide__eyebrow">The week</p>
     <h2>Where we stand</h2>
@@ -102,7 +102,7 @@
     </aside>
   </section>
 
-  <!-- How the day runs -->
+  <!-- ══════ 3 · How the day runs ══════ -->
   <section class="slide">
     <p class="slide__eyebrow">Today</p>
     <h2>How the day runs</h2>
@@ -124,7 +124,7 @@
     </aside>
   </section>
 
-  <!-- ══════ 2 · Objectives ══════ -->
+  <!-- ══════ 4 · Objectives ══════ -->
   <section class="slide">
     <p class="slide__eyebrow">Day 2</p>
     <h2>What you will be able to do by 2:30</h2>
@@ -143,7 +143,7 @@
     </aside>
   </section>
 
-  <!-- ══════ 3 · Recall ══════ -->
+  <!-- ══════ 5 · Recall ══════ -->
   <section class="slide">
     <p class="slide__eyebrow">Yesterday · questions to the room</p>
     <h2>Three questions before we start</h2>
@@ -160,7 +160,7 @@
     </aside>
   </section>
 
-  <!-- ══════ 4 · Divider ══════ -->
+  <!-- ══════ 6 · Divider ══════ -->
   <section class="slide slide--section">
     <p class="slide__eyebrow">Part one</p>
     <h2>Choosing an architecture</h2>
@@ -171,14 +171,14 @@
     </aside>
   </section>
 
-  <!-- ══════ 5 · Why it doesn't know ══════ -->
+  <!-- ══════ 7 · Why it doesn't know ══════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">The floor</p>
     <h2>It has never seen your documents</h2>
     <div class="slide__cols">
       <div>
         <p>The model learned from public text, up to a cut-off date. Your leave policy, your circulars, your internal manual — none of it was there.</p>
-        <p style="margin-top:14px">Ask anyway and you do not get "I don't know". You get a <strong>plausible invention</strong>, because likely text is the only thing it produces.</p>
+        <p class="mt-2">Ask anyway and you do not get "I don't know". You get a <strong>plausible invention</strong>, because likely text is the only thing it produces.</p>
       </div>
       <div class="slide-card slide-card--accent">
         <h3>Three ways out</h3>
@@ -196,7 +196,7 @@
     </aside>
   </section>
 
-  <!-- ══════ 6 · RAG in four steps ══════ -->
+  <!-- ══════ 8 · RAG in four steps ══════ -->
   <section class="slide">
     <p class="slide__eyebrow">Click each step</p>
     <h2>RAG in four steps</h2>
@@ -218,13 +218,13 @@
     </aside>
   </section>
 
-  <!-- ══════ 7 · Agents as a loop ══════ -->
+  <!-- ══════ 9 · Agents as a loop ══════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">The other architecture</p>
     <h2>An agent is a loop</h2>
     <div class="slide__cols">
       <div>
-        <ol class="numbered" style="font-size:20px">
+        <ol class="numbered t-md">
           <li>Give the model a goal and a list of tools.</li>
           <li>It decides which tool to call, and with what arguments.</li>
           <li><strong>Your code</strong> runs the tool and hands the result back.</li>
@@ -234,7 +234,7 @@
       <div class="slide-card slide-card--accent">
         <h3>What that buys, and costs</h3>
         <p><strong>Buys:</strong> it can take several steps, react to what it finds, and <em>do</em> things rather than only answer.</p>
-        <p style="margin-top:10px"><strong>Costs:</strong> every step is another call. Unpredictable path, unpredictable bill, and much harder to test.</p>
+        <p class="mt-1"><strong>Costs:</strong> every step is another call. Unpredictable path, unpredictable bill, and much harder to test.</p>
       </div>
     </div>
     <p class="slide-callout">RAG has one fixed path. An agent chooses its own — that is the whole difference.</p>
@@ -244,7 +244,7 @@
     </aside>
   </section>
 
-  <!-- ══════ 8 · Comparison ══════ -->
+  <!-- ══════ 10 · Comparison ══════ -->
   <section class="slide">
     <p class="slide__eyebrow">Choosing</p>
     <h2>RAG or agent?</h2>
@@ -266,7 +266,7 @@
     </aside>
   </section>
 
-  <!-- ══════ 9 · Divider + five stages ══════ -->
+  <!-- ══════ 11 · Divider + five stages ══════ -->
   <section class="slide slide--section">
     <p class="slide__eyebrow">Part two</p>
     <h2>The pipeline, stage by stage</h2>
@@ -283,7 +283,7 @@
     </aside>
   </section>
 
-  <!-- ══════ 10 · Ingestion ══════ -->
+  <!-- ══════ 12 · Ingestion ══════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Stage 1</p>
     <h2>Ingestion: boring, and decisive</h2>
@@ -299,8 +299,8 @@
       <div class="slide-card slide-card--accent">
         <h3>Keep the metadata</h3>
         <p>Every chunk travels with <code>source</code> and <code>page</code>, from the very first step.</p>
-        <p style="margin-top:10px">Without it you cannot cite. Without citations nobody in a government context will trust the answer — and they are right not to.</p>
-        <p class="muted" style="margin-top:10px">Adding it later means re-ingesting everything.</p>
+        <p class="mt-1">Without it you cannot cite. Without citations nobody in a government context will trust the answer — and they are right not to.</p>
+        <p class="muted mt-1">Adding it later means re-ingesting everything.</p>
       </div>
     </div>
     <p class="slide-callout">Garbage in, confidently-worded garbage out.</p>
@@ -311,14 +311,14 @@
     </aside>
   </section>
 
-  <!-- ══════ 11 · Multimodal ingestion ══════ -->
+  <!-- ══════ 13 · Multimodal ingestion ══════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Stage 1 · the applied bit</p>
     <h2>A scanned page has no text layer</h2>
     <div class="slide__cols">
       <div>
         <p>Half the Arabic PDFs in a government archive are photographs of paper. Open one in Python and you get an empty string back.</p>
-        <p style="margin-top:14px">So make the vision model a <strong>stage in the pipeline</strong>: page image in, text out, into the same chunker as everything else.</p>
+        <p class="mt-2">So make the vision model a <strong>stage in the pipeline</strong>: page image in, text out, into the same chunker as everything else.</p>
       </div>
       <div class="slide-card slide-card--accent">
         <h3>Why not classical OCR</h3>
@@ -327,7 +327,7 @@
           <li>Reads a table as a table, not as scrambled lines.</li>
           <li>You can instruct it: "transcribe exactly, do not summarise".</li>
         </ul>
-        <p class="muted" style="margin-top:10px">Cost: one call per page, once, at index time. Never per question.</p>
+        <p class="muted mt-1">Cost: one call per page, once, at index time. Never per question.</p>
       </div>
     </div>
     <p class="slide-callout">This is not a modality tour. It is a pipeline stage that solves a problem you will meet this week.</p>
@@ -338,7 +338,7 @@
     </aside>
   </section>
 
-  <!-- ══════ 12 · Code: vision ══════ -->
+  <!-- ══════ 14 · Code: vision ══════ -->
   <section class="slide slide--code">
     <p class="slide__eyebrow">Stage 1 · code</p>
     <h2>Page image in, text out</h2>
@@ -384,7 +384,7 @@ docs.append({<span class="s">"text"</span>: resp.text,
     </aside>
   </section>
 
-  <!-- ══════ 13 · Chunking ══════ -->
+  <!-- ══════ 15 · Chunking ══════ -->
   <section class="slide">
     <p class="slide__eyebrow">Stage 2</p>
     <h2>Chunking: the decision nobody documents</h2>
@@ -393,18 +393,18 @@ docs.append({<span class="s">"text"</span>: resp.text,
         <h3>Size</h3>
         <p>Too small and the answer is cut in half. Too big and you retrieve three paragraphs of noise around one useful line.</p>
         <p class="bigstat">~500</p>
-        <p class="muted" style="font-size:17px">tokens. A starting point, not a law.</p>
+        <p class="muted t-sm">tokens. A starting point, not a law.</p>
       </div>
       <div class="slide-card">
         <h3>Overlap</h3>
         <p>Repeat the tail of the previous chunk, so a sentence that spans a boundary survives whole in one of them.</p>
         <p class="bigstat">~10%</p>
-        <p class="muted" style="font-size:17px">of chunk size. Costs storage, saves answers.</p>
+        <p class="muted t-sm">of chunk size. Costs storage, saves answers.</p>
       </div>
       <div class="slide-card">
         <h3>Structure-aware</h3>
         <p>Split on headings, then paragraphs, then sentences — never blindly on character count.</p>
-        <p style="margin-top:8px">Keep a heading attached to the text it introduces.</p>
+        <p class="mt-1">Keep a heading attached to the text it introduces.</p>
       </div>
     </div>
     <p class="slide-callout">Start at ~500 tokens with ~10% overlap. Then <strong>measure</strong>, and tune. By 2:30 you will have the tool to do that.</p>
@@ -415,13 +415,13 @@ docs.append({<span class="s">"text"</span>: resp.text,
     </aside>
   </section>
 
-  <!-- ══════ 14 · Chunking gone wrong ══════ -->
+  <!-- ══════ 16 · Chunking gone wrong ══════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Stage 2 · the failure</p>
     <h2>What a blind split does</h2>
     <div class="slide__cols">
       <div>
-        <p class="muted" style="font-size:17px;margin-bottom:6px">Split every 500 characters:</p>
+        <p class="muted t-sm mb-0">Split every 500 characters:</p>
         <div class="doc">
           <span class="good">6.2 Annual leave entitlement by grade</span><br>
           <span class="good">Grade 9 &nbsp;— 21 days</span><br>
@@ -431,7 +431,7 @@ docs.append({<span class="s">"text"</span>: resp.text,
           <span class="bad">Grade 11 — 30 days</span><br>
           <span class="bad">Grade 12 — 30 days + 5</span>
         </div>
-        <p class="muted" style="font-size:17px;margin-top:10px">The second chunk is a table with no heading and no first rows. Retrieved on its own, it means nothing.</p>
+        <p class="muted t-sm mt-1">The second chunk is a table with no heading and no first rows. Retrieved on its own, it means nothing.</p>
       </div>
       <div class="slide-card slide-card--accent">
         <h3>What that costs you</h3>
@@ -440,7 +440,7 @@ docs.append({<span class="s">"text"</span>: resp.text,
           <li>The model sees "Grade 11 — 30 days" with no idea it is about leave.</li>
           <li>It answers anyway. Fluently. Possibly about something else entirely.</li>
         </ul>
-        <p style="margin-top:10px"><strong>Fix:</strong> split on the heading boundary, keep the table whole, and repeat the heading into the chunk.</p>
+        <p class="mt-1"><strong>Fix:</strong> split on the heading boundary, keep the table whole, and repeat the heading into the chunk.</p>
       </div>
     </div>
     <aside class="notes">
@@ -450,7 +450,7 @@ docs.append({<span class="s">"text"</span>: resp.text,
     </aside>
   </section>
 
-  <!-- ══════ 15 · Code: chunker ══════ -->
+  <!-- ══════ 17 · Code: chunker ══════ -->
   <section class="slide slide--code">
     <p class="slide__eyebrow">Stage 2 · code</p>
     <h2>The chunker</h2>
@@ -485,7 +485,7 @@ records = [{<span class="s">"text"</span>: c, <span class="s">"source"</span>: d
           <li>The highlighted line is the overlap: the tail of one chunk starts the next.</li>
           <li>The final comprehension is where <code>source</code> and <code>page</code> survive.</li>
         </ul>
-        <p class="muted" style="margin-top:8px">In the notebook the loop body is a <code>TODO</code>. You write it.</p>
+        <p class="muted mt-1">In the notebook the loop body is a <code>TODO</code>. You write it.</p>
       </div>
     </div>
     <aside class="notes">
@@ -495,18 +495,18 @@ records = [{<span class="s">"text"</span>: c, <span class="s">"source"</span>: d
     </aside>
   </section>
 
-  <!-- ══════ 16 · Embeddings ══════ -->
+  <!-- ══════ 18 · Embeddings ══════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Stage 3</p>
     <h2>Meaning as coordinates</h2>
     <div class="slide__cols">
       <div>
         <p>An embedding turns text into a list of numbers — a point in space — placed so that <strong>similar meanings land near each other</strong>.</p>
-        <div class="slide-card" style="margin-top:14px">
-          <p style="font-size:19px">"annual leave" &nbsp;↔&nbsp; "vacation days"</p>
-          <p class="muted" style="font-size:18px;margin-top:4px">Not one word in common. Nearly the same point.</p>
-          <p style="font-size:19px;margin-top:12px">"annual leave" &nbsp;↮&nbsp; "annual budget"</p>
-          <p class="muted" style="font-size:18px;margin-top:4px">One word in common. Far apart.</p>
+        <div class="slide-card mt-2">
+          <p class="t-md">"annual leave" &nbsp;↔&nbsp; "vacation days"</p>
+          <p class="muted t-sm mt-0">Not one word in common. Nearly the same point.</p>
+          <p class="t-md mt-2">"annual leave" &nbsp;↮&nbsp; "annual budget"</p>
+          <p class="muted t-sm mt-0">One word in common. Far apart.</p>
         </div>
       </div>
       <div class="slide-card slide-card--accent">
@@ -526,7 +526,7 @@ records = [{<span class="s">"text"</span>: c, <span class="s">"source"</span>: d
     </aside>
   </section>
 
-  <!-- ══════ 17 · Code: embed and store ══════ -->
+  <!-- ══════ 19 · Code: embed and store ══════ -->
   <section class="slide slide--code">
     <p class="slide__eyebrow">Stages 3 &amp; 4 · code</p>
     <h2>Embed, then store</h2>
@@ -566,7 +566,7 @@ col.add(
           <li>The <code>sleep</code> is not decoration. You will hit 429s today.</li>
           <li>The highlighted lines are your citations, surviving into the store.</li>
         </ul>
-        <h3 style="margin-top:12px">Where else it can live</h3>
+        <h3 class="mt-2">Where else it can live</h3>
         <p><strong>Chroma</strong> local, zero setup — what we use. <strong>Pinecone</strong> managed. <strong>Weaviate</strong> open source, hybrid built in. <strong>pgvector</strong> if you already run Postgres.</p>
       </div>
     </div>
@@ -577,17 +577,17 @@ col.add(
     </aside>
   </section>
 
-  <!-- ══════ 18 · Top-k ══════ -->
+  <!-- ══════ 20 · Top-k ══════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Stage 5</p>
     <h2>Top-k: coverage against noise</h2>
     <div class="slide__cols">
       <div>
         <p>Embed the question, ask the store for the <em>k</em> nearest chunks, paste them into the prompt.</p>
-        <div class="slide-card" style="margin-top:12px">
+        <div class="slide-card mt-2">
           <p><strong>k = 1</strong> — one shot. Miss, and the answer is gone.</p>
-          <p style="margin-top:8px"><strong>k = 3–5</strong> — the working range for most document sets.</p>
-          <p style="margin-top:8px"><strong>k = 20</strong> — the answer is probably in there, buried in nineteen distractions you also pay for.</p>
+          <p class="mt-1"><strong>k = 3–5</strong> — the working range for most document sets.</p>
+          <p class="mt-1"><strong>k = 20</strong> — the answer is probably in there, buried in nineteen distractions you also pay for.</p>
         </div>
       </div>
       <div class="slide-card slide-card--accent">
@@ -597,7 +597,7 @@ col.add(
           <li>Irrelevant context actively pulls the answer off course.</li>
           <li>The fix for "the right chunk isn't in my top 3" is <strong>better retrieval</strong>, not a bigger k.</li>
         </ul>
-        <p style="margin-top:10px" class="muted">Unless you re-rank. Then you retrieve twenty on purpose — that is coming up.</p>
+        <p class="muted mt-1">Unless you re-rank. Then you retrieve twenty on purpose — that is coming up.</p>
       </div>
     </div>
     <aside class="notes">
@@ -607,7 +607,7 @@ col.add(
     </aside>
   </section>
 
-  <!-- ══════ 19 · Divider ══════ -->
+  <!-- ══════ 21 · Divider ══════ -->
   <section class="slide slide--section">
     <p class="slide__eyebrow">Part three · the ceiling</p>
     <h2>Making it actually good</h2>
@@ -618,19 +618,19 @@ col.add(
     </aside>
   </section>
 
-  <!-- ══════ 20 · Where vector search fails ══════ -->
+  <!-- ══════ 22 · Where vector search fails ══════ -->
   <section class="slide">
     <p class="slide__eyebrow">The ceiling</p>
     <h2>Where meaning-based search falls over</h2>
     <div style="display:grid;grid-template-columns:1.15fr 1fr;gap:32px;align-items:start">
       <div>
         <div class="slide-card">
-          <p class="muted" style="font-size:17px;margin-bottom:4px">The query</p>
-          <p style="font-family:var(--font-mono);font-size:21px">SDAIA-F-CRS-201-01-V1</p>
-          <p class="muted" style="font-size:17px;margin-top:12px">What vector search returns</p>
-          <p style="font-size:19px">Chunks about training programmes, course catalogues, form templates. All <em>topically</em> near. None of them the document.</p>
+          <p class="muted t-sm mb-0">The query</p>
+          <p class="mono t-lg">SDAIA-F-CRS-201-01-V1</p>
+          <p class="muted t-sm mt-2">What vector search returns</p>
+          <p class="t-md">Chunks about training programmes, course catalogues, form templates. All <em>topically</em> near. None of them the document.</p>
         </div>
-        <p style="margin-top:12px">That string has no meaning to embed. It is an <strong>identifier</strong>, and identifiers match on characters, not semantics.</p>
+        <p class="mt-2">That string has no meaning to embed. It is an <strong>identifier</strong>, and identifiers match on characters, not semantics.</p>
       </div>
       <div class="slide-card slide-card--accent">
         <h3>Same failure, everywhere</h3>
@@ -641,7 +641,7 @@ col.add(
           <li>Article and clause numbers — <span lang="ar" dir="rtl">المادة</span> 12</li>
           <li>Product codes, error codes</li>
         </ul>
-        <p style="margin-top:10px"><strong>These are exactly the queries a professional user types.</strong></p>
+        <p class="mt-1"><strong>These are exactly the queries a professional user types.</strong></p>
       </div>
     </div>
     <aside class="notes">
@@ -651,7 +651,7 @@ col.add(
     </aside>
   </section>
 
-  <!-- ══════ 21 · Hybrid ══════ -->
+  <!-- ══════ 23 · Hybrid ══════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">The ceiling</p>
     <h2>Hybrid retrieval: run both</h2>
@@ -659,12 +659,12 @@ col.add(
       <div class="slide-card">
         <h3>BM25 — keyword</h3>
         <p>Decades old, boring, unbeatable at exact strings. Scores a chunk on how often the query's rare words appear in it.</p>
-        <p class="muted" style="margin-top:8px">Finds <code>SDAIA-F-CRS-201-01-V1</code> instantly. Cannot connect "leave" to "vacation".</p>
+        <p class="muted mt-1">Finds <code>SDAIA-F-CRS-201-01-V1</code> instantly. Cannot connect "leave" to "vacation".</p>
       </div>
       <div class="slide-card">
         <h3>Vector — meaning</h3>
         <p>Finds the paragraph that answers the question even when it shares no words with it.</p>
-        <p class="muted" style="margin-top:8px">Connects "leave" to "vacation". Cannot find an ID.</p>
+        <p class="muted mt-1">Connects "leave" to "vacation". Cannot find an ID.</p>
       </div>
     </div>
     <p class="slide-callout">Normalise both score lists, add them with a weight, sort. <strong>Two searches, one ranked list</strong> — each covering the other's blind spot.</p>
@@ -675,7 +675,7 @@ col.add(
     </aside>
   </section>
 
-  <!-- ══════ 22 · Code: hybrid ══════ -->
+  <!-- ══════ 24 · Code: hybrid ══════ -->
   <section class="slide slide--code">
     <p class="slide__eyebrow">The ceiling · code</p>
     <h2>Hybrid search</h2>
@@ -705,8 +705,8 @@ bm25 = BM25Okapi([r[<span class="s">"text"</span>].split() <span class="k">for</
       <div class="slide__caption">
         <h3>The one line that matters</h3>
         <p>The highlighted line is the whole idea. <code>alpha=1.0</code> is pure vector search; <code>alpha=0.0</code> is pure keyword.</p>
-        <p style="margin-top:12px">In the notebook, that line is your <code>TODO</code>.</p>
-        <p style="margin-top:12px" class="muted">Then re-run the query that failed two slides ago and watch it come back first.</p>
+        <p class="mt-2">In the notebook, that line is your <code>TODO</code>.</p>
+        <p class="muted mt-2">Then re-run the query that failed two slides ago and watch it come back first.</p>
       </div>
     </div>
     <aside class="notes">
@@ -716,14 +716,14 @@ bm25 = BM25Okapi([r[<span class="s">"text"</span>].split() <span class="k">for</
     </aside>
   </section>
 
-  <!-- ══════ 23 · Re-ranking ══════ -->
+  <!-- ══════ 25 · Re-ranking ══════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">The ceiling</p>
     <h2>Re-ranking: retrieve 20 cheap, keep the best 4</h2>
     <div class="slide__cols">
       <div>
         <p>Retrieval is fast and shallow. Judging relevance properly is slow and expensive. So do both, in that order.</p>
-        <ol class="numbered" style="margin-top:12px;font-size:19px">
+        <ol class="numbered mt-2 t-md">
           <li>Hybrid search returns 20 candidates. Milliseconds.</li>
           <li>Score each one for relevance, 0 to 10 — a cross-encoder, or the model itself.</li>
           <li>Keep the best 4. Only those go into the prompt.</li>
@@ -736,7 +736,7 @@ bm25 = BM25Okapi([r[<span class="s">"text"</span>].split() <span class="k">for</
           <li>Precision comes from the expensive judge.</li>
           <li>The prompt stays small, so generation stays cheap and focused.</li>
         </ul>
-        <p style="margin-top:10px" class="muted">Cost: one extra call per question. Usually the best value in the whole pipeline.</p>
+        <p class="muted mt-1">Cost: one extra call per question. Usually the best value in the whole pipeline.</p>
       </div>
     </div>
     <p class="slide-callout">This is the "k = 20" I told you not to do — the difference is that sixteen of them never reach the model.</p>
@@ -747,20 +747,20 @@ bm25 = BM25Okapi([r[<span class="s">"text"</span>].split() <span class="k">for</
     </aside>
   </section>
 
-  <!-- ══════ 24 · Query rewriting ══════ -->
+  <!-- ══════ 26 · Query rewriting ══════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">The ceiling</p>
     <h2>The user's question is a bad search string</h2>
     <div class="slide__cols">
       <div class="slide-card">
         <h3>What they type</h3>
-        <p style="font-size:19px">"and what about for part-timers?"</p>
-        <p class="muted" style="margin-top:8px">Meaningless alone. Retrieves nothing useful — the subject was two messages ago.</p>
+        <p class="t-md">"and what about for part-timers?"</p>
+        <p class="muted mt-1">Meaningless alone. Retrieves nothing useful — the subject was two messages ago.</p>
       </div>
       <div class="slide-card slide-card--accent">
         <h3>What you search for</h3>
-        <p style="font-size:19px">"annual leave entitlement part-time employees"</p>
-        <p class="muted" style="margin-top:8px">One cheap call rewrites it using the conversation so far. Then you retrieve on that.</p>
+        <p class="t-md">"annual leave entitlement part-time employees"</p>
+        <p class="muted mt-1">One cheap call rewrites it using the conversation so far. Then you retrieve on that.</p>
       </div>
     </div>
     <p class="slide-callout">Also useful: generate two or three variations, retrieve for each, merge the results. Cheap recall.</p>
@@ -771,7 +771,7 @@ bm25 = BM25Okapi([r[<span class="s">"text"</span>].split() <span class="k">for</
     </aside>
   </section>
 
-  <!-- ══════ 25 · Divider ══════ -->
+  <!-- ══════ 27 · Divider ══════ -->
   <section class="slide slide--section">
     <p class="slide__eyebrow">Part four · the ceiling</p>
     <h2>Proving it works</h2>
@@ -782,15 +782,15 @@ bm25 = BM25Okapi([r[<span class="s">"text"</span>].split() <span class="k">for</
     </aside>
   </section>
 
-  <!-- ══════ 26 · Golden set ══════ -->
+  <!-- ══════ 28 · Golden set ══════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Evaluation</p>
     <h2>The golden question set</h2>
     <div class="slide__cols">
       <div>
         <p>Ten questions <strong>you already know the answers to</strong>, written against your own documents, before you tune anything.</p>
-        <p style="margin-top:12px">For each one, record which chunk <em>should</em> come back — or a phrase that must appear in whatever does.</p>
-        <p style="margin-top:12px">Then: what fraction of the ten did retrieval get right? That is your hit rate.</p>
+        <p class="mt-2">For each one, record which chunk <em>should</em> come back — or a phrase that must appear in whatever does.</p>
+        <p class="mt-2">Then: what fraction of the ten did retrieval get right? That is your hit rate.</p>
       </div>
       <div class="slide-card slide-card--accent">
         <h3>How to write good ones</h3>
@@ -810,7 +810,7 @@ bm25 = BM25Okapi([r[<span class="s">"text"</span>].split() <span class="k">for</
     </aside>
   </section>
 
-  <!-- ══════ 27 · Code: evaluation ══════ -->
+  <!-- ══════ 29 · Code: evaluation ══════ -->
   <section class="slide slide--code">
     <p class="slide__eyebrow">Evaluation · code</p>
     <h2>Score it, three ways</h2>
@@ -840,7 +840,7 @@ bm25 = BM25Okapi([r[<span class="s">"text"</span>].split() <span class="k">for</
       </div>
       <div class="slide__caption">
         <h3>What comes out</h3>
-        <table class="scoretable" style="font-size:18px">
+        <table class="scoretable t-sm">
           <thead><tr><th>Retriever</th><th>Hit rate</th></tr></thead>
           <tbody>
             <tr><td>naive vector</td><td>6 / 10</td></tr>
@@ -848,7 +848,7 @@ bm25 = BM25Okapi([r[<span class="s">"text"</span>].split() <span class="k">for</
             <tr><td class="win">+ re-ranked</td><td class="win">9 / 10</td></tr>
           </tbody>
         </table>
-        <p class="muted" style="margin-top:10px">Now you can say which change helped, and by how much. That sentence is worth more than the code above it.</p>
+        <p class="muted mt-1">Now you can say which change helped, and by how much. That sentence is worth more than the code above it.</p>
       </div>
     </div>
     <aside class="notes">
@@ -858,7 +858,7 @@ bm25 = BM25Okapi([r[<span class="s">"text"</span>].split() <span class="k">for</
     </aside>
   </section>
 
-  <!-- ══════ 28 · Common mistakes ══════ -->
+  <!-- ══════ 30 · Common mistakes ══════ -->
   <section class="slide">
     <p class="slide__eyebrow">Before you build</p>
     <h2>The four mistakes everyone makes</h2>
@@ -887,13 +887,13 @@ bm25 = BM25Okapi([r[<span class="s">"text"</span>].split() <span class="k">for</
     </aside>
   </section>
 
-  <!-- ══════ 29 · Lab ══════ -->
+  <!-- ══════ 31 · Lab ══════ -->
   <section class="slide slide--split">
     <p class="slide__eyebrow">Lab · Notebook 2</p>
     <h2>Now you build the whole thing</h2>
     <div class="slide__cols">
       <div>
-        <h3 style="font-size:21px">day2_retrieval.ipynb</h3>
+        <h3 class="t-lg">day2_retrieval.ipynb</h3>
         <ul>
           <li><strong>Part A</strong> — load, clean, read a scanned page with vision, chunk, embed, store, query, answer with citations.</li>
           <li><strong>Part B</strong> — watch vector search miss an ID, add BM25, combine, re-rank, rewrite the query.</li>
@@ -906,7 +906,7 @@ bm25 = BM25Okapi([r[<span class="s">"text"</span>].split() <span class="k">for</
           <li><strong>429s.</strong> The batching and sleeping is already written. Do not remove it.</li>
           <li><strong>Re-running the store cell</strong> duplicates your collection. Delete it first — there is a guard in the notebook.</li>
         </ul>
-        <p style="margin-top:12px"><a class="btn" href="../notebooks/index.html">Open the notebooks →</a></p>
+        <p class="mt-2"><a class="btn" href="../notebooks/index.html">Open the notebooks →</a></p>
       </div>
     </div>
     <aside class="notes">
@@ -916,7 +916,7 @@ bm25 = BM25Okapi([r[<span class="s">"text"</span>].split() <span class="k">for</
     </aside>
   </section>
 
-  <!-- ══════ 30 · Summary ══════ -->
+  <!-- ══════ 32 · Summary ══════ -->
   <section class="slide slide--full">
     <p class="slide__eyebrow">Day 2</p>
     <h2>What today was</h2>
