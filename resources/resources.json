@@ -47,7 +47,37 @@
     {
       "title": "Slides",
       "note": "Printable copies of the decks, added as the week goes.",
-      "items": []
+      "items": [
+        {
+          "title": "Day 1 slides (Hussein)",
+          "kind": "PDF",
+          "day": "Day 1",
+          "href": "./slides/Day1_Hussein.pdf",
+          "download": true
+        },
+        {
+          "title": "Day 2 slides (Hussein)",
+          "kind": "Slides",
+          "day": "Day 2",
+          "href": "./slides/Day2_Hussein.pptx",
+          "download": true
+        },
+        {
+          "title": "Day 3 slides (Hussein)",
+          "kind": "Slides",
+          "day": "Day 3",
+          "href": "./slides/Day3_Hussein.pptx",
+          "download": true
+        },
+        {
+          "title": "Capstone Project Guide",
+          "kind": "PDF",
+          "day": "Project",
+          "description": "Capstone project guide, from Hussein.",
+          "href": "./slides/Capstone_Project_Guide_EN.pdf",
+          "download": true
+        }
+      ]
     },
     {
       "title": "Links",
@@ -61,6 +91,13 @@
           "href": "https://aistudio.google.com/"
         },
         {
+          "title": "SDAIA GenAI Portal",
+          "kind": "Link",
+          "day": "Quizzes & exams",
+          "description": "Used for quizzes and exams during the course, by Hussein.",
+          "href": "https://sdaia-genai-portal.vercel.app/"
+        },
+        {
           "title": "SDAIA Academy on GitHub",
           "kind": "Link",
           "day": "Project",
@@ -68,11 +105,6 @@
           "href": "https://github.com/SDAIAAcademy"
         }
       ]
-    },
-    {
-      "title": "Handouts",
-      "note": "Anything printed or shared in the room.",
-      "items": []
     }
   ]
 }
